@@ -1,0 +1,28 @@
+{
+  "defaultSeverity": "error",
+  "compilerOptions": {
+    "target": "es2016",
+    "baseUrl": ".",
+    "rootDir": ".",
+    "lib": ["es2016", "esnext.asynciterable"],
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "dist",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
+    "typeRoots": ["./node_modules/@types", "./src/typings"],
+    "paths": {
+      "*": ["./src/typings"],
+      "@app/*": ["src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", ".cache", ".vscode"]
+}

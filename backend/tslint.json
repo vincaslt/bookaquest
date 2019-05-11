@@ -1,0 +1,28 @@
+{
+  "extends": ["tslint:recommended", "tslint-config-prettier", "tslint-plugin-prettier"],
+  "jsRules": {
+    "prettier": true,
+    "interface-name": false,
+    "object-literal-sort-keys": false,
+    "member-access": false,
+    "no-console": {
+      "severity": "warning"
+    },
+    "variable-name": false,
+    "no-shadowed-variable": true
+  },
+  "rules": {
+    "prettier": true,
+    "interface-name": false,
+    "object-literal-sort-keys": false,
+    "member-access": false,
+    "no-console": {
+      "severity": "warning"
+    },
+    "variable-name": false,
+    "no-shadowed-variable": true
+  },
+  "linterOptions": {
+    "exclude": ["node_modules/**/*.ts"]
+  }
+}
