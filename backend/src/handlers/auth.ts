@@ -33,11 +33,12 @@ const login = withBody(SignInDTO, dto => async (req, res) => {
 
 const refreshToken = withBody(RefreshTokenDTO, dto => async (req, res) => {
   const token = await refreshAccessToken(dto.userId, dto.refreshToken)
-  if (token) {
-    send(res, 200, { token })
-  } else {
-    send(res, 401)
+
+  if (!token) {
+    return send(res, 401)
   }
+
+  return send(res, 200, { token })
 })
 
 export default [post('/login', login), post('/refreshToken', refreshToken)]
