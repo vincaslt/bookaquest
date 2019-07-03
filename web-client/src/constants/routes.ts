@@ -2,7 +2,8 @@ import * as pathToRegexp from 'path-to-regexp'
 
 enum Routes {
   Home = '/',
-  Register = '/register'
+  Register = '/register',
+  FormBuilder = '/build'
 }
 
 export const getUrl = (path: Routes, params: object) => {

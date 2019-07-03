@@ -2,6 +2,7 @@ import { Form, FormItem, Input, SubmitButton } from '@jbuschke/formik-antd'
 import { notification } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 import * as Yup from 'yup'
 import * as api from '../../../api/application'
 import { CreateUser } from '../../../interfaces/user'
@@ -13,6 +14,8 @@ const initialValues: CreateUser = {
 }
 
 function RegistrationForm() {
+  const { t } = useTranslation()
+
   const validationSchema = Yup.object().shape<CreateUser>({
     fullName: Yup.string().required(),
     email: Yup.string()
@@ -29,14 +32,14 @@ function RegistrationForm() {
       .then(() => {
         actions.setSubmitting(false)
         notification.open({
-          message: 'Success',
-          description: 'User has been created'
+          message: t('Success'),
+          description: t('User has been created')
         })
       })
       .catch(() => {
         notification.open({
-          message: 'Error',
-          description: 'Please try again in a moment'
+          message: t('Error'),
+          description: t('Please try again in a moment')
         })
       })
   }
@@ -48,18 +51,18 @@ function RegistrationForm() {
       onSubmit={handleSubmit}
     >
       <Form>
-        <FormItem name="fullName" label="Full name">
+        <FormItem name="fullName" label={t('Full name')}>
           <Input name="fullName" />
         </FormItem>
 
-        <FormItem name="email" label="Email">
+        <FormItem name="email" label={t('Email')}>
           <Input name="email" type="email" />
         </FormItem>
 
-        <FormItem name="password" label="Password">
+        <FormItem name="password" label={t('Password')}>
           <Input type="password" name="password" />
         </FormItem>
-        <SubmitButton>Register</SubmitButton>
+        <SubmitButton>{t('Register')}</SubmitButton>
       </Form>
     </Formik>
   )

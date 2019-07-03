@@ -1,18 +1,26 @@
 import { Router } from '@reach/router'
-import { Spin } from 'antd'
+import { Layout, Spin } from 'antd'
 import * as React from 'react'
 import styled from 'styled-components'
 import Routes from './constants/routes'
+import FormBuilder from './pages/FormBuilder/FormBuilder'
 import HomePage from './pages/HomePage/HomePage'
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage'
+import SideMenu from './shared/SideMenu'
 import './utils/i18n'
 
-const AppSpinnerContainer = styled.div`
+const AppSpinnerContainer = styled('div')`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 80vh;
+`
+
+const ContentContainer = styled(Layout)`
+  margin-left: 200px;
+  min-height: 100vh;
+  padding: 24px 16px 0;
 `
 
 function App() {
@@ -24,10 +32,16 @@ function App() {
         </AppSpinnerContainer>
       }
     >
-      <Router>
-        <HomePage path={Routes.Home} />
-        <RegistrationPage path={Routes.Register} />
-      </Router>
+      <Layout>
+        <SideMenu />
+        <ContentContainer>
+          <Router>
+            <HomePage path={Routes.Home} />
+            <RegistrationPage path={Routes.Register} />
+            <FormBuilder path={Routes.FormBuilder} />
+          </Router>
+        </ContentContainer>
+      </Layout>
     </React.Suspense>
   )
 }
