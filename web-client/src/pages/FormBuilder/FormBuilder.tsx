@@ -2,8 +2,9 @@ import { RouteComponentProps } from '@reach/router'
 import * as React from 'react'
 import styled from 'styled-components'
 import PageContent from '../../shared/PageContent'
-import { FormConfig, FormEditProvider, GeneratedForm, useFormEdit } from './lib'
-import dummyConfig from './lib/__formConfig'
+import dummyConfig from './__formConfig'
+import { FormBuilderProvider } from './FormBuilderProvider'
+import FormPreview from './FormPreview'
 import Toolbar from './Toolbar/Toolbar'
 
 const FormBuilderContainer = styled.div`
@@ -11,32 +12,16 @@ const FormBuilderContainer = styled.div`
   display: flex;
 `
 
-const DummyContent = styled.div`
-  height: 500px;
-`
-
-function Test() {
-  const editor = useFormEdit()
-
-  return editor && <div>Test selected {editor.selectedProperty}</div>
-}
-
 function FormBuilder(props: RouteComponentProps) {
-  const [formConfig, setFormConfig] = React.useState<FormConfig>(dummyConfig)
-
   return (
-    <FormEditProvider>
+    <FormBuilderProvider initialConfig={dummyConfig}>
       <FormBuilderContainer>
         <PageContent>
-          <GeneratedForm uiSchema={formConfig.uiSchema} schema={formConfig.schema} />
-          <DummyContent>
-            <Test />
-          </DummyContent>
-          .
+          <FormPreview />
         </PageContent>
-        <Toolbar config={formConfig} onChangeConfig={setFormConfig} />
+        <Toolbar />
       </FormBuilderContainer>
-    </FormEditProvider>
+    </FormBuilderProvider>
   )
 }
 

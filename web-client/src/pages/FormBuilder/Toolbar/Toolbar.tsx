@@ -1,8 +1,6 @@
-import { Button } from 'antd'
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { FormConfig } from '../../../../../user-script/src/lib'
+import FieldDefinition from './FieldDefinition'
 
 const Container = styled.div`
   overflow: auto;
@@ -14,32 +12,10 @@ const Container = styled.div`
   padding: 24px 16px;
 `
 
-interface Props {
-  config: FormConfig
-  onChangeConfig: (config: FormConfig) => void
-}
-
-function Toolbar({ config, onChangeConfig }: Props) {
-  const { t } = useTranslation()
-
-  const handleAddField = () =>
-    onChangeConfig({
-      ...config,
-      schema: {
-        ...config.schema,
-        properties: {
-          ...config.schema.properties,
-          new_field: {
-            type: 'string',
-            title: 'New Field'
-          }
-        }
-      }
-    })
-
+function Toolbar() {
   return (
     <Container>
-      <Button onClick={handleAddField}>{t('Add text field')}</Button>
+      <FieldDefinition />
     </Container>
   )
 }

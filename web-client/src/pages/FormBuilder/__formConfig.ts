@@ -1,4 +1,4 @@
-import { FormConfig } from '@lib/index'
+import { FormConfig } from './index'
 
 const dummyConfig: FormConfig = {
   uiSchema: {
@@ -23,21 +23,14 @@ const dummyConfig: FormConfig = {
       },
       timeslot: {
         type: 'object',
+        title: 'Timeslot',
         required: ['timeslots'],
         properties: {
-          timeslots: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                startTime: {
-                  type: 'string'
-                },
-                endTime: {
-                  type: 'string'
-                }
-              }
-            }
+          startTime: {
+            type: 'string'
+          },
+          endTime: {
+            type: 'string'
           }
         }
       }
