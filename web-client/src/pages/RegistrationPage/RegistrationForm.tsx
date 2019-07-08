@@ -4,8 +4,8 @@ import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import * as Yup from 'yup'
-import * as api from '../../../api/application'
-import { CreateUser } from '../../../interfaces/user'
+import * as api from '../../api/application'
+import { CreateUser } from '../../interfaces/user'
 
 const initialValues: CreateUser = {
   email: '',
@@ -51,15 +51,15 @@ function RegistrationForm() {
       onSubmit={handleSubmit}
     >
       <Form>
-        <FormItem name="fullName" label={t('Full name')}>
+        <FormItem name="fullName" hasFeedback label={t('Full name')}>
           <Input name="fullName" />
         </FormItem>
 
-        <FormItem name="email" label={t('Email')}>
+        <FormItem name="email" hasFeedback label={t('Email')}>
           <Input name="email" type="email" />
         </FormItem>
 
-        <FormItem name="password" label={t('Password')}>
+        <FormItem name="password" hasFeedback label={t('Password')}>
           <Input type="password" name="password" />
         </FormItem>
         <SubmitButton>{t('Register')}</SubmitButton>

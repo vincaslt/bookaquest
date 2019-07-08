@@ -6,21 +6,19 @@ import TimeSlotPicker from './TimeSlotPicker'
 
 const fields = { timeslot: TimeSlotPicker }
 
-const SelectableField = styled.div`
+const SelectableField = styled.div<{ selected: boolean }>`
   padding: 10px;
   position: relative;
-  border: 1px solid ${({ selected }: { selected: boolean }) => (selected ? 'red' : 'grey')};
   cursor: pointer;
+  ${({ selected }) => selected && 'background-color: #f5f5f5'};
 
   &:hover {
-    border: 1px solid red;
+    background-color: ${({ selected }) => (selected ? '#f5f5f5' : '#fcfcfc')};
   }
 `
 
 function FieldWrapper(props: ObjectFieldTemplateProps) {
-  const { selectField, selectedField } = useFormBuilder()
-
-  const handleSelectField = (name: string) => () => selectField(name)
+  const { selectField, selectedFieldName } = useFormBuilder()
 
   return (
     <>
@@ -28,9 +26,9 @@ function FieldWrapper(props: ObjectFieldTemplateProps) {
       <p>{props.description}</p>
       {props.properties.map((element, i) => (
         <SelectableField
-          selected={selectedField === element.name}
+          selected={selectedFieldName === element.name}
           key={element.name}
-          onClick={handleSelectField(element.name)}
+          onClick={() => selectField(element.name)}
         >
           {element.content}
         </SelectableField>

@@ -1,4 +1,4 @@
-import { FormConfig } from './index'
+import { FormConfig } from './lib/index'
 
 const dummyConfig: FormConfig = {
   uiSchema: {

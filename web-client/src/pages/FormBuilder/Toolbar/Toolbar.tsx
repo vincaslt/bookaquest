@@ -1,6 +1,8 @@
+import { Button } from 'antd'
 import * as React from 'react'
 import styled from 'styled-components'
 import FieldDefinition from './FieldDefinition'
+import NewFieldModal from './NewFieldModal'
 
 const Container = styled.div`
   overflow: auto;
@@ -13,8 +15,12 @@ const Container = styled.div`
 `
 
 function Toolbar() {
+  const [modalVisible, setModalVisible] = React.useState(false)
+
   return (
     <Container>
+      {modalVisible && <NewFieldModal close={() => setModalVisible(false)} />}
+      <Button onClick={() => setModalVisible(true)}>Add field</Button>
       <FieldDefinition />
     </Container>
   )

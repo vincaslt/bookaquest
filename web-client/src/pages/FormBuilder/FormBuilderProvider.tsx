@@ -14,6 +14,7 @@ interface FormBuilderState {
   selectedFieldName: string | null
   selectField: (name: string | null) => void
   changeFieldProperty: (property: string, value: any) => void
+  addField: (name: string) => void
 }
 
 const FormBuilderContext = React.createContext<FormBuilderState | null>(null)
@@ -36,9 +37,19 @@ export const FormBuilderProvider = ({ initialConfig, children }: Props) => {
     selectedFieldName &&
     setConfig(assocPath(['schema', 'properties', selectedFieldName, property], value))
 
+  const addField = (fieldName: string) =>
+    setConfig(assocPath(['schema', 'properties', fieldName], { type: 'string' }))
+
   return (
     <FormBuilderContext.Provider
-      value={{ config, selectedField, selectField, changeFieldProperty, selectedFieldName }}
+      value={{
+        config,
+        selectedField,
+        selectField,
+        changeFieldProperty,
+        selectedFieldName,
+        addField
+      }}
     >
       {children}
     </FormBuilderContext.Provider>

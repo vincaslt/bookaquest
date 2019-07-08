@@ -39,7 +39,7 @@ function TimeSlotPicker(props: FieldProps) {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <legend>{props.schema.title}</legend>
       {timeslots.map((timeslot, i) => (
-        <Button key={i} type="button" onClick={handleSelectTimeslot(timeslot)}>
+        <Button key={i} onClick={handleSelectTimeslot(timeslot)}>
           {selected === timeslot && '=> '}
           {timeslot.info.title} ({timeslot.startTime.toLocaleTimeString()} -{' '}
           {timeslot.endTime.toLocaleTimeString()})

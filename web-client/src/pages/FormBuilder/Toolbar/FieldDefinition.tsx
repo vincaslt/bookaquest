@@ -1,5 +1,6 @@
 import { Input, Select } from 'antd'
 import * as React from 'react'
+import { asNumber, asString } from '../../../utils/formHelpers'
 import { useFormBuilder } from '../FormBuilderProvider'
 
 function FieldDefinition() {
@@ -10,14 +11,6 @@ function FieldDefinition() {
   }
 
   const handleChangeProperty = (key: string) => (value: any) => changeFieldProperty(key, value)
-
-  function asString<E extends HTMLInputElement>(handler: (value: string) => void) {
-    return (e: React.ChangeEvent<E>) => handler(e.currentTarget.value)
-  }
-
-  function asNumber<E extends HTMLInputElement>(handler: (value: number) => void) {
-    return (e: React.ChangeEvent<E>) => handler(+e.currentTarget.value)
-  }
 
   return (
     <div>
