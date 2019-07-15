@@ -28,6 +28,11 @@ function SideMenu() {
             <Icon type="dashboard" /> {t('Dashboard')}
           </Link>
         </Menu.Item>
+        <Menu.Item key="bookings">
+          <Link to={Routes.Bookings}>
+            <Icon type="schedule" /> {t('Bookings')}
+          </Link>
+        </Menu.Item>
         <Menu.Item key="build">
           <Link to={Routes.FormBuilder}>
             <Icon type="build" /> {t('Build')}

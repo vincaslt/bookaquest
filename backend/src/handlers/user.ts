@@ -17,4 +17,4 @@ const createUser = withBody(CreateUserDTO, dto => async (req, res) => {
   return send(res, 200)
 })
 
-export default [post('/users', createUser)]
+export default [post('/user', createUser)]

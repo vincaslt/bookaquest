@@ -21,7 +21,6 @@
     "noUnusedLocals": true,
     "noEmit": true,
     "jsx": "react",
-    "jsxFactory": "h",
     "typeRoots": [
       "./node_modules/@types"
     ],

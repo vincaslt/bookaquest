@@ -3,6 +3,7 @@ import { Layout, Spin } from 'antd'
 import * as React from 'react'
 import styled from 'styled-components'
 import Routes from './constants/routes'
+import BookingsPage from './pages/BookingsPage/BookingsPage'
 import FormBuilder from './pages/FormBuilder/FormBuilder'
 import HomePage from './pages/HomePage/HomePage'
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage'
@@ -39,6 +40,7 @@ function App() {
             <HomePage path={Routes.Home} />
             <RegistrationPage path={Routes.Register} />
             <FormBuilder path={Routes.FormBuilder} />
+            <BookingsPage path={Routes.Bookings} />
           </Router>
         </ContentContainer>
       </Layout>
