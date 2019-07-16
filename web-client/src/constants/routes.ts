@@ -4,7 +4,8 @@ enum Routes {
   Home = '/',
   Register = '/register',
   FormBuilder = '/build',
-  Bookings = '/bookings'
+  Bookings = '/bookings',
+  SignIn = '/sign-in'
 }
 
 export const getUrl = (path: Routes, params: object) => {

@@ -6,6 +6,7 @@ import Routes from './constants/routes'
 import BookingsPage from './pages/BookingsPage/BookingsPage'
 import FormBuilder from './pages/FormBuilder/FormBuilder'
 import HomePage from './pages/HomePage/HomePage'
+import LoginPage from './pages/LoginPage/LoginPage'
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage'
 import SideMenu from './shared/SideMenu'
 import './utils/i18n'
@@ -41,6 +42,7 @@ function App() {
             <RegistrationPage path={Routes.Register} />
             <FormBuilder path={Routes.FormBuilder} />
             <BookingsPage path={Routes.Bookings} />
+            <LoginPage path={Routes.SignIn} />
           </Router>
         </ContentContainer>
       </Layout>

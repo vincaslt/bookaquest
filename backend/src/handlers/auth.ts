@@ -23,11 +23,9 @@ const login = withBody(SignInDTO, dto => async (req, res) => {
     return send(res, 401)
   }
 
-  const jwtPayload = { userId: user.id }
-
   return send(res, 200, {
-    accessToken: await issueAccessToken(jwtPayload),
-    refreshToken: await issueRefreshToken(jwtPayload)
+    accessToken: await issueAccessToken(user.id),
+    refreshToken: await issueRefreshToken(user.id)
   })
 })
 

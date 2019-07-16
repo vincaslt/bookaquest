@@ -8,13 +8,16 @@ export function withAuth(handler: (payload: JwtPayload) => RequestHandler): Requ
       | undefined)
 
     if (authHeader) {
-      const payload = verifyToken(authHeader.split('Bearer ')[1])
+      const payload = verifyToken(authHeader.split('Bearer ')[1]) as JwtPayload
 
       if (payload) {
-        return await handler(payload as JwtPayload)(req, res)
+        console.log(payload.expires)
+        return new Date(payload.expires) > new Date()
+          ? await handler(payload)(req, res)
+          : await send(res, 401) // Token has expired
       }
     }
 
-    return await send(res, 401)
+    return await send(res, 401) // Token is not present in headers
   }
 }

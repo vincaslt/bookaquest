@@ -5,44 +5,42 @@ import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import * as Yup from 'yup'
 import * as api from '../../api/application'
-import { CreateUser } from '../../interfaces/user'
+import { SignIn } from '../../interfaces/auth'
 
-const initialValues: CreateUser = {
+const initialValues: SignIn = {
   email: '',
-  fullName: '',
   password: ''
 }
 
-function RegistrationForm() {
+function LoginForm() {
   const { t } = useTranslation()
 
-  const validationSchema = Yup.object().shape<CreateUser>({
-    fullName: Yup.string().required(),
-    email: Yup.string()
-      .required()
-      .email(),
-    password: Yup.string()
-      .required()
-      .min(6)
+  const validationSchema = Yup.object().shape<SignIn>({
+    email: Yup.string().required(),
+    password: Yup.string().required()
   })
 
-  const handleSubmit = (values: CreateUser, actions: FormikActions<CreateUser>) => {
+  const handleSubmit = (values: SignIn, actions: FormikActions<SignIn>) => {
     api
-      .register(values)
-      .then(() => {
-        actions.setSubmitting(false)
+      .signIn(values)
+      .then(({ accessToken, refreshToken }) => {
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
         notification.open({
           message: t('Success'),
           type: 'success',
-          description: t('User has been created')
+          description: t('Logged in successfully')
         })
       })
       .catch(() => {
         notification.open({
           message: t('Error'),
           type: 'error',
-          description: t('Please try again in a moment')
+          description: t('Invalid credentials')
         })
+      })
+      .finally(() => {
+        actions.setSubmitting(false)
       })
   }
 
@@ -53,10 +51,6 @@ function RegistrationForm() {
       onSubmit={handleSubmit}
     >
       <Form>
-        <FormItem name="fullName" hasFeedback label={t('Full name')}>
-          <Input name="fullName" />
-        </FormItem>
-
         <FormItem name="email" hasFeedback label={t('Email')}>
           <Input name="email" type="email" />
         </FormItem>
@@ -64,10 +58,10 @@ function RegistrationForm() {
         <FormItem name="password" hasFeedback label={t('Password')}>
           <Input type="password" name="password" />
         </FormItem>
-        <SubmitButton>{t('Register')}</SubmitButton>
+        <SubmitButton>{t('Sign in')}</SubmitButton>
       </Form>
     </Formik>
   )
 }
 
-export default RegistrationForm
+export default LoginForm

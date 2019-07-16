@@ -9,15 +9,15 @@ function generateRandomString(length: number) {
   return String.fromCharCode(...array.map(x => validChars.charCodeAt(x % validChars.length)))
 }
 
-export async function issueRefreshToken(payload: JwtPayload) {
+export async function issueRefreshToken(userId: string) {
   const tokenRepo = getRepository(RefreshTokenEntity)
 
   const expirationDate = new Date()
-  expirationDate.setDate(expirationDate.getDate() + 14)
+  expirationDate.setDate(expirationDate.getDate() + 14) // TODO: Probably not a correct way to add days
 
   const refreshToken = await tokenRepo.create({
     token: generateRandomString(256),
-    userId: payload.userId,
+    userId,
     expirationDate
   })
 
@@ -26,10 +26,19 @@ export async function issueRefreshToken(payload: JwtPayload) {
   return token
 }
 
-export async function issueAccessToken(payload: JwtPayload) {
+export async function issueAccessToken(userId: string) {
   if (!process.env.JWT_SECRET) {
     throw new Error('No jwt secret, please check env variables')
   }
+
+  const expires = new Date()
+  expires.setMinutes(expires.getMinutes() + 5) // TODO: Probably not a correct way to add minutes
+
+  const payload: JwtPayload = {
+    userId,
+    expires
+  }
+
   return sign(payload, process.env.JWT_SECRET)
 }
 
@@ -51,5 +60,5 @@ export async function refreshAccessToken(userId: string, refreshToken: string) {
     }
   })
 
-  return token && issueAccessToken({ userId: token.userId })
+  return token && issueAccessToken(token.userId)
 }

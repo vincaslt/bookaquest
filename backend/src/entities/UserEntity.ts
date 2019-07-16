@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, Index,PrimaryGeneratedColumn } from 'typeorm'
+import { ScheduleEntity } from '@app/entities/ScheduleEntity'
+import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
 export class UserEntity {
@@ -14,6 +15,9 @@ export class UserEntity {
 
   @Column()
   password: string
+
+  @OneToMany(type => ScheduleEntity, schedule => schedule.owner)
+  schedules: ScheduleEntity[]
 
   @CreateDateColumn()
   createdAt: Date
