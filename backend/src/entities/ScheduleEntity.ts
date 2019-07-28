@@ -1,5 +1,4 @@
-import { UserEntity } from '@app/entities/UserEntity'
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
 export class ScheduleEntity {
@@ -13,8 +12,8 @@ export class ScheduleEntity {
   @Column('simple-array')
   workHours: number[]
 
-  @ManyToOne(type => UserEntity, user => user.schedules)
-  owner: UserEntity
+  // @ManyToOne(type => UserEntity, user => user.schedules)
+  // owner: UserEntity
 
   @Column()
   ownerId: string

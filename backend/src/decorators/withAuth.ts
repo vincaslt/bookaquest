@@ -11,7 +11,6 @@ export function withAuth(handler: (payload: JwtPayload) => RequestHandler): Requ
       const payload = verifyToken(authHeader.split('Bearer ')[1]) as JwtPayload
 
       if (payload) {
-        console.log(payload.expires)
         return new Date(payload.expires) > new Date()
           ? await handler(payload)(req, res)
           : await send(res, 401) // Token has expired

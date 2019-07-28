@@ -6,6 +6,7 @@ import { send } from 'micro'
 import { post } from 'microrouter'
 import { getRepository } from 'typeorm'
 
+// FIXME: unused, irrelevant mostly
 const createSchedule = withAuth(({ userId }) =>
   withBody(CreateScheduleDTO, dto => async (req, res) => {
     const scheduleRepo = getRepository(ScheduleEntity)

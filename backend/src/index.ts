@@ -5,6 +5,7 @@ config()
 
 import { withCors } from '@app/decorators/withCors'
 import authHandlers from '@app/handlers/auth'
+import organizationHandlers from '@app/handlers/organization'
 import scheduleHandlers from '@app/handlers/schedule'
 import userHandlers from '@app/handlers/user'
 import serve from 'micro'
@@ -12,7 +13,9 @@ import * as microDev from 'micro-dev'
 import { router } from 'microrouter'
 import { createConnection } from 'typeorm'
 
-const handler = withCors(router(...userHandlers, ...authHandlers, ...scheduleHandlers))
+const handler = withCors(
+  router(...userHandlers, ...authHandlers, ...scheduleHandlers, ...organizationHandlers)
+)
 
 const port = process.env.PORT || 3001
 

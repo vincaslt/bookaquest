@@ -6,6 +6,7 @@ import { send } from 'micro'
 import { post } from 'microrouter'
 import { getRepository } from 'typeorm'
 
+// TODO: check if maybe user exists, so that it doesn't override
 const createUser = withBody(CreateUserDTO, dto => async (req, res) => {
   const userRepo = getRepository(UserEntity)
 
