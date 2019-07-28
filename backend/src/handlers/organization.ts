@@ -1,6 +1,7 @@
 import { CreateOrganizationDTO } from '@app/dto/CreateOrganizationDTO'
 import { OrganizationEntity } from '@app/entities/OrganizationEntity'
 import { OrganizationMembershipEntity } from '@app/entities/OrganizationMembershipEntity'
+import { STATUS_SUCCESS } from '@app/lib/constants'
 import { withAuth } from '@app/lib/decorators/withAuth'
 import { withBody } from '@app/lib/decorators/withBody'
 import { send } from 'micro'
@@ -25,7 +26,7 @@ const createOrganization = withAuth(({ userId }) =>
       await transactionalManager.save(newMember)
     })
 
-    return send(res, 200)
+    return send(res, STATUS_SUCCESS.OK)
   })
 )
 

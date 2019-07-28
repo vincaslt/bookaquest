@@ -1,3 +1,4 @@
+import { STATUS_SUCCESS } from '@app/lib/constants'
 import { RequestHandler, send } from 'micro'
 
 const ALLOW_METHODS = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
@@ -21,7 +22,7 @@ export function withCors(handler: RequestHandler): RequestHandler {
       res.setHeader('Access-Control-Allow-Methods', ALLOW_METHODS.join(','))
       res.setHeader('Access-Control-Allow-Headers', ALLOW_HEADERS.join(','))
       res.setHeader('Access-Control-Max-Age', String(MAX_AGE_SECONDS))
-      return send(res, 200, 'ok!')
+      return send(res, STATUS_SUCCESS.OK)
     }
 
     return await handler(req, res)

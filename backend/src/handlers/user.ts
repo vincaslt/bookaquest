@@ -1,5 +1,6 @@
 import { CreateUserDTO } from '@app/dto/CreateUserDTO'
 import { UserEntity } from '@app/entities/UserEntity'
+import { STATUS_SUCCESS } from '@app/lib/constants'
 import { withBody } from '@app/lib/decorators/withBody'
 import * as bcrypt from 'bcryptjs'
 import { send } from 'micro'
@@ -15,7 +16,7 @@ const createUser = withBody(CreateUserDTO, dto => async (req, res) => {
 
   await userRepo.save(newUser)
 
-  return send(res, 200)
+  return send(res, STATUS_SUCCESS.OK)
 })
 
 export default [post('/user', createUser)]

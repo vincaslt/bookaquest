@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm'
 
-@Entity()
+@Entity({ name: 'schedule' })
 export class ScheduleEntity {
   @PrimaryGeneratedColumn('uuid')
   @Index()

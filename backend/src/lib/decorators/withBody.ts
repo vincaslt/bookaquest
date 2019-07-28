@@ -1,5 +1,6 @@
+import { STATUS_ERROR } from '@app/lib/constants'
 import { ClassType, transformAndValidate } from 'class-transformer-validator'
-import { createError, json, RequestHandler } from 'micro'
+import { json, RequestHandler, send } from 'micro'
 
 export function withBody<DTO extends object>(
   dto: ClassType<DTO>,
@@ -7,9 +8,13 @@ export function withBody<DTO extends object>(
 ): RequestHandler {
   return async (req, res) => {
     try {
-      return await handler(await transformAndValidate<DTO>(dto, await json(req)))(req, res)
+      return await handler(
+        await transformAndValidate<DTO>(dto, await json(req), {
+          validator: { validationError: { target: false } }
+        })
+      )(req, res)
     } catch (e) {
-      throw createError(400, e.toString(), e)
+      return send(res, STATUS_ERROR.BAD_REQUEST, e)
     }
   }
 }

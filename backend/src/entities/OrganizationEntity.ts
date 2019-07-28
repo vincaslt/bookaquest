@@ -2,7 +2,7 @@ import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
 import { OrganizationMembershipEntity } from '@app/entities/OrganizationMembershipEntity'
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
-@Entity()
+@Entity({ name: 'organization' })
 export class OrganizationEntity {
   @PrimaryGeneratedColumn('uuid')
   @Index()

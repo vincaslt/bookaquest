@@ -1,5 +1,6 @@
 import { CreateScheduleDTO } from '@app/dto/CreateScheduleDTO'
 import { ScheduleEntity } from '@app/entities/ScheduleEntity'
+import { STATUS_SUCCESS } from '@app/lib/constants'
 import { withAuth } from '@app/lib/decorators/withAuth'
 import { withBody } from '@app/lib/decorators/withBody'
 import { send } from 'micro'
@@ -15,7 +16,7 @@ const createSchedule = withAuth(({ userId }) =>
 
     await scheduleRepo.save(newSchedule)
 
-    return send(res, 200)
+    return send(res, STATUS_SUCCESS.OK)
   })
 )
 

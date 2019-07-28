@@ -1,3 +1,4 @@
+import { STATUS_ERROR } from '@app/lib/constants'
 import { verifyToken } from '@app/utils/auth'
 import { RequestHandler, send } from 'micro'
 
@@ -13,10 +14,10 @@ export function withAuth(handler: (payload: JwtPayload) => RequestHandler): Requ
       if (payload) {
         return new Date(payload.expires) > new Date()
           ? await handler(payload)(req, res)
-          : await send(res, 401) // Token has expired
+          : await send(res, STATUS_ERROR.UNAUTHORIZED) // Token has expired
       }
     }
 
-    return await send(res, 401) // Token is not present in headers
+    return await send(res, STATUS_ERROR.UNAUTHORIZED) // Token is not present in headers
   }
 }

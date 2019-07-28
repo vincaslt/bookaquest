@@ -3,7 +3,7 @@ import { UserEntity } from '@app/entities/UserEntity'
 import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryColumn } from 'typeorm'
 
 // TODO: custom defined roles with defined set of privileges
-@Entity()
+@Entity({ name: 'organization_membership' })
 export class OrganizationMembershipEntity {
   @Index()
   @PrimaryColumn()

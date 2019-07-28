@@ -1,7 +1,7 @@
 import { OrganizationMembershipEntity } from '@app/entities/OrganizationMembershipEntity'
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
-@Entity()
+@Entity({ name: 'user' })
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   @Index()
