@@ -20,6 +20,12 @@ export class OrganizationEntity {
   @OneToMany(type => EscapeRoomEntity, escapeRoom => escapeRoom.organization)
   escapeRooms: EscapeRoomEntity[]
 
+  @Column('simple-array', { nullable: true })
+  weekDays: number[]
+
+  @Column('simple-array', { nullable: true })
+  workHours: number[]
+
   @CreateDateColumn()
   createdAt: Date
 }

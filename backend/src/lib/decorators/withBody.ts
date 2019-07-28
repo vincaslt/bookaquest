@@ -10,7 +10,12 @@ export function withBody<DTO extends object>(
     try {
       return await handler(
         await transformAndValidate<DTO>(dto, await json(req), {
-          validator: { validationError: { target: false } }
+          validator: {
+            validationError: { target: false, value: false },
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            forbidUnknownValues: true
+          }
         })
       )(req, res)
     } catch (e) {
