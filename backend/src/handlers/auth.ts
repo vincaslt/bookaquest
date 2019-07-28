@@ -1,7 +1,7 @@
-import { withBody } from '@app/decorators/withBody'
 import { RefreshTokenDTO } from '@app/dto/RefreshTokenDTO'
 import { SignInDTO } from '@app/dto/SignInDTO'
 import { UserEntity } from '@app/entities/UserEntity'
+import { withBody } from '@app/lib/decorators/withBody'
 import { issueAccessToken, issueRefreshToken, refreshAccessToken } from '@app/utils/auth'
 import * as bcrypt from 'bcryptjs'
 import { send } from 'micro'

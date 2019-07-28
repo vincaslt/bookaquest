@@ -1,6 +1,6 @@
-import { withBody } from '@app/decorators/withBody'
 import { CreateUserDTO } from '@app/dto/CreateUserDTO'
 import { UserEntity } from '@app/entities/UserEntity'
+import { withBody } from '@app/lib/decorators/withBody'
 import * as bcrypt from 'bcryptjs'
 import { send } from 'micro'
 import { post } from 'microrouter'
