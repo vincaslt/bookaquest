@@ -23,7 +23,8 @@ function LoginForm() {
   const handleSubmit = (values: SignIn, actions: FormikActions<SignIn>) => {
     api
       .signIn(values)
-      .then(({ accessToken, refreshToken }) => {
+      .then(({ tokens: { accessToken, refreshToken }, user }) => {
+        // TODO: save user info to some global state or context or hook
         localStorage.setItem('accessToken', accessToken)
         localStorage.setItem('refreshToken', refreshToken)
         notification.open({

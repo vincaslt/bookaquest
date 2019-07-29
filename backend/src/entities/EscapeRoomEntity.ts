@@ -25,6 +25,9 @@ export class EscapeRoomEntity {
   @Column()
   organizationId: string
 
+  @Column()
+  location: string
+
   @OneToMany(type => OrganizationEntity, organization => organization.escapeRooms)
   organization: OrganizationEntity[]
 

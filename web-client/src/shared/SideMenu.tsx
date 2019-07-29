@@ -33,11 +33,6 @@ function SideMenu() {
             <Icon type="schedule" /> {t('Bookings')}
           </Link>
         </Menu.Item>
-        <Menu.Item key="build">
-          <Link to={Routes.FormBuilder}>
-            <Icon type="build" /> {t('Build')}
-          </Link>
-        </Menu.Item>
         <Menu.Item key="logout">
           <Icon type="logout" /> {t('Logout')}
         </Menu.Item>

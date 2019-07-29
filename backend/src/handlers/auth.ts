@@ -1,5 +1,6 @@
 import { RefreshTokenDTO } from '@app/dto/RefreshTokenDTO'
 import { SignInDTO } from '@app/dto/SignInDTO'
+import { toUserInfoDTO } from '@app/dto/UserInfoDTO'
 import { UserEntity } from '@app/entities/UserEntity'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
 import { withBody } from '@app/lib/decorators/withBody'
@@ -11,8 +12,10 @@ import { getRepository } from 'typeorm'
 
 const login = withBody(SignInDTO, dto => async (req, res) => {
   const userRepo = getRepository(UserEntity)
-
-  const user = await userRepo.findOne({ where: { email: dto.email } })
+  const user = await userRepo.findOne({
+    where: { email: dto.email },
+    relations: ['memberships', 'memberships.organization']
+  })
 
   if (!user) {
     return send(res, STATUS_ERROR.UNAUTHORIZED)
@@ -25,8 +28,11 @@ const login = withBody(SignInDTO, dto => async (req, res) => {
   }
 
   return send(res, STATUS_SUCCESS.OK, {
-    accessToken: await issueAccessToken(user.id),
-    refreshToken: await issueRefreshToken(user.id)
+    tokens: {
+      accessToken: await issueAccessToken(user.id),
+      refreshToken: await issueRefreshToken(user.id)
+    },
+    user: toUserInfoDTO(user)
   })
 })
 

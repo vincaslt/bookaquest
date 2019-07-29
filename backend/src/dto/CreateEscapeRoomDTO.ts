@@ -18,4 +18,7 @@ export class CreateEscapeRoomDTO {
 
   @IsNumber()
   interval: number
+
+  @IsString()
+  location: string
 }

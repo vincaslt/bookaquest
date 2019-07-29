@@ -14,6 +14,9 @@ export class OrganizationEntity {
   @Column()
   website: string
 
+  @Column()
+  location: string
+
   @OneToMany(type => OrganizationMembershipEntity, member => member.organization)
   members: OrganizationMembershipEntity[]
 

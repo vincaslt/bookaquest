@@ -3,8 +3,8 @@ import * as pathToRegexp from 'path-to-regexp'
 enum Routes {
   Home = '/',
   Register = '/register',
-  FormBuilder = '/build',
   Bookings = '/bookings',
+  Organization = '/organization',
   SignIn = '/sign-in'
 }
 

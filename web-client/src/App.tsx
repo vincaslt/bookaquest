@@ -4,7 +4,6 @@ import * as React from 'react'
 import styled from 'styled-components'
 import Routes from './constants/routes'
 import BookingsPage from './pages/BookingsPage/BookingsPage'
-import FormBuilder from './pages/FormBuilder/FormBuilder'
 import HomePage from './pages/HomePage/HomePage'
 import LoginPage from './pages/LoginPage/LoginPage'
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage'
@@ -40,7 +39,6 @@ function App() {
           <Router>
             <HomePage path={Routes.Home} />
             <RegistrationPage path={Routes.Register} />
-            <FormBuilder path={Routes.FormBuilder} />
             <BookingsPage path={Routes.Bookings} />
             <LoginPage path={Routes.SignIn} />
           </Router>

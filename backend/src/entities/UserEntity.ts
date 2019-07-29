@@ -3,17 +3,18 @@ import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedCol
 
 @Entity({ name: 'user' })
 export class UserEntity {
-  @PrimaryGeneratedColumn('uuid')
   @Index()
+  @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @Index()
   @Column({ unique: true })
   email: string
 
   @Column()
   fullName: string
 
-  @Column()
+  @Column() // TODO: not select it by default
   password: string // TODO: rework to use secure remote password protocol
 
   @OneToMany(type => OrganizationMembershipEntity, membership => membership.user)

@@ -15,4 +15,7 @@ export class CreateOrganizationDTO {
 
   @IsNumber(undefined, { each: true })
   workHours: number[]
+
+  @IsString()
+  location: string
 }

@@ -3,7 +3,7 @@ export interface SignInDTO {
   password: string
 }
 
-export interface AuthTokenDTO {
+export interface AuthTokensDTO {
   accessToken: string
   refreshToken: string
 }
