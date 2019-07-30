@@ -11,7 +11,7 @@ export const register = (user: CreateUser) => api.post('/user', user).then(res =
 export const signIn = (credentials: SignIn) =>
   api.post<{ tokens: AuthTokensDTO; user: UserInfoDTO }>('/login', credentials).then(res => ({
     tokens: res.data.tokens,
-    user: fromUserInfoDTO(res.data.user)
+    userInfo: fromUserInfoDTO(res.data.user)
   }))
 
 export const refreshAuthToken = (dto: RequestRefreshTokenDTO) =>
@@ -19,4 +19,11 @@ export const refreshAuthToken = (dto: RequestRefreshTokenDTO) =>
 
 export const createSchedule = withAuth(headers => (schedule: CreateSchedule) =>
   api.post('/schedule', schedule, { headers }).then(res => res.data)
+)
+
+export const getAuthUserInfo = withAuth(headers => () =>
+  api
+    .get<UserInfoDTO>('/user/me', { headers })
+    .then(res => res.data)
+    .then(fromUserInfoDTO)
 )

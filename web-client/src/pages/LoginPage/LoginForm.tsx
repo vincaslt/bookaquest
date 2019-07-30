@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import * as Yup from 'yup'
 import * as api from '../../api/application'
 import { SignIn } from '../../interfaces/auth'
+import { useUser } from '../../shared/providers/UserProvider'
 
 const initialValues: SignIn = {
   email: '',
@@ -14,6 +15,7 @@ const initialValues: SignIn = {
 
 function LoginForm() {
   const { t } = useTranslation()
+  const { setUserInfo } = useUser()
 
   const validationSchema = Yup.object().shape<SignIn>({
     email: Yup.string().required(),
@@ -23,8 +25,8 @@ function LoginForm() {
   const handleSubmit = (values: SignIn, actions: FormikActions<SignIn>) => {
     api
       .signIn(values)
-      .then(({ tokens: { accessToken, refreshToken }, user }) => {
-        // TODO: save user info to some global state or context or hook
+      .then(({ tokens: { accessToken, refreshToken }, userInfo }) => {
+        setUserInfo(userInfo)
         localStorage.setItem('accessToken', accessToken)
         localStorage.setItem('refreshToken', refreshToken)
         notification.open({

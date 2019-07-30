@@ -1,9 +1,10 @@
 import { Link } from '@reach/router'
-import { Icon, Layout, Menu } from 'antd'
+import { Icon, Layout, Menu, Typography } from 'antd'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Routes from '../constants/routes'
+import { useUser } from './providers/UserProvider'
 
 const StyledSider = styled(Layout.Sider)`
   overflow: auto;
@@ -12,11 +13,20 @@ const StyledSider = styled(Layout.Sider)`
   left: 0;
 `
 
+const UserInfoBox = styled.div`
+  display: flex;
+  color: rgb(255, 255, 255, 0.65);
+  padding: 20px;
+  margin-bottom: 20px;
+`
+
 function SideMenu() {
   const { t } = useTranslation()
+  const { userInfo } = useUser()
 
   return (
     <StyledSider>
+      {userInfo && <UserInfoBox>{userInfo.email}</UserInfoBox>}
       <Menu
         theme="dark"
         mode="inline"
