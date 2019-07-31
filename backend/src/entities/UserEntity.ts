@@ -17,6 +17,7 @@ export class UserEntity {
   @Column() // TODO: not select it by default
   password: string // TODO: rework to use secure remote password protocol
 
+  // TODO: setup cascade deletes
   @OneToMany(type => OrganizationMembershipEntity, membership => membership.user)
   memberships: OrganizationMembershipEntity[]
 

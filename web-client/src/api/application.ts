@@ -14,6 +14,8 @@ export const signIn = (credentials: SignIn) =>
     userInfo: fromUserInfoDTO(res.data.user)
   }))
 
+export const signOut = withAuth(headers => () => api.post('/logout', undefined, { headers }))
+
 export const refreshAuthToken = (dto: RequestRefreshTokenDTO) =>
   api.post<RefreshTokenDTO>('/refreshToken', dto).then(res => res.data)
 

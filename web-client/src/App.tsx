@@ -21,7 +21,7 @@ const AppSpinnerContainer = styled('div')`
 `
 
 const ContentContainer = styled(Layout)`
-  margin-left: 200px;
+  margin-left: 256px;
   min-height: 100vh;
   padding: 24px 16px 0;
 `

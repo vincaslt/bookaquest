@@ -1,8 +1,9 @@
 import { Link } from '@reach/router'
-import { Icon, Layout, Menu, Typography } from 'antd'
+import { Icon, Layout, Menu } from 'antd'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { signOut } from '../api/application'
 import Routes from '../constants/routes'
 import { useUser } from './providers/UserProvider'
 
@@ -11,6 +12,7 @@ const StyledSider = styled(Layout.Sider)`
   height: 100vh;
   position: fixed;
   left: 0;
+  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
 `
 
 const UserInfoBox = styled.div`
@@ -24,8 +26,15 @@ function SideMenu() {
   const { t } = useTranslation()
   const { userInfo } = useUser()
 
+  const logout = () => {
+    signOut()
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    location.assign(Routes.SignIn)
+  }
+
   return (
-    <StyledSider>
+    <StyledSider width={256}>
       {userInfo && <UserInfoBox>{userInfo.email}</UserInfoBox>}
       <Menu
         theme="dark"
@@ -43,7 +52,7 @@ function SideMenu() {
             <Icon type="schedule" /> {t('Bookings')}
           </Link>
         </Menu.Item>
-        <Menu.Item key="logout">
+        <Menu.Item key="logout" onClick={logout}>
           <Icon type="logout" /> {t('Logout')}
         </Menu.Item>
       </Menu>
