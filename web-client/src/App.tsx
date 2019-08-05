@@ -38,6 +38,8 @@ function App() {
     )
   }
 
+  // TODO: only render login/registration when not authenticated
+
   return (
     <Layout>
       <SideMenu />

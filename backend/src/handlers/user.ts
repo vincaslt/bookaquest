@@ -11,7 +11,7 @@ import { getRepository } from 'typeorm'
 
 const createUser = withBody(CreateUserDTO, dto => async (req, res) => {
   const userRepo = getRepository(UserEntity)
-  const existingUser = userRepo.findOne({ where: { email: dto.email } })
+  const existingUser = await userRepo.findOne({ where: { email: dto.email } })
 
   if (existingUser) {
     return send(res, STATUS_ERROR.BAD_REQUEST)

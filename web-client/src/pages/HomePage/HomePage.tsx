@@ -1,6 +1,7 @@
 import { RouteComponentProps } from '@reach/router'
 import * as React from 'react'
 import styled from 'styled-components'
+import { UserMembership } from '../../interfaces/user'
 import PageContent from '../../shared/PageContent'
 import { useUser } from '../../shared/providers/UserProvider'
 import CreateOrganizationForm from './CreateOrganizationForm'
@@ -14,7 +15,10 @@ const CreateOrganizationSection = styled(PageContent)`
 `
 
 function HomePage(props: RouteComponentProps) {
-  const { userInfo } = useUser()
+  const { userInfo, setUserInfo } = useUser()
+
+  const handleCreateOrganization = (memberships: UserMembership[]) =>
+    userInfo && setUserInfo({ ...userInfo, memberships })
 
   return (
     <div>
@@ -22,7 +26,7 @@ function HomePage(props: RouteComponentProps) {
         <>
           <CreateOrganizationSplash />
           <CreateOrganizationSection>
-            <CreateOrganizationForm />
+            <CreateOrganizationForm onCreateOrganization={handleCreateOrganization} />
           </CreateOrganizationSection>
         </>
       ) : (

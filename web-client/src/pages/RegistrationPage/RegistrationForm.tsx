@@ -30,7 +30,6 @@ function RegistrationForm() {
     api
       .register(values)
       .then(() => {
-        actions.setSubmitting(false)
         notification.open({
           message: t('Success'),
           type: 'success',
@@ -44,6 +43,7 @@ function RegistrationForm() {
           description: t('Please try again in a moment')
         })
       })
+      .finally(() => actions.setSubmitting(false))
   }
 
   return (
