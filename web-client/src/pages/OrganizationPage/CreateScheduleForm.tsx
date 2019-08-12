@@ -1,5 +1,5 @@
 import { Form, FormItem, Slider, SubmitButton, TreeSelect } from '@jbuschke/formik-antd'
-import { TreeSelect as antdTreeSelect } from 'antd'
+import { Col, InputNumber, Row, TreeSelect as antdTreeSelect } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,6 +14,7 @@ const initialValues: CreateSchedule = {
 }
 
 // TODO: use moment weekdays
+// TODO: divide work hours by interval */
 function CreateScheduleForm() {
   const { t } = useTranslation()
 
@@ -22,19 +23,27 @@ function CreateScheduleForm() {
 
   return (
     <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-      <Form>
-        <FormItem name="weekDays" hasFeedback label={t('Weekdays')}>
-          <TreeSelect name="weekDays" treeCheckable placeholder="Weekdays">
-            <TreeNode value={1} title="Monday" />
-            <TreeNode value={2} title="Tuesday" />
-            <TreeNode value={3} title="Wednesday" />
-            <TreeNode value={4} title="Thursday" />
-            <TreeNode value={5} title="Friday" />
-            <TreeNode value={6} title="Saturday" />
-            <TreeNode value={7} title="Sunday" />
-          </TreeSelect>
-        </FormItem>
-        {/* <InputNumber placeholder="Interval" /> // TODO: time interval to divide work hours by */}
+      <Form layout="vertical">
+        <Row gutter={16}>
+          <Col span={8}>
+            <FormItem name="weekDays" hasFeedback label={t('Weekdays')}>
+              <TreeSelect name="weekDays" treeCheckable placeholder={t('Weekdays')}>
+                <TreeNode value={1} title="Monday" />
+                <TreeNode value={2} title="Tuesday" />
+                <TreeNode value={3} title="Wednesday" />
+                <TreeNode value={4} title="Thursday" />
+                <TreeNode value={5} title="Friday" />
+                <TreeNode value={6} title="Saturday" />
+                <TreeNode value={7} title="Sunday" />
+              </TreeSelect>
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem name="interval" hasFeedback label={t('Interval')}>
+              <InputNumber name="interval" placeholder={t('Interval')} />
+            </FormItem>
+          </Col>
+        </Row>
         <FormItem name="fullName" hasFeedback label={t('Work hours')}>
           <Slider
             name="workHours"
@@ -71,7 +80,9 @@ function CreateScheduleForm() {
             defaultValue={[9, 17]}
           />
         </FormItem>
-        <SubmitButton>{t('Submit')}</SubmitButton>
+        <FormItem name="action">
+          <SubmitButton>{t('Submit')}</SubmitButton>
+        </FormItem>
       </Form>
     </Formik>
   )

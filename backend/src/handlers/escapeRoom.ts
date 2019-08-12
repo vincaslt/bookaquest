@@ -21,6 +21,8 @@ const createEscapeRoom = withAuth(({ userId }) =>
         return send(res, STATUS_ERROR.FORBIDDEN)
       }
 
+      // TODO: implement deriviation of schedule and location from organization
+
       const newEscapeRoom = escapeRoomRepo.create({ ...dto, organizationId })
       await escapeRoomRepo.save(newEscapeRoom)
 

@@ -1,9 +1,15 @@
 import { SignIn } from '../interfaces/auth'
 import { AuthTokensDTO, RefreshTokenDTO, RequestRefreshTokenDTO } from '../interfaces/dto/auth'
-import { UserInfoDTO, UserMembershipDTO } from '../interfaces/dto/user'
-import { CreateOrganization } from '../interfaces/organization'
+import { UserInfoDTO, UserMembershipDTO, UserOrganizationDTO } from '../interfaces/dto/user'
+import { CreateEscapeRoom } from '../interfaces/escapeRoom'
+import { CreateOrganization, UpdateOrganization } from '../interfaces/organization'
 import { CreateSchedule } from '../interfaces/schedule'
-import { CreateUser, fromUserInfoDTO, fromUserMembershipDTO } from '../interfaces/user'
+import {
+  CreateUser,
+  fromUserInfoDTO,
+  fromUserMembershipDTO,
+  fromUserOrganizationDTO
+} from '../interfaces/user'
 import { api, withAuth } from '../utils/apiHelpers'
 
 // TODO: should be CreateUser and convert to DTO before sending
@@ -31,8 +37,20 @@ export const getAuthUserInfo = withAuth(headers => () =>
     .then(fromUserInfoDTO)
 )
 
+export const createEscapeRoom = withAuth(
+  headers => (organizationId: string, dto: CreateEscapeRoom) =>
+    api.post(`/organization/${organizationId}/escape-room`, dto, { headers }).then(res => res.data)
+)
+
 export const createOrganization = withAuth(headers => (dto: CreateOrganization) =>
   api
     .post<UserMembershipDTO[]>('/organization', dto, { headers })
     .then(res => res.data.map(fromUserMembershipDTO))
+)
+
+export const updateOrganization = withAuth(headers => (dto: UpdateOrganization) =>
+  api
+    .put<UserOrganizationDTO>('/organization', dto, { headers })
+    .then(res => res.data)
+    .then(fromUserOrganizationDTO)
 )

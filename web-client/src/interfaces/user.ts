@@ -14,7 +14,7 @@ export type UserInfo = Omit<UserInfoDTO, 'createdAt' | 'memberships'> & {
   memberships: UserMembership[]
 }
 
-export function fromUserOrganization(dto: UserOrganizationDTO): UserOrganization {
+export function fromUserOrganizationDTO(dto: UserOrganizationDTO): UserOrganization {
   return {
     ...dto,
     createdAt: new Date(dto.createdAt)
@@ -25,7 +25,7 @@ export function fromUserMembershipDTO(dto: UserMembershipDTO): UserMembership {
   return {
     ...dto,
     createdAt: new Date(dto.createdAt),
-    organization: fromUserOrganization(dto.organization)
+    organization: fromUserOrganizationDTO(dto.organization)
   }
 }
 

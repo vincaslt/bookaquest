@@ -1,13 +1,13 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
+import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator'
 
-export class CreateEscapeRoomDTO {
-  @IsNotEmpty()
+export class UpdateOrganizationDTO {
+  @IsOptional()
   @IsString()
   name: string
 
-  @IsNotEmpty()
-  @IsString()
-  description: string
+  @IsOptional()
+  @IsUrl()
+  website: string
 
   // TODO: validate 0-24/1-7
   @IsOptional()

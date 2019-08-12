@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Routes from './constants/routes'
 import BookingsPage from './pages/BookingsPage/BookingsPage'
-import HomePage from './pages/HomePage/HomePage'
 import LoginPage from './pages/LoginPage/LoginPage'
+import OrganizationPage from './pages/OrganizationPage/OrganizationPage'
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage'
 import { useUser, withUserProvider } from './shared/providers/UserProvider'
 import SideMenu from './shared/SideMenu'
@@ -45,7 +45,7 @@ function App() {
       <SideMenu />
       <ContentContainer>
         <Router>
-          <HomePage path={Routes.Home} />
+          <OrganizationPage path={Routes.Organization} />
           <RegistrationPage path={Routes.Register} />
           <BookingsPage path={Routes.Bookings} />
           <LoginPage path={Routes.SignIn} />

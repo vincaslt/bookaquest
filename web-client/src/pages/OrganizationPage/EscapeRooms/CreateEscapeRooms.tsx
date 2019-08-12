@@ -5,45 +5,41 @@ import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import * as Yup from 'yup'
-import * as api from '../../api/application'
-import { CreateOrganization } from '../../interfaces/organization'
-import { UserMembership } from '../../interfaces/user'
+import * as api from '../../../api/application'
+import { CreateEscapeRoom } from '../../../interfaces/escapeRoom'
 
 const StyledForm = styled(Form)`
   max-width: 512px;
   width: 100%;
 `
 
-const initialValues: CreateOrganization = {
+const initialValues: CreateEscapeRoom = {
   name: '',
-  website: '',
+  description: '',
   location: ''
 }
 
 interface Props {
-  onCreateOrganization: (memberships: UserMembership[]) => void
+  organizationId: string
 }
 
-function CreateOrganizationForm({ onCreateOrganization }: Props) {
+function CreateEscapeRoom({ organizationId }: Props) {
   const { t } = useTranslation()
 
-  const validationSchema = Yup.object().shape<CreateOrganization>({
+  const validationSchema = Yup.object().shape<CreateEscapeRoom>({
     name: Yup.string().required(),
-    website: Yup.string()
-      .required()
-      .url(),
+    description: Yup.string().required(),
     location: Yup.string().required()
   })
 
-  const handleSubmit = (values: CreateOrganization, actions: FormikActions<CreateOrganization>) => {
+  const handleSubmit = (values: CreateEscapeRoom, actions: FormikActions<CreateEscapeRoom>) => {
     api
-      .createOrganization(values)
-      .then(memberships => {
-        onCreateOrganization(memberships)
+      .createEscapeRoom(organizationId, values)
+      .then(() => {
         notification.open({
           message: t('Success'),
           type: 'success',
-          description: t('Organization has been created')
+          description: t('Escape room has been created')
         })
       })
       .catch(() => {
@@ -62,20 +58,20 @@ function CreateOrganizationForm({ onCreateOrganization }: Props) {
       initialValues={initialValues}
       onSubmit={handleSubmit}
     >
-      <StyledForm labelCol={{ span: 4 }} wrapperCol={{ span: 16 }}>
+      <StyledForm layout="vertical">
         <FormItem name="name" hasFeedback label={t('Name')}>
           <Input name="name" />
-        </FormItem>
-
-        <FormItem name="website" hasFeedback label={t('Website')}>
-          <Input name="website" type="url" />
         </FormItem>
 
         <FormItem name="location" hasFeedback label={t('Location')}>
           <Input name="location" />
         </FormItem>
 
-        <FormItem name="action" wrapperCol={{ span: 16, offset: 4 }}>
+        <FormItem name="description" hasFeedback label={t('Description')}>
+          <Input.TextArea name="description" rows={4} />
+        </FormItem>
+
+        <FormItem name="action">
           <SubmitButton>{t('Create')}</SubmitButton>
         </FormItem>
       </StyledForm>
@@ -83,4 +79,4 @@ function CreateOrganizationForm({ onCreateOrganization }: Props) {
   )
 }
 
-export default CreateOrganizationForm
+export default CreateEscapeRoom

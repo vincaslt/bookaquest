@@ -52,6 +52,11 @@ function SideMenu() {
             <Icon type="schedule" /> {t('Bookings')}
           </Link>
         </Menu.Item>
+        <Menu.Item key="organization">
+          <Link to={Routes.Organization}>
+            <Icon type="apartment" /> {t('Organization')}
+          </Link>
+        </Menu.Item>
         <Menu.Item key="logout" onClick={logout}>
           <Icon type="logout" /> {t('Logout')}
         </Menu.Item>
