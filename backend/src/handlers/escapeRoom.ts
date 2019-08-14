@@ -1,4 +1,5 @@
 import { CreateEscapeRoomDTO } from '@app/dto/CreateEscapeRoomDTO'
+import { toEscapeRoomDTO } from '@app/dto/EscapeRoomDTO'
 import { UpdateEscapeRoomDTO } from '@app/dto/UpdateEscapeRoomDTO'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
@@ -7,7 +8,7 @@ import { withAuth } from '@app/lib/decorators/withAuth'
 import { withBody } from '@app/lib/decorators/withBody'
 import withParams from '@app/lib/decorators/withParams'
 import { send } from 'micro'
-import { post, put } from 'microrouter'
+import { get, post, put } from 'microrouter'
 import { getRepository } from 'typeorm'
 
 // TODO: check organization escape room limits, how many it has already
@@ -55,7 +56,22 @@ const updateEscapeRoom = withAuth(({ userId }) =>
   )
 )
 
+const listEscapeRooms = withAuth(({ userId }) =>
+  withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
+    const escapeRoomRepo = getRepository(EscapeRoomEntity)
+
+    if (!isOrganizationMember(organizationId, userId)) {
+      return send(res, STATUS_ERROR.FORBIDDEN)
+    }
+
+    const organizationEscapeRooms = await escapeRoomRepo.find({ where: { organizationId } })
+
+    return organizationEscapeRooms.map(toEscapeRoomDTO)
+  })
+)
+
 export default [
+  get('/organization/:organizationId/escape-room', listEscapeRooms),
   post('/organization/:organizationId/escape-room', createEscapeRoom),
   put('/escape-room/:escapeRoomId', updateEscapeRoom)
 ]

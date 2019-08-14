@@ -1,7 +1,8 @@
 import { SignIn } from '../interfaces/auth'
 import { AuthTokensDTO, RefreshTokenDTO, RequestRefreshTokenDTO } from '../interfaces/dto/auth'
+import { EscapeRoomDTO } from '../interfaces/dto/escapeRoom'
 import { UserInfoDTO, UserMembershipDTO, UserOrganizationDTO } from '../interfaces/dto/user'
-import { CreateEscapeRoom } from '../interfaces/escapeRoom'
+import { CreateEscapeRoom, fromEscapeRoomDTO } from '../interfaces/escapeRoom'
 import { CreateOrganization, UpdateOrganization } from '../interfaces/organization'
 import { CreateSchedule } from '../interfaces/schedule'
 import {
@@ -35,6 +36,12 @@ export const getAuthUserInfo = withAuth(headers => () =>
     .get<UserInfoDTO>('/user/me', { headers })
     .then(res => res.data)
     .then(fromUserInfoDTO)
+)
+
+export const getEscapeRooms = withAuth(headers => (organizationId: string) =>
+  api
+    .get<EscapeRoomDTO[]>(`/organization/${organizationId}/escape-room`, { headers })
+    .then(res => res.data.map(fromEscapeRoomDTO))
 )
 
 export const createEscapeRoom = withAuth(
