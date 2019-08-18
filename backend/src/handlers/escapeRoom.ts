@@ -27,7 +27,7 @@ const createEscapeRoom = withAuth(({ userId }) =>
       const newEscapeRoom = escapeRoomRepo.create({ ...dto, organizationId })
       await escapeRoomRepo.save(newEscapeRoom)
 
-      return send(res, STATUS_SUCCESS.OK)
+      return send(res, STATUS_SUCCESS.OK, toEscapeRoomDTO(newEscapeRoom))
     })
   )
 )

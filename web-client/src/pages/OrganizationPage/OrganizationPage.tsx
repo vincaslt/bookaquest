@@ -21,7 +21,7 @@ const CreateOrganizationSection = styled(PageContent)`
 const Section = styled.div`
   background-color: white;
   padding: 20px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 `
 
 // TODO: let user pick organizations / multiple organizations support
@@ -34,10 +34,10 @@ function OrganizationPage(props: RouteComponentProps) {
   const membership = userInfo && userInfo.memberships[0]
 
   return (
-    <div>
+    <PageContent noBackground>
       {membership ? (
         <>
-          <Row gutter={16}>
+          <Row gutter={24}>
             <Col span={6}>
               <Section>
                 <CreateOrganizationForm onCreateOrganization={handleCreateOrganization} />
@@ -66,7 +66,7 @@ function OrganizationPage(props: RouteComponentProps) {
           </CreateOrganizationSection>
         </>
       )}
-    </div>
+    </PageContent>
   )
 }
 

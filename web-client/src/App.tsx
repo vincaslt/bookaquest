@@ -20,14 +20,21 @@ const AppSpinnerContainer = styled('div')`
   height: 80vh;
 `
 
-const ContentContainer = styled(Layout)`
+const PageContainer = styled(Layout)`
   margin-left: 256px;
   min-height: 100vh;
-  padding: 24px 16px 0;
+`
+
+const StyledHeader = styled(Layout.Header)`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: white;
+  padding: 16px 24px;
 `
 
 function App() {
-  const { isLoading } = useUser()
+  const { isLoading, userInfo } = useUser()
   const { ready } = useTranslation(undefined, { useSuspense: false })
 
   if (isLoading || !ready) {
@@ -43,14 +50,15 @@ function App() {
   return (
     <Layout>
       <SideMenu />
-      <ContentContainer>
+      <PageContainer>
+        <StyledHeader>{userInfo && userInfo.email}</StyledHeader>
         <Router>
           <OrganizationPage path={Routes.Organization} />
           <RegistrationPage path={Routes.Register} />
           <BookingsPage path={Routes.Bookings} />
           <LoginPage path={Routes.SignIn} />
         </Router>
-      </ContentContainer>
+      </PageContainer>
     </Layout>
   )
 }

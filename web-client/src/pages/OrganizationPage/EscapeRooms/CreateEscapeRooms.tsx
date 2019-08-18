@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import * as Yup from 'yup'
 import * as api from '../../../api/application'
-import { CreateEscapeRoom } from '../../../interfaces/escapeRoom'
+import { CreateEscapeRoom, EscapeRoom } from '../../../interfaces/escapeRoom'
 
 const StyledForm = styled(Form)`
   max-width: 512px;
@@ -21,9 +21,10 @@ const initialValues: CreateEscapeRoom = {
 
 interface Props {
   organizationId: string
+  onCreateDone: (escapeRoom: EscapeRoom) => void
 }
 
-function CreateEscapeRoom({ organizationId }: Props) {
+function CreateEscapeRoom({ organizationId, onCreateDone }: Props) {
   const { t } = useTranslation()
 
   const validationSchema = Yup.object().shape<CreateEscapeRoom>({
@@ -35,12 +36,13 @@ function CreateEscapeRoom({ organizationId }: Props) {
   const handleSubmit = (values: CreateEscapeRoom, actions: FormikActions<CreateEscapeRoom>) => {
     api
       .createEscapeRoom(organizationId, values)
-      .then(() => {
+      .then(escapeRoom => {
         notification.open({
           message: t('Success'),
           type: 'success',
           description: t('Escape room has been created')
         })
+        onCreateDone(escapeRoom)
       })
       .catch(() => {
         actions.setSubmitting(false)

@@ -46,7 +46,10 @@ export const getEscapeRooms = withAuth(headers => (organizationId: string) =>
 
 export const createEscapeRoom = withAuth(
   headers => (organizationId: string, dto: CreateEscapeRoom) =>
-    api.post(`/organization/${organizationId}/escape-room`, dto, { headers }).then(res => res.data)
+    api
+      .post<EscapeRoomDTO>(`/organization/${organizationId}/escape-room`, dto, { headers })
+      .then(res => res.data)
+      .then(fromEscapeRoomDTO)
 )
 
 export const createOrganization = withAuth(headers => (dto: CreateOrganization) =>
