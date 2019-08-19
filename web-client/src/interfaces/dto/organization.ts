@@ -10,5 +10,4 @@ export interface UpdateOrganizationDTO {
   location?: string
   weekDays?: number[]
   workHours?: number[]
-  interval?: number
 }

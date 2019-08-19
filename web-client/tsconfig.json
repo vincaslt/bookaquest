@@ -11,6 +11,7 @@
     "allowSyntheticDefaultImports": false,
     "esModuleInterop": true,
     "strict": true,
+    "suppressExcessPropertyErrors": false,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",

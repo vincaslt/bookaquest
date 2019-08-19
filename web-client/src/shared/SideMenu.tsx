@@ -13,6 +13,7 @@ const StyledSider = styled(Layout.Sider)`
   left: 0;
 `
 
+// TODO: show active based on route
 function SideMenu() {
   const { t } = useTranslation()
 

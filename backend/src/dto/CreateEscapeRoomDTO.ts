@@ -12,17 +12,17 @@ export class CreateEscapeRoomDTO {
   // TODO: validate 0-24/1-7
   @IsOptional()
   @IsNumber(undefined, { each: true })
-  weekDays: number[]
+  weekDays?: number[]
 
   @IsOptional()
   @IsNumber(undefined, { each: true })
-  workHours: number[]
+  workHours?: number[]
 
   @IsOptional()
   @IsNumber()
-  interval: number
+  interval?: number
 
   @IsOptional()
   @IsString()
-  location: string
+  location?: string
 }

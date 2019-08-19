@@ -2,6 +2,7 @@ import { CreateEscapeRoomDTO } from '@app/dto/CreateEscapeRoomDTO'
 import { toEscapeRoomDTO } from '@app/dto/EscapeRoomDTO'
 import { UpdateEscapeRoomDTO } from '@app/dto/UpdateEscapeRoomDTO'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
+import { OrganizationEntity } from '@app/entities/OrganizationEntity'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
 import { withAuth } from '@app/lib/decorators/withAuth'
@@ -16,15 +17,27 @@ const createEscapeRoom = withAuth(({ userId }) =>
   withParams(['organizationId'], ({ organizationId }) =>
     withBody(CreateEscapeRoomDTO, dto => async (req, res) => {
       const escapeRoomRepo = getRepository(EscapeRoomEntity)
+      const organizationRepo = getRepository(OrganizationEntity)
 
       // TODO: check permissions when implemented
       if (!isOrganizationMember(organizationId, userId)) {
         return send(res, STATUS_ERROR.FORBIDDEN)
       }
 
-      // TODO: implement deriviation of schedule and location from organization
+      const organization = await organizationRepo.findOne(organizationId)
 
-      const newEscapeRoom = escapeRoomRepo.create({ ...dto, organizationId })
+      if (!organization) {
+        return send(res, STATUS_ERROR.NOT_FOUND)
+      }
+
+      // TODO: maybe make interval (duration) mandatory when creating schedule for escape room
+      const schedule = {
+        interval: dto.interval || 60,
+        workHours: dto.workHours || organization.workHours,
+        weekDays: dto.weekDays || organization.weekDays
+      }
+
+      const newEscapeRoom = escapeRoomRepo.create({ ...dto, ...schedule, organizationId })
       await escapeRoomRepo.save(newEscapeRoom)
 
       return send(res, STATUS_SUCCESS.OK, toEscapeRoomDTO(newEscapeRoom))

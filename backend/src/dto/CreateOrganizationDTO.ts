@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, IsUrl } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator'
 
 export class CreateOrganizationDTO {
   @IsNotEmpty()
@@ -10,12 +10,15 @@ export class CreateOrganizationDTO {
   website: string
 
   // TODO: validate 0-24/1-7
+  @IsOptional()
   @IsNumber(undefined, { each: true })
-  weekDays: number[]
+  weekDays?: number[]
 
+  @IsOptional()
   @IsNumber(undefined, { each: true })
-  workHours: number[]
+  workHours?: number[]
 
+  @IsOptional()
   @IsString()
-  location: string
+  location?: string
 }

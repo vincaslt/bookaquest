@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import * as api from '../../../api/application'
 import { EscapeRoom } from '../../../interfaces/escapeRoom'
 import useLoading from '../../../shared/hooks/useLoading'
-import CreateEscapeRoom from './CreateEscapeRooms'
+import CreateEscapeRoom from './CreateEscapeRoom'
 import NoEscapeRooms from './NoEscapeRooms'
 
 const CenteredContainer = styled.div`
@@ -38,6 +38,7 @@ function EscapeRooms({ organizationId }: Props) {
   }, [])
 
   const handleCreateClick = () => setIsCreating(true)
+  const handleCancel = () => setIsCreating(false)
   const handleCreateDone = (escapeRoom: EscapeRoom) => {
     setEscapeRooms(rooms => [...rooms, escapeRoom])
     setIsCreating(false)
@@ -52,7 +53,13 @@ function EscapeRooms({ organizationId }: Props) {
   }
 
   if (isCreating) {
-    return <CreateEscapeRoom onCreateDone={handleCreateDone} organizationId={organizationId} />
+    return (
+      <CreateEscapeRoom
+        onCancel={handleCancel}
+        onCreateDone={handleCreateDone}
+        organizationId={organizationId}
+      />
+    )
   }
 
   return escapeRooms.length > 0 ? (

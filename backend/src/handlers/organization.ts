@@ -64,4 +64,7 @@ const updateOrganization = withAuth(({ userId }) =>
   )
 )
 
-export default [post('/organization', createOrganization), put('/organization', updateOrganization)]
+export default [
+  post('/organization', createOrganization),
+  put('/organization/:organizationId', updateOrganization)
+]

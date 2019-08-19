@@ -4,7 +4,6 @@ import { EscapeRoomDTO } from '../interfaces/dto/escapeRoom'
 import { UserInfoDTO, UserMembershipDTO, UserOrganizationDTO } from '../interfaces/dto/user'
 import { CreateEscapeRoom, fromEscapeRoomDTO } from '../interfaces/escapeRoom'
 import { CreateOrganization, UpdateOrganization } from '../interfaces/organization'
-import { CreateSchedule } from '../interfaces/schedule'
 import {
   CreateUser,
   fromUserInfoDTO,
@@ -26,10 +25,6 @@ export const signOut = withAuth(headers => () => api.post('/logout', undefined, 
 
 export const refreshAuthToken = (dto: RequestRefreshTokenDTO) =>
   api.post<RefreshTokenDTO>('/refreshToken', dto).then(res => res.data)
-
-export const createSchedule = withAuth(headers => (schedule: CreateSchedule) =>
-  api.post('/schedule', schedule, { headers }).then(res => res.data)
-)
 
 export const getAuthUserInfo = withAuth(headers => () =>
   api
@@ -58,9 +53,10 @@ export const createOrganization = withAuth(headers => (dto: CreateOrganization) 
     .then(res => res.data.map(fromUserMembershipDTO))
 )
 
-export const updateOrganization = withAuth(headers => (dto: UpdateOrganization) =>
-  api
-    .put<UserOrganizationDTO>('/organization', dto, { headers })
-    .then(res => res.data)
-    .then(fromUserOrganizationDTO)
+export const updateOrganization = withAuth(
+  headers => (organizationId: string, dto: UpdateOrganization) =>
+    api
+      .put<UserOrganizationDTO>(`/organization/${organizationId}`, dto, { headers })
+      .then(res => res.data)
+      .then(fromUserOrganizationDTO)
 )

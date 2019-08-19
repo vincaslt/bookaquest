@@ -1,4 +1,4 @@
-import { Form, FormItem, Input, SubmitButton } from '@jbuschke/formik-antd'
+import { Form, FormItem, Input, ResetButton, SubmitButton } from '@jbuschke/formik-antd'
 import { notification } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
@@ -13,6 +13,10 @@ const StyledForm = styled(Form)`
   width: 100%;
 `
 
+const StyledResetButton = styled(ResetButton)`
+  margin-right: 16px;
+`
+
 const initialValues: CreateEscapeRoom = {
   name: '',
   description: '',
@@ -22,9 +26,10 @@ const initialValues: CreateEscapeRoom = {
 interface Props {
   organizationId: string
   onCreateDone: (escapeRoom: EscapeRoom) => void
+  onCancel: () => void
 }
 
-function CreateEscapeRoom({ organizationId, onCreateDone }: Props) {
+function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
   const { t } = useTranslation()
 
   const validationSchema = Yup.object().shape<CreateEscapeRoom>({
@@ -74,6 +79,9 @@ function CreateEscapeRoom({ organizationId, onCreateDone }: Props) {
         </FormItem>
 
         <FormItem name="action">
+          <StyledResetButton onClick={onCancel} disabled={false}>
+            {t('Cancel')}
+          </StyledResetButton>
           <SubmitButton>{t('Create')}</SubmitButton>
         </FormItem>
       </StyledForm>

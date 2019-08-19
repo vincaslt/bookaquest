@@ -49,7 +49,7 @@ function OrganizationPage(props: RouteComponentProps) {
             </Col>
             <Col span={18}>
               <Section>
-                <CreateScheduleForm />
+                <CreateScheduleForm organizationId={membership.organization.id} />
               </Section>
 
               <Section>
