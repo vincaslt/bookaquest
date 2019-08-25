@@ -20,7 +20,7 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       ]
     })
 
-    // TODO: also validate if the timeslot itself is valid (working hours, etc.)
+    // TODO: also validate if the timeslot itself is valid (working hours, interval, etc.)
     if (overlap) {
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }

@@ -33,11 +33,10 @@ export const getAuthUserInfo = withAuth(headers => () =>
     .then(fromUserInfoDTO)
 )
 
-export const getEscapeRooms = withAuth(headers => (organizationId: string) =>
+export const getEscapeRooms = (organizationId: string) =>
   api
-    .get<EscapeRoomDTO[]>(`/organization/${organizationId}/escape-room`, { headers })
+    .get<EscapeRoomDTO[]>(`/organization/${organizationId}/escape-room`)
     .then(res => res.data.map(fromEscapeRoomDTO))
-)
 
 export const createEscapeRoom = withAuth(
   headers => (organizationId: string, dto: CreateEscapeRoom) =>

@@ -4,3 +4,8 @@ Should support two ways of rendering at the moment:
 
 - into html elements (by passing in element id to render the form in)
 - as a modal popup, and a button that calls it.
+
+# Structure
+
+- src - contains the booking widget application
+- lib - contains the script that the client uses

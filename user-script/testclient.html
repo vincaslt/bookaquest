@@ -3,12 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>User Script</title>
+  <title>Test Client</title>
 </head>
 
 <body>
-  <div id="bm-form-root"></div>
+  <div id="container"></div>
   <script src="./lib/index.tsx"></script>
+  <script>
+    window.BookaQuestID = '1';
+    CrossSiteBookingComponent().render('#container');
+  </script>
 </body>
 
 </html>

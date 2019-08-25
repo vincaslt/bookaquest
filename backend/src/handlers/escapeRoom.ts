@@ -69,22 +69,19 @@ const updateEscapeRoom = withAuth(({ userId }) =>
   )
 )
 
-const listEscapeRooms = withAuth(({ userId }) =>
-  withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
-    const escapeRoomRepo = getRepository(EscapeRoomEntity)
+// TODO: query param to get only the ones with working hours
+// TODO: separate private endpoint to get bookings
+// TODO: separate public endpoint to get availability
+const listEscapeRooms = withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
+  const escapeRoomRepo = getRepository(EscapeRoomEntity)
 
-    if (!isOrganizationMember(organizationId, userId)) {
-      return send(res, STATUS_ERROR.FORBIDDEN)
-    }
+  const organizationEscapeRooms = await escapeRoomRepo.find({ where: { organizationId } })
 
-    const organizationEscapeRooms = await escapeRoomRepo.find({ where: { organizationId } })
-
-    return organizationEscapeRooms.map(toEscapeRoomDTO)
-  })
-)
+  return organizationEscapeRooms.map(toEscapeRoomDTO)
+})
 
 export default [
-  get('/organization/:organizationId/escape-room', listEscapeRooms),
+  get('/organization/:organizationId/escape-room', listEscapeRooms), // No auth required
   post('/organization/:organizationId/escape-room', createEscapeRoom),
   put('/escape-room/:escapeRoomId', updateEscapeRoom)
 ]
