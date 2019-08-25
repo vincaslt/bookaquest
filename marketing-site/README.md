@@ -1,1 +1,0 @@
-Simple marketing website for booking manager app.

@@ -5,7 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "start": "parcel public/index.html",
-    "build": "parcel build public/index.html"
+    "build": "parcel build public/index.html",
+    "parse-locales": "i18next --config i18next-parser.config.js"
   },
   "repository": {
     "type": "git",
@@ -21,14 +22,16 @@
     "@types/axios": "^0.14.0",
     "@types/i18next": "^12.1.0",
     "@types/i18next-xhr-backend": "^1.4.2",
+    "@types/ramda": "^0.26.15",
     "@types/reach__router": "^1.2.4",
     "@types/react": "^16.8.17",
     "@types/react-dom": "^16.8.4",
     "@types/react-i18next": "^8.1.0",
+    "@types/react-jsonschema-form": "^1.6.0",
     "@types/styled-components": "^4.1.14",
     "@types/yup": "^0.26.13",
     "acorn": "^6.1.1",
-    "acorn-jsx": "^5.0.1",
+    "acorn-jsx": "4.x",
     "i18next-parser": "https://github.com/vincaslt/i18next-parser.git",
     "parcel-bundler": "^1.9.0",
     "prettier": "^1.17.0",
@@ -39,22 +42,26 @@
     "typescript": "^2.4.0"
   },
   "dependencies": {
-    "@jbuschke/formik-antd": "^1.0.0-preview.2",
+    "@jbuschke/formik-antd": "^1.0.0-preview.6",
     "@reach/router": "^1.2.1",
     "antd": "^3.17.0",
     "app": "^0.1.0",
     "axios": "^0.18.0",
+    "bootstrap": "^4.3.1",
+    "emotion": "^10.0.9",
     "formik": "^1.5.4",
     "i18next": "^15.1.0",
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-xhr-backend": "^2.0.1",
     "path-to-regexp": "^3.0.0",
+    "ramda": "^0.26.1",
     "reach-router": "^0.0.0",
-    "react": "15.x || 16.x || 16.4.0-alpha.0911da3",
-    "react-dom": "15.x || 16.x || 16.4.0-alpha.0911da3",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "react-i18next": "^10.9.0",
+    "react-jsonschema-form": "^1.6.1",
     "src": "^1.1.2",
-    "styled-components": "^4.2.0",
+    "styled-components": "^4.3.2",
     "yup": "^0.27.0"
   }
 }

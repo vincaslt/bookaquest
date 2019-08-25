@@ -7,7 +7,6 @@
       "esnext"
     ],
     "rootDir": "src",
-    "baseUrl": ".",
     "outDir": "dist",
     "allowSyntheticDefaultImports": false,
     "esModuleInterop": true,
@@ -21,18 +20,10 @@
     "noUnusedLocals": true,
     "noEmit": true,
     "jsx": "react",
-    "jsxFactory": "h",
     "typeRoots": [
-      "./node_modules/@types"
-    ],
-    "paths": {
-      "*": [
-        "./src/typings"
-      ],
-      "@lib/*": [
-        "src/lib/*"
-      ]
-    }
+      "./node_modules/@types",
+      "./src/typings"
+    ]
   },
   "exclude": [
     "node_modules",

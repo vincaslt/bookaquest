@@ -11,6 +11,7 @@
     "allowSyntheticDefaultImports": false,
     "esModuleInterop": true,
     "strict": true,
+    "suppressExcessPropertyErrors": false,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
@@ -21,7 +22,8 @@
     "noEmit": true,
     "jsx": "react",
     "typeRoots": [
-      "./node_modules/@types"
+      "./node_modules/@types",
+      "./src/typings"
     ]
   },
   "exclude": [

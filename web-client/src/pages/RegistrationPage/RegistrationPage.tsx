@@ -1,12 +1,13 @@
 import { RouteComponentProps } from '@reach/router'
 import * as React from 'react'
-import RegistrationForm from './components/RegistrationForm'
+import PageContent from '../../shared/PageContent'
+import RegistrationForm from './RegistrationForm'
 
 function RegistrationPage(props: RouteComponentProps) {
   return (
-    <div>
+    <PageContent>
       <RegistrationForm />
-    </div>
+    </PageContent>
   )
 }
 

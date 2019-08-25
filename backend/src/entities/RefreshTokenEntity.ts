@@ -1,10 +1,11 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, PrimaryColumn } from 'typeorm'
 
-@Entity()
+@Entity({ name: 'refresh_token' })
 export class RefreshTokenEntity {
   @PrimaryColumn({ length: 256 })
   token: string
 
+  @Index()
   @Column()
   userId: string
 
