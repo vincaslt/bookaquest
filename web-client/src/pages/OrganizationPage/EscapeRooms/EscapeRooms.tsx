@@ -29,7 +29,7 @@ interface Props {
 
 function EscapeRooms({ organizationId }: Props) {
   const { t } = useTranslation()
-  const { isLoading, withLoading } = useLoading(true)
+  const [isLoading, withLoading] = useLoading(true)
   const [isCreating, setIsCreating] = React.useState(false)
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([])
 

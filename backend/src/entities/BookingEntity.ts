@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   Unique
 } from 'typeorm'
@@ -34,7 +34,7 @@ export class BookingEntity {
   @Column()
   escapeRoomId: string
 
-  @OneToMany(type => EscapeRoomEntity, escapeRoom => escapeRoom.bookings)
+  @ManyToOne(type => EscapeRoomEntity, escapeRoom => escapeRoom.bookings)
   escapeRoom: EscapeRoomEntity
 
   @CreateDateColumn()

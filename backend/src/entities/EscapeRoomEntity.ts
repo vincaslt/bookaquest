@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
@@ -28,8 +29,8 @@ export class EscapeRoomEntity {
   @Column()
   location: string
 
-  @OneToMany(type => OrganizationEntity, organization => organization.escapeRooms)
-  organization: OrganizationEntity[]
+  @ManyToOne(type => OrganizationEntity, organization => organization.escapeRooms)
+  organization: OrganizationEntity
 
   @OneToMany(type => BookingEntity, booking => booking.escapeRoom)
   bookings: BookingEntity[]

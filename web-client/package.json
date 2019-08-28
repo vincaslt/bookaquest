@@ -19,26 +19,23 @@
   },
   "homepage": "https://github.com/vincaslt/bookings-manager#readme",
   "devDependencies": {
-    "@types/axios": "^0.14.0",
     "@types/i18next": "^12.1.0",
-    "@types/i18next-xhr-backend": "^1.4.2",
     "@types/ramda": "^0.26.15",
     "@types/reach__router": "^1.2.4",
     "@types/react": "^16.8.17",
     "@types/react-dom": "^16.8.4",
-    "@types/react-i18next": "^8.1.0",
     "@types/styled-components": "^4.1.14",
     "@types/yup": "^0.26.13",
     "acorn": "^6.1.1",
     "acorn-jsx": "4.x",
     "i18next-parser": "https://github.com/vincaslt/i18next-parser.git",
-    "parcel-bundler": "^1.9.0",
+    "parcel-bundler": "^1.12.3",
     "prettier": "^1.17.0",
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
     "tslint-react": "^4.0.0",
-    "typescript": "^2.4.0"
+    "typescript": "^3.5.2"
   },
   "dependencies": {
     "@jbuschke/formik-antd": "^1.0.0-preview.6",
@@ -57,7 +54,7 @@
     "react-dom": "^16.8.6",
     "react-i18next": "^10.9.0",
     "styled-components": "^4.3.2",
-    "tui-calendar": "https://github.com/vincaslt/tui.calendar#master",
+    "tui-calendar": "git+https://github.com/nhn/tui.calendar.git#fix/update-type-definition",
     "yup": "^0.27.0"
   }
 }

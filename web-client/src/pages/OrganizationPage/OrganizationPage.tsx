@@ -31,7 +31,7 @@ function OrganizationPage(props: RouteComponentProps) {
   const handleCreateOrganization = (memberships: UserMembership[]) =>
     userInfo && setUserInfo({ ...userInfo, memberships })
 
-  const membership = userInfo && userInfo.memberships[0]
+  const membership = userInfo && userInfo.memberships[0] // TODO: use selected, instead of first one
 
   return (
     <PageContent noBackground>

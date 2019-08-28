@@ -31,4 +31,5 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
     return send(res, STATUS_SUCCESS.OK)
   })
 )
+
 export default [post('/escape-room/:escapeRoomId/booking', createBooking)]

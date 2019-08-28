@@ -1,5 +1,7 @@
 import { SignIn } from '../interfaces/auth'
+import { fromBookingDTO } from '../interfaces/booking'
 import { AuthTokensDTO, RefreshTokenDTO, RequestRefreshTokenDTO } from '../interfaces/dto/auth'
+import { BookingDTO } from '../interfaces/dto/booking'
 import { EscapeRoomDTO } from '../interfaces/dto/escapeRoom'
 import { UserInfoDTO, UserMembershipDTO, UserOrganizationDTO } from '../interfaces/dto/user'
 import { CreateEscapeRoom, fromEscapeRoomDTO } from '../interfaces/escapeRoom'
@@ -58,4 +60,10 @@ export const updateOrganization = withAuth(
       .put<UserOrganizationDTO>(`/organization/${organizationId}`, dto, { headers })
       .then(res => res.data)
       .then(fromUserOrganizationDTO)
+)
+
+export const getOrganizationBookings = withAuth(headers => (organizationId: string) =>
+  api
+    .get<BookingDTO[]>(`/organization/${organizationId}/booking`, { headers })
+    .then(res => res.data.map(fromBookingDTO))
 )

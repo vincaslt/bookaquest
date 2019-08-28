@@ -19,15 +19,16 @@ const createEscapeRoom = withAuth(({ userId }) =>
       const escapeRoomRepo = getRepository(EscapeRoomEntity)
       const organizationRepo = getRepository(OrganizationEntity)
 
-      // TODO: check permissions when implemented
-      if (!isOrganizationMember(organizationId, userId)) {
-        return send(res, STATUS_ERROR.FORBIDDEN)
-      }
-
+      // TODO: util method to get with relation and check existance, return monad
       const organization = await organizationRepo.findOne(organizationId)
 
       if (!organization) {
         return send(res, STATUS_ERROR.NOT_FOUND)
+      }
+
+      // TODO: check permissions when implemented
+      if (!isOrganizationMember(organizationId, userId)) {
+        return send(res, STATUS_ERROR.FORBIDDEN)
       }
 
       // TODO: maybe make interval (duration) mandatory when creating schedule for escape room
