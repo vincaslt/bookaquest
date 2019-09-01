@@ -2,13 +2,13 @@ import * as React from 'react'
 import { getAuthUserInfo } from '../../api/application'
 import { UserInfo } from '../../interfaces/user'
 
-interface UserProviderState {
+export interface UserProviderState {
   isLoading: boolean
   userInfo: UserInfo | null
   setUserInfo: (userInfo: UserInfo) => void
 }
 
-const UserContext = React.createContext<UserProviderState | null>(null)
+export const UserContext = React.createContext<UserProviderState | null>(null)
 
 interface Props {
   children: React.ReactNode
@@ -35,8 +35,6 @@ export const UserProvider = ({ children }: Props) => {
     </UserContext.Provider>
   )
 }
-
-export const useUser = () => React.useContext(UserContext) as UserProviderState
 
 export function withUserProvider<P>(Component: React.ComponentType<P>) {
   return (props: P) => (

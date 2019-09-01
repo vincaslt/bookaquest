@@ -17,7 +17,7 @@ export type UserInfoDTO = Omit<UserEntity, 'password' | 'memberships'> & {
 }
 
 export function toUserOrganizationDTO(organization: OrganizationEntity): UserOrganizationDTO {
-  return omit(['members', 'escapeRooms'], organization)
+  return omit(['members', 'escapeRooms'])(organization)
 }
 
 export function toUserMembershipDTO(membership: OrganizationMembershipEntity): UserMembershipDTO {

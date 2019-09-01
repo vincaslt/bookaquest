@@ -4,9 +4,8 @@ import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import * as Yup from 'yup'
-import * as api from '../../api/application'
 import { SignIn } from '../../interfaces/auth'
-import { useUser } from '../../shared/providers/UserProvider'
+import useUser from '../../shared/hooks/useUser'
 
 const initialValues: SignIn = {
   email: '',
@@ -15,20 +14,16 @@ const initialValues: SignIn = {
 
 function LoginForm() {
   const { t } = useTranslation()
-  const { setUserInfo } = useUser()
+  const { login } = useUser()
 
   const validationSchema = Yup.object().shape<SignIn>({
     email: Yup.string().required(),
     password: Yup.string().required()
   })
 
-  const handleSubmit = (values: SignIn, actions: FormikActions<SignIn>) => {
-    api
-      .signIn(values)
-      .then(({ tokens: { accessToken, refreshToken }, userInfo }) => {
-        setUserInfo(userInfo)
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('refreshToken', refreshToken)
+  const handleSubmit = async (values: SignIn, actions: FormikActions<SignIn>) => {
+    await login(values)
+      .then(() => {
         notification.open({
           message: t('Success'),
           type: 'success',

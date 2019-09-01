@@ -1,16 +1,17 @@
 import * as pathToRegexp from 'path-to-regexp'
 
-enum Routes {
-  Home = '/',
-  Register = '/register',
+export enum PrivateRoutes {
+  Dashboard = '/',
   Bookings = '/bookings',
-  Organization = '/organization',
-  SignIn = '/sign-in'
+  Organization = '/organization'
 }
 
-export const getUrl = (path: Routes, params: object) => {
+export enum PublicRoutes {
+  SignIn = '/',
+  Register = '/register'
+}
+
+export const getUrl = (path: PublicRoutes | PrivateRoutes, params: object) => {
   const toPath = pathToRegexp.compile(path)
   return toPath(params)
 }
-
-export default Routes

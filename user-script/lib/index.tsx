@@ -9,7 +9,7 @@ interface BookingWindow extends Window {
   CrossSiteBookingComponent: any
 }
 
-const w = window as BookingWindow
+const w = (window as any) as BookingWindow
 
 const CrossSiteBookingComponent = zoid.create({
   tag: 'booking-component',

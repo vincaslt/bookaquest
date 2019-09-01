@@ -1,7 +1,7 @@
 import Axios, { AxiosError } from 'axios'
 import { refreshAuthToken } from '../api/application'
 import config from '../config'
-import Routes from '../constants/routes'
+import { PublicRoutes } from '../constants/routes'
 import { JwtPayload } from '../interfaces/auth'
 
 export const api = Axios.create({
@@ -26,7 +26,7 @@ export function withAuth<Args extends any[], T>(
 
     if (!accessToken) {
       // Not logged in - redirect to login
-      location.assign(Routes.SignIn)
+      location.assign(PublicRoutes.SignIn)
       return Promise.reject(new Error('Not logged in!'))
     }
 
@@ -52,7 +52,7 @@ export function withAuth<Args extends any[], T>(
           // Failed to refresh token, session has expired
           localStorage.removeItem('accessToken')
           localStorage.removeItem('refreshToken')
-          location.assign(Routes.SignIn)
+          location.assign(PublicRoutes.SignIn)
           return Promise.reject('Token has expired!')
         })
     })

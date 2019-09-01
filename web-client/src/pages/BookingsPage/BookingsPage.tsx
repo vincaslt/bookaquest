@@ -5,8 +5,8 @@ import { ISchedule } from 'tui-calendar'
 import * as api from '../../api/application'
 import { Booking } from '../../interfaces/booking'
 import useLoading from '../../shared/hooks/useLoading'
+import useUser from '../../shared/hooks/useUser'
 import PageContent from '../../shared/PageContent'
-import { useUser } from '../../shared/providers/UserProvider'
 
 const getScheduleMapper = (organizationId: string) => (booking: Booking): ISchedule => ({
   id: booking.id,
@@ -32,9 +32,8 @@ function BookingsPage(props: RouteComponentProps) {
   }, [])
 
   return (
-    !isLoading &&
-    membership && (
-      <PageContent>
+    <PageContent>
+      {!isLoading && membership && (
         <TuiCalendar
           taskView={false}
           scheduleView={['time']}
@@ -42,8 +41,8 @@ function BookingsPage(props: RouteComponentProps) {
           height="auto"
           view="week"
         />
-      </PageContent>
-    )
+      )}
+    </PageContent>
   )
 }
 

@@ -1,14 +1,11 @@
-import { Router } from '@reach/router'
 import { Layout, Spin } from 'antd'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import Routes from './constants/routes'
-import BookingsPage from './pages/BookingsPage/BookingsPage'
-import LoginPage from './pages/LoginPage/LoginPage'
-import OrganizationPage from './pages/OrganizationPage/OrganizationPage'
-import RegistrationPage from './pages/RegistrationPage/RegistrationPage'
-import { useUser, withUserProvider } from './shared/providers/UserProvider'
+import PrivateRoutes from './PrivateRoutes'
+import PublicRoutes from './PublicRoutes'
+import useUser from './shared/hooks/useUser'
+import { withUserProvider } from './shared/providers/UserProvider'
 import SideMenu from './shared/SideMenu'
 import './utils/i18n'
 
@@ -21,6 +18,10 @@ const AppSpinnerContainer = styled('div')`
 `
 
 const PageContainer = styled(Layout)`
+  min-height: 100vh;
+`
+
+const PageWithSidebarContainer = styled(Layout)`
   margin-left: 256px;
   min-height: 100vh;
 `
@@ -45,20 +46,22 @@ function App() {
     )
   }
 
-  // TODO: only render login/registration when not authenticated
-
   return (
     <Layout>
-      <SideMenu />
-      <PageContainer>
-        <StyledHeader>{userInfo && userInfo.email}</StyledHeader>
-        <Router>
-          <OrganizationPage path={Routes.Organization} />
-          <RegistrationPage path={Routes.Register} />
-          <BookingsPage path={Routes.Bookings} />
-          <LoginPage path={Routes.SignIn} />
-        </Router>
-      </PageContainer>
+      {userInfo ? (
+        <>
+          <SideMenu />
+          <PageWithSidebarContainer>
+            <StyledHeader>{userInfo && userInfo.email}</StyledHeader>
+            <PrivateRoutes />
+          </PageWithSidebarContainer>
+        </>
+      ) : (
+        <PageContainer>
+          <StyledHeader />
+          <PublicRoutes />
+        </PageContainer>
+      )}
     </Layout>
   )
 }
