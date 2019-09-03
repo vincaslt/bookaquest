@@ -3,6 +3,8 @@ import { OrganizationMembershipEntity } from '@app/entities/OrganizationMembersh
 import { UserEntity } from '@app/entities/UserEntity'
 import { omit } from 'ramda'
 
+export type BasicUserInfo = Omit<UserEntity, 'password' | 'memberships'>
+
 export type UserOrganizationDTO = Omit<OrganizationEntity, 'members' | 'escapeRooms'>
 
 export type UserMembershipDTO = Omit<
@@ -12,7 +14,7 @@ export type UserMembershipDTO = Omit<
   organization: UserOrganizationDTO
 }
 
-export type UserInfoDTO = Omit<UserEntity, 'password' | 'memberships'> & {
+export type UserInfoDTO = BasicUserInfo & {
   memberships: UserMembershipDTO[]
 }
 
@@ -22,14 +24,18 @@ export function toUserOrganizationDTO(organization: OrganizationEntity): UserOrg
 
 export function toUserMembershipDTO(membership: OrganizationMembershipEntity): UserMembershipDTO {
   return {
-    ...omit(['userId', 'organizationId', 'organization'], membership),
+    ...omit(['userId', 'organizationId', 'organization'])(membership),
     organization: toUserOrganizationDTO(membership.organization)
   }
 }
 
+export function toBasicUserInfoDTO(user: UserEntity): BasicUserInfo {
+  return omit(['password', 'memberships'])(user)
+}
+
 export function toUserInfoDTO(user: UserEntity): UserInfoDTO {
   return {
-    ...omit(['password', 'memberships'], user),
+    ...toBasicUserInfoDTO(user),
     memberships: user.memberships.map(toUserMembershipDTO)
   }
 }

@@ -44,7 +44,7 @@ function OrganizationPage(props: RouteComponentProps) {
               </Section>
 
               <Section>
-                <Members />
+                <Members organizationId={membership.organization.id} />
               </Section>
             </Col>
             <Col span={18}>

@@ -3,9 +3,11 @@ import { fromBookingDTO } from '../interfaces/booking'
 import { AuthTokensDTO, RefreshTokenDTO, RequestRefreshTokenDTO } from '../interfaces/dto/auth'
 import { BookingDTO } from '../interfaces/dto/booking'
 import { EscapeRoomDTO } from '../interfaces/dto/escapeRoom'
+import { OrganizationMemberDTO } from '../interfaces/dto/organizationMember'
 import { UserInfoDTO, UserMembershipDTO, UserOrganizationDTO } from '../interfaces/dto/user'
 import { CreateEscapeRoom, fromEscapeRoomDTO } from '../interfaces/escapeRoom'
 import { CreateOrganization, UpdateOrganization } from '../interfaces/organization'
+import { fromOrganizationMemberDTO } from '../interfaces/organizationMember'
 import {
   CreateUser,
   fromUserInfoDTO,
@@ -66,4 +68,10 @@ export const getOrganizationBookings = withAuth(headers => (organizationId: stri
   api
     .get<BookingDTO[]>(`/organization/${organizationId}/booking`, { headers })
     .then(res => res.data.map(fromBookingDTO))
+)
+
+export const getOrganizationMembers = withAuth(headers => (organizationId: string) =>
+  api
+    .get<OrganizationMemberDTO[]>(`/organization/${organizationId}/member`, { headers })
+    .then(res => res.data.map(fromOrganizationMemberDTO))
 )

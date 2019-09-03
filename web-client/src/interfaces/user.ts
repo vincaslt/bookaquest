@@ -1,6 +1,16 @@
-import { CreateUserDTO, UserInfoDTO, UserMembershipDTO, UserOrganizationDTO } from './dto/user'
+import {
+  BasicUserInfoDTO,
+  CreateUserDTO,
+  UserInfoDTO,
+  UserMembershipDTO,
+  UserOrganizationDTO
+} from './dto/user'
 
 export type CreateUser = CreateUserDTO
+
+export type BasicUserInfo = Omit<BasicUserInfoDTO, 'createdAt'> & {
+  createdAt: Date
+}
 
 export type UserOrganization = Omit<UserOrganizationDTO, 'createdAt'> & {
   createdAt: Date
@@ -26,6 +36,13 @@ export function fromUserMembershipDTO(dto: UserMembershipDTO): UserMembership {
     ...dto,
     createdAt: new Date(dto.createdAt),
     organization: fromUserOrganizationDTO(dto.organization)
+  }
+}
+
+export function fromBasicUserInfoDTO(dto: BasicUserInfoDTO): BasicUserInfo {
+  return {
+    ...dto,
+    createdAt: new Date(dto.createdAt)
   }
 }
 

@@ -1,5 +1,6 @@
 import { toBookingDTO } from '@app/dto/BookingDTO'
 import { CreateOrganizationDTO } from '@app/dto/CreateOrganizationDTO'
+import { toMemberDTO } from '@app/dto/OrganizationMemberDTO'
 import { UpdateOrganizationDTO } from '@app/dto/UpdateOrganizationDTO'
 import { toUserMembershipDTO, toUserOrganizationDTO } from '@app/dto/UserInfoDTO'
 import { BookingEntity } from '@app/entities/BookingEntity'
@@ -93,8 +94,26 @@ const listBookings = withAuth(({ userId }) =>
   })
 )
 
+const listMembers = withAuth(({ userId }) =>
+  withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
+    const organizationMembershipRepo = getRepository(OrganizationMembershipEntity)
+
+    if (!isOrganizationMember(organizationId, userId)) {
+      return send(res, STATUS_ERROR.FORBIDDEN)
+    }
+
+    const memberships = await organizationMembershipRepo.find({
+      where: { organizationId },
+      relations: ['user']
+    })
+
+    return send(res, STATUS_SUCCESS.OK, memberships.map(toMemberDTO))
+  })
+)
+
 export default [
   post('/organization', createOrganization),
   put('/organization/:organizationId', updateOrganization),
-  get('/organization/:organizationId/booking', listBookings)
+  get('/organization/:organizationId/booking', listBookings),
+  get('/organization/:organizationId/member', listMembers)
 ]

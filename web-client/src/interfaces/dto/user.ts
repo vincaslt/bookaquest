@@ -14,12 +14,15 @@ export interface UserMembershipDTO {
   organization: UserOrganizationDTO
 }
 
-export interface UserInfoDTO {
+export interface BasicUserInfoDTO {
   id: string
   email: string
   fullName: string
-  memberships: UserMembershipDTO[]
   createdAt: string
+}
+
+export interface UserInfoDTO extends BasicUserInfoDTO {
+  memberships: UserMembershipDTO[]
 }
 
 export interface CreateUserDTO {
