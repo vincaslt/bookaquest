@@ -1,7 +1,7 @@
 import { Layout } from 'antd'
 import * as React from 'react'
 import styled from 'styled-components'
-import BookingForm from './BookingForm'
+import Booking from './features/Booking/Booking'
 
 const ContentContainer = styled(Layout)`
   min-height: 100vh;
@@ -18,7 +18,7 @@ function App() {
 
   return (
     <ContentContainer>
-      {route === Routes.Booking && <BookingForm organizationId={organizationId} />}
+      {route === Routes.Booking && <Booking organizationId={organizationId} />}
     </ContentContainer>
   )
 }

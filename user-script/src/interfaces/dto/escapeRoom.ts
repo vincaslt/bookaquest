@@ -1,12 +1,4 @@
-export interface CreateEscapeRoomDTO {
-  name: string
-  description: string
-  weekDays?: number[]
-  workHours?: number[]
-  interval?: number
-  location?: string
-}
-
+// TODO: limit only to escape rooms that have weekDays and workHours and interval
 export interface EscapeRoomDTO {
   id: string
   organizationId: string
@@ -14,8 +6,8 @@ export interface EscapeRoomDTO {
   description: string
   createdAt: string
   updatedAt: string
-  weekDays?: number[]
-  workHours?: number[]
-  interval?: number
+  weekDays: number[]
+  workHours: [number, number]
+  interval: number
   location?: string
 }

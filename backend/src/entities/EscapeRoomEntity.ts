@@ -35,10 +35,10 @@ export class EscapeRoomEntity {
   @OneToMany(type => BookingEntity, booking => booking.escapeRoom)
   bookings: BookingEntity[]
 
-  @Column('simple-array', { nullable: true })
+  @Column('integer', { array: true, nullable: true })
   weekDays: number[]
 
-  @Column('simple-array', { nullable: true })
+  @Column('integer', { array: true, nullable: true })
   workHours: number[]
 
   @Column({ nullable: true })

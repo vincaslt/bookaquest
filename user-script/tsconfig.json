@@ -8,7 +8,7 @@
     ],
     "rootDir": ".",
     "outDir": "dist",
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strict": true,
     "noImplicitAny": true,
