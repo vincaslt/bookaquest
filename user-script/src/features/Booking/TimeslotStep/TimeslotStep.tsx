@@ -1,9 +1,10 @@
 import { Button, DatePicker, Form } from 'antd'
-import moment from 'moment'
-import times from 'ramda/es/times'
+import moment, { Moment } from 'moment'
 import * as React from 'react'
+import * as api from '../../../api/application'
 import { CreateBooking } from '../../../interfaces/createBooking'
 import { EscapeRoom } from '../../../interfaces/escapeRoom'
+import { Timeslot } from '../../../interfaces/timeslot'
 
 export type TimeslotInfo = Pick<CreateBooking, 'startDate' | 'endDate'>
 
@@ -13,19 +14,18 @@ interface Props {
 }
 
 function TimeslotStep({ room, onSelect }: Props) {
-  const [date, setDate] = React.useState(moment())
-  const [startHour, endHour] = room.workHours
+  const isDayDisabled = (current?: Moment) =>
+    !!current && (current < moment().startOf('day') || !room.weekDays.includes(current.weekday()))
 
-  // TODO: check timeslot availabilities
-  const timeslots = times(i => {
-    const start = moment(date)
-      .startOf('day')
-      .minutes(startHour * 60 + i * room.interval)
-    const end = moment(date)
-      .startOf('day')
-      .minutes(startHour * 60 + (i + 1) * room.interval)
-    return { start, end, key: i }
-  }, ((endHour - startHour) * 60) / room.interval)
+  const [date, setDate] = React.useState(isDayDisabled(moment()) ? undefined : moment())
+  const [timeslots, setTimeslots] = React.useState<Timeslot[]>([])
+
+  React.useEffect(() => {
+    if (date) {
+      setTimeslots([])
+      api.getAvailability(room.id, date.toDate()).then(setTimeslots)
+    }
+  }, [date])
 
   return (
     <div>
@@ -33,24 +33,21 @@ function TimeslotStep({ room, onSelect }: Props) {
         <DatePicker
           onChange={value => value && setDate(value)}
           value={date}
-          disabledDate={current =>
-            !!current &&
-            (current < moment().startOf('day') || !room.weekDays.includes(current.weekday()))
-          }
+          disabledDate={isDayDisabled}
         />
       </Form.Item>
 
-      {timeslots.map(({ start, end, key }) => (
+      {timeslots.map(({ start, end }, i) => (
         <Button
-          key={key}
+          key={i}
           onClick={() =>
             onSelect({
-              startDate: start.toDate(),
-              endDate: end.toDate()
+              startDate: start,
+              endDate: end
             })
           }
         >
-          {start.format('LT')} - {end.format('LT')}
+          {moment(start).format('LT')} - {moment(end).format('LT')}
         </Button>
       ))}
     </div>

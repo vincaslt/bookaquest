@@ -11,5 +11,5 @@ export const toCreateBookingDTO = (escapeRoom: CreateBooking): CreateBookingDTO 
   omit(['escapeRoomId'], {
     ...escapeRoom,
     startDate: escapeRoom.startDate.toString(),
-    endDate: escapeRoom.startDate.toString()
+    endDate: escapeRoom.endDate.toString()
   })

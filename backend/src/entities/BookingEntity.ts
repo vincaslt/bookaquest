@@ -16,10 +16,10 @@ export class BookingEntity {
   @Index()
   id: string
 
-  @Column()
+  @Column('timestamptz')
   startDate: Date
 
-  @Column()
+  @Column('timestamptz')
   endDate: Date
 
   @Column()
