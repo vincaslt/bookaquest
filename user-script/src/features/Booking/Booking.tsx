@@ -4,8 +4,9 @@ import styled from 'styled-components'
 import * as api from '../../api/application'
 import { EscapeRoom } from '../../interfaces/escapeRoom'
 import BookingInfoStep, { BookingInfo } from './BookingInfoStep/BookingInfoStep'
+import ConfirmationStep from './ConfirmationStep/ConfirmationStep'
 import EscapeRoomStep from './EscapeRoomStep/EscapeRoomStep'
-import PaymentStep from './PaymentStep/PaymentStep'
+import SuccessStep from './SuccessStep/SuccessStep'
 import TimeslotStep, { TimeslotInfo } from './TimeslotStep/TimeslotStep'
 
 const StyledRow = styled(Row)`
@@ -21,7 +22,8 @@ enum BookingStep {
   EscapeRoom = 'escape-room',
   Timeslot = 'timeslot',
   BookingInfo = 'booking-info',
-  Payment = 'payment'
+  Confirmation = 'confirmation',
+  Success = 'success'
 }
 
 interface Props {
@@ -49,26 +51,39 @@ function Booking({ organizationId }: Props) {
 
   const handleSelectTimeslot = (timeslotInfo: TimeslotInfo) => {
     setTimeslot(timeslotInfo)
-    setStep(BookingStep.Payment)
+    setStep(BookingStep.Confirmation)
   }
 
-  const handlePaymentDone = () => {
+  const handleConfirmation = async () => {
     if (timeslot && selectedRoom && bookingInfo) {
-      console.log(timeslot)
-      api.createBooking({
+      await api.createBooking({
         ...bookingInfo,
         startDate: timeslot.startDate,
         endDate: timeslot.endDate,
         escapeRoomId: selectedRoom.id
       })
+      setStep(BookingStep.Success)
     }
+  }
+
+  if (step === BookingStep.Success && selectedRoom && bookingInfo) {
+    return (
+      <Row>
+        <Col xxl={{ span: 18, push: 3 }} xl={{ span: 22, push: 1 }} span={24}>
+          <Section>
+            <SuccessStep bookingInfo={bookingInfo} escapeRoom={selectedRoom} />
+          </Section>
+        </Col>
+      </Row>
+    )
   }
 
   const currentStep = {
     [BookingStep.EscapeRoom]: 0,
     [BookingStep.BookingInfo]: 1,
     [BookingStep.Timeslot]: 2,
-    [BookingStep.Payment]: 3
+    [BookingStep.Confirmation]: 3,
+    [BookingStep.Success]: 4
   }[step]
 
   return (
@@ -80,7 +95,7 @@ function Booking({ organizationId }: Props) {
               <Steps.Step title="Escape Room" icon={<Icon type="home" />} />
               <Steps.Step title="Booking Details" icon={<Icon type="contacts" />} />
               <Steps.Step title="Date & Time" icon={<Icon type="calendar" />} />
-              <Steps.Step title="Payment" icon={<Icon type="credit-card" />} />
+              <Steps.Step title="Confirmation" icon={<Icon type="credit-card" />} />
             </Steps>
           </Section>
         </StyledRow>
@@ -96,7 +111,13 @@ function Booking({ organizationId }: Props) {
               {step === BookingStep.Timeslot && selectedRoom && (
                 <TimeslotStep onSelect={handleSelectTimeslot} room={selectedRoom} />
               )}
-              {step === BookingStep.Payment && <PaymentStep onPaymentDone={handlePaymentDone} />}
+              {step === BookingStep.Confirmation && bookingInfo && selectedRoom && (
+                <ConfirmationStep
+                  bookingInfo={bookingInfo}
+                  escapeRoom={selectedRoom}
+                  onSubmit={handleConfirmation}
+                />
+              )}
             </Section>
           </Col>
           <Col span={12}>
