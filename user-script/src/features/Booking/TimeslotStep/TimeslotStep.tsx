@@ -2,15 +2,12 @@ import { Button, DatePicker, Form } from 'antd'
 import moment, { Moment } from 'moment'
 import * as React from 'react'
 import * as api from '../../../api/application'
-import { CreateBooking } from '../../../interfaces/createBooking'
 import { EscapeRoom } from '../../../interfaces/escapeRoom'
 import { Timeslot } from '../../../interfaces/timeslot'
 
-export type TimeslotInfo = Pick<CreateBooking, 'startDate' | 'endDate'>
-
 interface Props {
   room: EscapeRoom
-  onSelect: (timeslot: TimeslotInfo) => void
+  onSelect: (timeslot: Timeslot) => void
 }
 
 function TimeslotStep({ room, onSelect }: Props) {
@@ -37,17 +34,9 @@ function TimeslotStep({ room, onSelect }: Props) {
         />
       </Form.Item>
 
-      {timeslots.map(({ start, end }, i) => (
-        <Button
-          key={i}
-          onClick={() =>
-            onSelect({
-              startDate: start,
-              endDate: end
-            })
-          }
-        >
-          {moment(start).format('LT')} - {moment(end).format('LT')}
+      {timeslots.map((timeslot, i) => (
+        <Button key={i} onClick={() => onSelect(timeslot)}>
+          {moment(timeslot.start).format('LT')} - {moment(timeslot.end).format('LT')}
         </Button>
       ))}
     </div>

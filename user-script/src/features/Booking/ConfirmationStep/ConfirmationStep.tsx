@@ -1,27 +1,23 @@
 import { Button } from 'antd'
 import * as React from 'react'
 import { EscapeRoom } from '../../../interfaces/escapeRoom'
+import { Timeslot } from '../../../interfaces/timeslot'
 import { BookingInfo } from '../BookingInfoStep/BookingInfoStep'
 
 interface Props {
-  bookingInfo: BookingInfo
   escapeRoom: EscapeRoom
+  bookingInfo: BookingInfo
+  timeslot: Timeslot
   onSubmit: () => void
 }
 
-function ConfirmationStep({ escapeRoom, bookingInfo, onSubmit }: Props) {
-  const [loading, setLoading] = React.useState(false)
-
-  const handleSubmit = () => {
-    setLoading(true)
-    onSubmit()
-  }
-
+function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, onSubmit }: Props) {
   return (
     <>
-      <div>EscapeRoom: {JSON.stringify(escapeRoom)}</div>
-      <div>Info: {JSON.stringify(bookingInfo)}</div>
-      <Button type="primary" loading={loading} onClick={handleSubmit}>
+      <div>bookingInfo: {JSON.stringify(bookingInfo)}</div>
+      <div>escapeRoom: {JSON.stringify(escapeRoom)}</div>
+      <div>timeslot: {JSON.stringify(timeslot)}</div>
+      <Button type="primary" onClick={onSubmit}>
         Confirm
       </Button>
     </>

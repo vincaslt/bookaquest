@@ -1,3 +1,4 @@
+import { toBookingDTO, toBookingWithEscapeRoomDTO } from '@app/dto/BookingDTO'
 import { CreateBookingDTO } from '@app/dto/CreateBookingDTO'
 import { BookingEntity } from '@app/entities/BookingEntity'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
@@ -10,6 +11,18 @@ import { send } from 'micro'
 import { get, post } from 'microrouter'
 import { times } from 'ramda'
 import { Between, getRepository, LessThan, MoreThan } from 'typeorm'
+
+const getBooking = withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
+  const bookingRepo = getRepository(BookingEntity)
+
+  const booking = await bookingRepo.findOne(bookingId, { relations: ['escapeRoom'] })
+
+  if (!booking) {
+    return send(res, STATUS_ERROR.NOT_FOUND)
+  }
+
+  return send(res, STATUS_SUCCESS.OK, toBookingWithEscapeRoomDTO(booking))
+})
 
 const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
   withBody(CreateBookingDTO, dto => async (req, res) => {
@@ -29,10 +42,9 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
 
-    const newBooking = bookingRepo.create({ ...dto, escapeRoomId })
-    await bookingRepo.save(newBooking)
+    const booking = await bookingRepo.save(bookingRepo.create({ ...dto, escapeRoomId }))
 
-    return send(res, STATUS_SUCCESS.OK)
+    return send(res, STATUS_SUCCESS.OK, toBookingDTO(booking))
   })
 )
 
@@ -93,5 +105,6 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
 
 export default [
   post('/escape-room/:escapeRoomId/booking', createBooking),
-  get('/escape-room/:escapeRoomId/availability', getAvailability)
+  get('/escape-room/:escapeRoomId/availability', getAvailability),
+  get('/booking/:bookingId', getBooking)
 ]

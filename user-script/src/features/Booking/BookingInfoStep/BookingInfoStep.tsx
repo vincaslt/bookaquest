@@ -2,7 +2,7 @@ import { Form, FormItem, Input, SubmitButton } from '@jbuschke/formik-antd'
 import { Col, Row } from 'antd'
 import { Formik } from 'formik'
 import * as React from 'react'
-import { CreateBooking } from '../../../interfaces/createBooking'
+import { CreateBooking } from '../../../interfaces/booking'
 
 export type BookingInfo = Pick<CreateBooking, 'email' | 'name' | 'phoneNumber'>
 

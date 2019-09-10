@@ -1,13 +1,15 @@
 import { Col, Icon, Row, Steps } from 'antd'
 import * as React from 'react'
 import styled from 'styled-components'
+import { useLocation, useRoute } from 'wouter'
 import * as api from '../../api/application'
+import { Booking } from '../../interfaces/booking'
 import { EscapeRoom } from '../../interfaces/escapeRoom'
+import { Timeslot } from '../../interfaces/timeslot'
 import BookingInfoStep, { BookingInfo } from './BookingInfoStep/BookingInfoStep'
 import ConfirmationStep from './ConfirmationStep/ConfirmationStep'
 import EscapeRoomStep from './EscapeRoomStep/EscapeRoomStep'
-import SuccessStep from './SuccessStep/SuccessStep'
-import TimeslotStep, { TimeslotInfo } from './TimeslotStep/TimeslotStep'
+import TimeslotStep from './TimeslotStep/TimeslotStep'
 
 const StyledRow = styled(Row)`
   margin-bottom: 20px;
@@ -22,22 +24,25 @@ enum BookingStep {
   EscapeRoom = 'escape-room',
   Timeslot = 'timeslot',
   BookingInfo = 'booking-info',
-  Confirmation = 'confirmation',
-  Success = 'success'
-}
-
-interface Props {
-  organizationId: string
+  Confirmation = 'confirmation'
 }
 
 // TODO check organization ID for undefined
 // TODO show availabilities, and escape room selection
-function Booking({ organizationId }: Props) {
+function Booking() {
+  const [match, params] = useRoute('/:organizationId')
+  const [location, setLocation] = useLocation()
   const [step, setStep] = React.useState<BookingStep>(BookingStep.EscapeRoom)
 
   const [selectedRoom, setSelectedRoom] = React.useState<EscapeRoom>()
   const [bookingInfo, setBookingInfo] = React.useState<BookingInfo>()
-  const [timeslot, setTimeslot] = React.useState<TimeslotInfo>()
+  const [timeslot, setTimeslot] = React.useState<Timeslot>()
+
+  if (!params) {
+    return null // TODO: redirect to error?
+  }
+
+  const { organizationId } = params
 
   const handleSelectEscapeRoom = (room: EscapeRoom) => {
     setSelectedRoom(room)
@@ -49,41 +54,28 @@ function Booking({ organizationId }: Props) {
     setStep(BookingStep.Timeslot)
   }
 
-  const handleSelectTimeslot = (timeslotInfo: TimeslotInfo) => {
+  const handleSelectTimeslot = (timeslotInfo: Timeslot) => {
     setTimeslot(timeslotInfo)
     setStep(BookingStep.Confirmation)
   }
 
   const handleConfirmation = async () => {
     if (timeslot && selectedRoom && bookingInfo) {
-      await api.createBooking({
+      const { id } = await api.createBooking({
         ...bookingInfo,
-        startDate: timeslot.startDate,
-        endDate: timeslot.endDate,
+        startDate: timeslot.start,
+        endDate: timeslot.end,
         escapeRoomId: selectedRoom.id
       })
-      setStep(BookingStep.Success)
+      setLocation(`/booking/${id}`)
     }
-  }
-
-  if (step === BookingStep.Success && selectedRoom && bookingInfo) {
-    return (
-      <Row>
-        <Col xxl={{ span: 18, push: 3 }} xl={{ span: 22, push: 1 }} span={24}>
-          <Section>
-            <SuccessStep bookingInfo={bookingInfo} escapeRoom={selectedRoom} />
-          </Section>
-        </Col>
-      </Row>
-    )
   }
 
   const currentStep = {
     [BookingStep.EscapeRoom]: 0,
     [BookingStep.BookingInfo]: 1,
     [BookingStep.Timeslot]: 2,
-    [BookingStep.Confirmation]: 3,
-    [BookingStep.Success]: 4
+    [BookingStep.Confirmation]: 3
   }[step]
 
   return (
@@ -95,7 +87,6 @@ function Booking({ organizationId }: Props) {
               <Steps.Step title="Escape Room" icon={<Icon type="home" />} />
               <Steps.Step title="Booking Details" icon={<Icon type="contacts" />} />
               <Steps.Step title="Date & Time" icon={<Icon type="calendar" />} />
-              <Steps.Step title="Confirmation" icon={<Icon type="credit-card" />} />
             </Steps>
           </Section>
         </StyledRow>
@@ -111,10 +102,11 @@ function Booking({ organizationId }: Props) {
               {step === BookingStep.Timeslot && selectedRoom && (
                 <TimeslotStep onSelect={handleSelectTimeslot} room={selectedRoom} />
               )}
-              {step === BookingStep.Confirmation && bookingInfo && selectedRoom && (
+              {step === BookingStep.Confirmation && timeslot && bookingInfo && selectedRoom && (
                 <ConfirmationStep
                   bookingInfo={bookingInfo}
                   escapeRoom={selectedRoom}
+                  timeslot={timeslot}
                   onSubmit={handleConfirmation}
                 />
               )}

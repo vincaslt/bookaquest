@@ -1,5 +1,11 @@
 import Axios from 'axios'
-import { CreateBooking, toCreateBookingDTO } from '../interfaces/createBooking'
+import {
+  CreateBooking,
+  fromBookingDTO,
+  fromBookingWithEscapeRoomDTO,
+  toCreateBookingDTO
+} from '../interfaces/booking'
+import { BookingDTO, BookingWithEscapeRoomDTO } from '../interfaces/dto/booking'
 import { EscapeRoomDTO } from '../interfaces/dto/escapeRoom'
 import { TimeslotDTO } from '../interfaces/dto/timeslot'
 import { fromEscapeRoomDTO } from '../interfaces/escapeRoom'
@@ -14,10 +20,17 @@ export const getEscapeRooms = (organizationId: string) =>
     .get<EscapeRoomDTO[]>(`/organization/${organizationId}/escape-room`)
     .then(res => res.data.map(fromEscapeRoomDTO))
 
+export const getBooking = (bookingId: string) =>
+  api
+    .get<BookingWithEscapeRoomDTO>(`/booking/${bookingId}`)
+    .then(res => res.data)
+    .then(fromBookingWithEscapeRoomDTO)
+
 export const createBooking = (booking: CreateBooking) =>
   api
-    .post(`/escape-room/${booking.escapeRoomId}/booking`, toCreateBookingDTO(booking))
+    .post<BookingDTO>(`/escape-room/${booking.escapeRoomId}/booking`, toCreateBookingDTO(booking))
     .then(res => res.data)
+    .then(fromBookingDTO)
 
 export const getAvailability = (escapeRoomId: string, date: Date) =>
   api

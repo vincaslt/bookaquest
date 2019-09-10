@@ -1,26 +1,26 @@
+import { hot } from 'react-hot-loader'
+
 import { Layout } from 'antd'
 import * as React from 'react'
 import styled from 'styled-components'
+import { Route, Switch } from 'wouter'
 import Booking from './features/Booking/Booking'
+import BookingStatus from './features/BookingStatus/BookingStatus'
 
 const ContentContainer = styled(Layout)`
   min-height: 100vh;
   padding: 24px;
 `
-enum Routes {
-  Booking = 'booking'
-}
 
 function App() {
-  const urlParts = window.location.pathname.split('/')
-  const route = urlParts[1]
-  const organizationId = urlParts[2]
-
   return (
     <ContentContainer>
-      {route === Routes.Booking && <Booking organizationId={organizationId} />}
+      <Switch>
+        <Route path="/booking/:organizationId" component={BookingStatus} />
+        <Route path="/:organizationId" component={Booking} />
+      </Switch>
     </ContentContainer>
   )
 }
 
-export default App
+export default hot(module as any)(App)
