@@ -4,8 +4,9 @@ import moment from 'moment'
 import * as React from 'react'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
-import { getBooking } from '../../api/application'
+import { getBooking, getOrganization } from '../../api/application'
 import { BookingWithEscapeRoom } from '../../interfaces/booking'
+import { Organization } from '../../interfaces/organization'
 
 const Section = styled.div`
   background: white;
@@ -23,14 +24,24 @@ const DetailsContainer = styled.div`
 function BookingStatus() {
   const [match, params] = useRoute('/booking/:bookingId')
   const [booking, setBooking] = React.useState<BookingWithEscapeRoom>()
+  const [organization, setOrganization] = React.useState<Organization>()
+
+  const bookingId = params && params.bookingId
 
   React.useEffect(() => {
-    if (params) {
-      getBooking(params.bookingId).then(setBooking)
+    const fetchBookingData = async (_bookingId: string) => {
+      const _booking = await getBooking(_bookingId)
+      const _organization = await getOrganization(_booking.escapeRoom.organizationId)
+      setBooking(_booking)
+      setOrganization(_organization)
     }
-  }, [params])
 
-  if (!booking) {
+    if (bookingId) {
+      fetchBookingData(bookingId)
+    }
+  }, [bookingId])
+
+  if (!booking || !organization) {
     return null // TODO: loading
   }
 
@@ -44,15 +55,20 @@ function BookingStatus() {
           <Result
             status="info"
             title={`Booking request for "${escapeRoom.name}" has been received`}
-            subTitle={`The escape room operator will now review your booking and send you an email confirmation with details to ${
-              booking.email
-            } once it's accepted. You can come back to this page to check your booking status.`}
+            subTitle={`The escape room operator will now review your booking and send you an email confirmation with details to ${booking.email} once it's accepted. You can come back to this page to check your booking status.`}
             extra={<Button type="primary">Close</Button>}
           >
             <DetailsContainer>
               <Paragraph>
                 <strong>Details</strong>
-                <div>{startDate}</div>
+                <div>Name: {booking.name}</div>
+                <div>Date: {startDate}</div>
+                <div>Escape room: {booking.escapeRoom.name}</div>
+              </Paragraph>
+              <Paragraph>
+                <strong>Operator</strong>
+                <div>Name: {organization.name}</div>
+                <div>Location: {organization.location}</div>
               </Paragraph>
               <Paragraph>
                 <strong>Booking ID</strong>

@@ -82,7 +82,7 @@ const listEscapeRooms = withParams(['organizationId'], ({ organizationId }) => a
 })
 
 export default [
-  get('/organization/:organizationId/escape-room', listEscapeRooms), // No auth required
+  get('/organization/:organizationId/escape-room', listEscapeRooms), // TODO mark as public? No auth required
   post('/organization/:organizationId/escape-room', createEscapeRoom),
   put('/escape-room/:escapeRoomId', updateEscapeRoom)
 ]

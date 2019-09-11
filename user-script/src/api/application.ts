@@ -7,13 +7,21 @@ import {
 } from '../interfaces/booking'
 import { BookingDTO, BookingWithEscapeRoomDTO } from '../interfaces/dto/booking'
 import { EscapeRoomDTO } from '../interfaces/dto/escapeRoom'
+import { OrganizationDTO } from '../interfaces/dto/organization'
 import { TimeslotDTO } from '../interfaces/dto/timeslot'
 import { fromEscapeRoomDTO } from '../interfaces/escapeRoom'
+import { fromOrganizationDTO } from '../interfaces/organization'
 import { fromTimeslotDTO } from '../interfaces/timeslot'
 
 const api = Axios.create({
   baseURL: 'http://localhost:3001'
 })
+
+export const getOrganization = (organizationId: string) =>
+  api
+    .get<OrganizationDTO>(`/organization/${organizationId}`)
+    .then(res => res.data)
+    .then(fromOrganizationDTO)
 
 export const getEscapeRooms = (organizationId: string) =>
   api

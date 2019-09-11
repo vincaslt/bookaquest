@@ -1,5 +1,6 @@
 import { toBookingDTO } from '@app/dto/BookingDTO'
 import { CreateOrganizationDTO } from '@app/dto/CreateOrganizationDTO'
+import { toOrganizationDTO } from '@app/dto/OrganizationDTO'
 import { toMemberDTO } from '@app/dto/OrganizationMemberDTO'
 import { UpdateOrganizationDTO } from '@app/dto/UpdateOrganizationDTO'
 import { toUserMembershipDTO, toUserOrganizationDTO } from '@app/dto/UserInfoDTO'
@@ -110,9 +111,22 @@ const listMembers = withAuth(({ userId }) =>
   })
 )
 
+const getOrganization = withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
+  const organizationRepo = getRepository(OrganizationEntity)
+
+  const organization = await organizationRepo.findOne(organizationId)
+
+  if (!organization) {
+    return send(res, STATUS_ERROR.NOT_FOUND)
+  }
+
+  return send(res, STATUS_SUCCESS.OK, toOrganizationDTO(organization))
+})
+
 export default [
   post('/organization', createOrganization),
   put('/organization/:organizationId', updateOrganization),
   get('/organization/:organizationId/booking', listBookings),
-  get('/organization/:organizationId/member', listMembers)
+  get('/organization/:organizationId/member', listMembers),
+  get('/organization/:organizationId', getOrganization) // TODO mark as public? no auth required
 ]
