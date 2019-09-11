@@ -1,4 +1,6 @@
-import { Col, Icon, Row, Steps } from 'antd'
+import { Col, Empty, Icon, Row, Steps } from 'antd'
+import Paragraph from 'antd/lib/typography/Paragraph'
+import moment from 'moment'
 import * as React from 'react'
 import styled from 'styled-components'
 import { useLocation, useRoute } from 'wouter'
@@ -114,9 +116,24 @@ function Booking() {
           </Col>
           <Col span={12}>
             <Section>
-              <div>Room: {JSON.stringify(selectedRoom)}</div>
-              <div>Info: {JSON.stringify(bookingInfo)}</div>
-              <div>Timeslot: {JSON.stringify(timeslot)}</div>
+              {step === BookingStep.EscapeRoom ? (
+                <Empty description="Pick an escape room" />
+              ) : (
+                <>
+                  {selectedRoom && (
+                    <>
+                      <h1>{selectedRoom.name}</h1>
+                      <Paragraph>{selectedRoom.description}</Paragraph>
+                      <div>Location: {selectedRoom.location}</div>
+                      <div>
+                        Work hours:{' '}
+                        {selectedRoom.weekDays.map(weekday => moment.weekdays(weekday)).join(', ')}{' '}
+                        {selectedRoom.workHours[0]} to {selectedRoom.workHours[1]}
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
             </Section>
           </Col>
         </Row>

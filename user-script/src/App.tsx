@@ -12,6 +12,21 @@ const ContentContainer = styled(Layout)`
   padding: 24px;
 `
 
+const Footer = styled(Layout.Footer)`
+  text-align: center;
+  color: rgba(0, 0, 0, 0.45);
+
+  & > a {
+    color: rgba(0, 0, 0, 0.65);
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
+  }
+`
+
+// TODO: footer link
 function App() {
   return (
     <ContentContainer>
@@ -19,6 +34,9 @@ function App() {
         <Route path="/booking/:organizationId" component={BookingStatus} />
         <Route path="/:organizationId" component={Booking} />
       </Switch>
+      <Footer>
+        Powered by <a href="#">BookaQuest</a>
+      </Footer>
     </ContentContainer>
   )
 }

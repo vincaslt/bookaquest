@@ -1,4 +1,4 @@
-import { Button, Col, Result, Row, Steps } from 'antd'
+import { Button, Col, Result, Row, Spin, Steps, Typography } from 'antd'
 import Paragraph from 'antd/lib/typography/Paragraph'
 import moment from 'moment'
 import * as React from 'react'
@@ -8,9 +8,22 @@ import { getBooking, getOrganization } from '../../api/application'
 import { BookingWithEscapeRoom } from '../../interfaces/booking'
 import { Organization } from '../../interfaces/organization'
 
+const { Text } = Typography
+
 const Section = styled.div`
   background: white;
   padding: 20px;
+`
+
+const SectionLoading = styled.div`
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  & > *:first-child {
+    margin-bottom: 20px;
+  }
 `
 
 const DetailsContainer = styled.div`
@@ -20,7 +33,8 @@ const DetailsContainer = styled.div`
 `
 
 // TODO: booking confirmed status based on booking state
-
+// TODO: add "link to this page"
+// TODO: use Detail component? Or Description whatever
 function BookingStatus() {
   const [match, params] = useRoute('/booking/:bookingId')
   const [booking, setBooking] = React.useState<BookingWithEscapeRoom>()
@@ -42,7 +56,16 @@ function BookingStatus() {
   }, [bookingId])
 
   if (!booking || !organization) {
-    return null // TODO: loading
+    return (
+      <Row>
+        <Col xxl={{ span: 18, push: 3 }} xl={{ span: 22, push: 1 }} span={24}>
+          <SectionLoading>
+            <Spin size="large" />
+            <h2>Loading...</h2>
+          </SectionLoading>
+        </Col>
+      </Row>
+    )
   }
 
   const startDate = moment(booking.startDate).format('LLLL')
@@ -60,19 +83,25 @@ function BookingStatus() {
           >
             <DetailsContainer>
               <Paragraph>
-                <strong>Details</strong>
+                <Text strong>Details</Text>
                 <div>Name: {booking.name}</div>
                 <div>Date: {startDate}</div>
                 <div>Escape room: {booking.escapeRoom.name}</div>
               </Paragraph>
               <Paragraph>
-                <strong>Operator</strong>
-                <div>Name: {organization.name}</div>
-                <div>Location: {organization.location}</div>
+                <Text strong>Operator</Text>
+                <div>
+                  Name: <Text>{organization.name}</Text>
+                </div>
+                <div>
+                  Location: <Text>{organization.location}</Text>
+                </div>
               </Paragraph>
               <Paragraph>
-                <strong>Booking ID</strong>
-                <pre>{booking.id}</pre>
+                <Text strong>Booking ID</Text>
+                <pre>
+                  <Text copyable>{booking.id}</Text>
+                </pre>
               </Paragraph>
             </DetailsContainer>
             <Steps progressDot current={1}>
