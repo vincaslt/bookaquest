@@ -1,25 +1,26 @@
-import { Button, Card, Col, Row, Spin } from 'antd'
-import splitEvery from 'ramda/es/splitEvery'
+import { List } from 'antd'
 import * as React from 'react'
+import AspectRatio from 'react-aspect-ratio'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import * as api from '../../../api/application'
 import { EscapeRoom } from '../../../interfaces/escapeRoom'
+import EscapeRoomCard from '../../../shared/EscapeRoomCard'
 import useLoading from '../../../shared/hooks/useLoading'
+import Section from '../../../shared/layout/Section'
 import CreateEscapeRoom from './CreateEscapeRoom'
 import NoEscapeRooms from './NoEscapeRooms'
 
-const CenteredContainer = styled.div`
-  text-align: center;
-`
+const NewEscapeRoomCard = styled.button`
+  background-color: white;
+  color: rgba(0, 0, 0, 0.45);
+  border: 1px dashed #d9d9d9;
+  border-radius: 2px;
+  transition: border-color 0.2s ease-in-out;
+  cursor: pointer;
 
-const Toolbar = styled.div`
-  margin-bottom: 16px;
-`
-
-const StyledRow = styled(Row)`
-  &:not(:last-child) {
-    margin-bottom: 16px;
+  &:hover {
+    border-color: #40a9ff;
   }
 `
 
@@ -44,38 +45,47 @@ function EscapeRooms({ organizationId }: Props) {
     setIsCreating(false)
   }
 
-  if (isLoading) {
-    return (
-      <CenteredContainer>
-        <Spin />
-      </CenteredContainer>
-    )
-  }
-
   if (isCreating) {
     return (
-      <CreateEscapeRoom
-        onCancel={handleCancel}
-        onCreateDone={handleCreateDone}
-        organizationId={organizationId}
-      />
+      <Section>
+        <CreateEscapeRoom
+          onCancel={handleCancel}
+          onCreateDone={handleCreateDone}
+          organizationId={organizationId}
+        />
+      </Section>
     )
   }
 
-  return escapeRooms.length > 0 ? (
+  return escapeRooms.length > 0 || isLoading ? (
     <>
-      <Toolbar>
-        <Button onClick={handleCreateClick}>{t('New Escape Room')}</Button>
-      </Toolbar>
-      {splitEvery(3, escapeRooms).map((row, i) => (
-        <StyledRow key={i} gutter={16}>
-          {row.map(escapeRoom => (
-            <Col key={escapeRoom.id} span={8}>
-              <Card title={escapeRoom.name}>{escapeRoom.description}</Card>
-            </Col>
-          ))}
-        </StyledRow>
-      ))}
+      <List
+        grid={{
+          gutter: 16,
+          xs: 1,
+          sm: 1,
+          md: 2,
+          lg: 2,
+          xl: 3,
+          xxl: 3
+        }}
+        loading={isLoading}
+        extra={<div>EXTRA</div>}
+        dataSource={['new', ...escapeRooms]}
+        renderItem={item => (
+          <List.Item>
+            {typeof item === 'string' ? (
+              <AspectRatio ratio="532/320">
+                <NewEscapeRoomCard onClick={handleCreateClick}>
+                  {t('New Escape Room')}
+                </NewEscapeRoomCard>
+              </AspectRatio>
+            ) : (
+              <EscapeRoomCard escapeRoom={item} />
+            )}
+          </List.Item>
+        )}
+      />
     </>
   ) : (
     <NoEscapeRooms onClickCTA={handleCreateClick} />

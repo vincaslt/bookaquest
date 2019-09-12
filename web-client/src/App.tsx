@@ -1,3 +1,5 @@
+import { hot } from 'react-hot-loader'
+
 import { Layout, Spin } from 'antd'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -66,4 +68,4 @@ function App() {
   )
 }
 
-export default withUserProvider(App)
+export default hot(module as any)(withUserProvider(App))

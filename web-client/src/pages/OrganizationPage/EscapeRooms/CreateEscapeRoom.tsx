@@ -20,7 +20,8 @@ const StyledResetButton = styled(ResetButton)`
 const initialValues: CreateEscapeRoom = {
   name: '',
   description: '',
-  location: ''
+  location: '',
+  images: []
 }
 
 interface Props {
@@ -29,13 +30,17 @@ interface Props {
   onCancel: () => void
 }
 
+// TODO: image upload, validation
 function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
   const { t } = useTranslation()
 
   const validationSchema = Yup.object().shape<CreateEscapeRoom>({
     name: Yup.string().required(),
     description: Yup.string().required(),
-    location: Yup.string().required()
+    location: Yup.string().required(),
+    images: Yup.array()
+      .of(Yup.string())
+      .required()
   })
 
   const handleSubmit = (values: CreateEscapeRoom, actions: FormikActions<CreateEscapeRoom>) => {
@@ -76,6 +81,10 @@ function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
 
         <FormItem name="description" hasFeedback label={t('Description')}>
           <Input.TextArea name="description" rows={4} />
+        </FormItem>
+
+        <FormItem name="images" hasFeedback label={t('Images')}>
+          <Input name="images[0]" />
         </FormItem>
 
         <FormItem name="action">

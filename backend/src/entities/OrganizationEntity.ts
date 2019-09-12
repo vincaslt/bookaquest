@@ -23,10 +23,10 @@ export class OrganizationEntity {
   @OneToMany(type => EscapeRoomEntity, escapeRoom => escapeRoom.organization)
   escapeRooms: EscapeRoomEntity[]
 
-  @Column('simple-array', { nullable: true })
+  @Column('integer', { array: true })
   weekDays: number[]
 
-  @Column('simple-array', { nullable: true })
+  @Column('numeric', { array: true, precision: 5, scale: 2 })
   workHours: number[]
 
   @CreateDateColumn()

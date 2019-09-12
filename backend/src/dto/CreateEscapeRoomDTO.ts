@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator'
 
 export class CreateEscapeRoomDTO {
   @IsNotEmpty()
@@ -8,6 +8,15 @@ export class CreateEscapeRoomDTO {
   @IsNotEmpty()
   @IsString()
   description: string
+
+  @IsNotEmpty()
+  @IsNumber()
+  price: number
+
+  // TODO: somehow validate if it's a valid image
+  @IsNotEmpty()
+  @IsUrl(undefined, { each: true })
+  images: string[]
 
   // TODO: validate 0-24/1-7
   @IsOptional()

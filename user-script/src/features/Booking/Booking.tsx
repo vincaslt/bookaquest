@@ -13,13 +13,10 @@ import ConfirmationStep from './ConfirmationStep/ConfirmationStep'
 import EscapeRoomStep from './EscapeRoomStep/EscapeRoomStep'
 import TimeslotStep from './TimeslotStep/TimeslotStep'
 
-const StyledRow = styled(Row)`
-  margin-bottom: 20px;
-`
-
 const Section = styled.div`
   background: white;
   padding: 20px;
+  margin-bottom: 20px;
 `
 
 enum BookingStep {
@@ -83,7 +80,7 @@ function Booking() {
   return (
     <Row>
       <Col xxl={{ span: 18, push: 3 }} xl={{ span: 22, push: 1 }} span={24}>
-        <StyledRow>
+        <Row>
           <Section>
             <Steps current={currentStep}>
               <Steps.Step title="Escape Room" icon={<Icon type="home" />} />
@@ -91,7 +88,7 @@ function Booking() {
               <Steps.Step title="Date & Time" icon={<Icon type="calendar" />} />
             </Steps>
           </Section>
-        </StyledRow>
+        </Row>
         <Row gutter={24}>
           <Col span={12}>
             <Section>

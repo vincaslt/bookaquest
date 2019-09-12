@@ -3,12 +3,12 @@ import { Typography } from 'antd'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import PageContent from '../../shared/PageContent'
+import PageContent from '../../shared/layout/PageContent'
 import crossroadsSvg from './crossroads.svg'
 
 const SplashImage = styled.img`
   max-width: 256px;
-  margin: 20px;
+  margin: 16px;
 `
 
 const SplashContainer = styled(PageContent)`

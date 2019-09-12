@@ -6,7 +6,7 @@ import * as api from '../../api/application'
 import { Booking } from '../../interfaces/booking'
 import useLoading from '../../shared/hooks/useLoading'
 import useUser from '../../shared/hooks/useUser'
-import PageContent from '../../shared/PageContent'
+import PageContent from '../../shared/layout/PageContent'
 
 const getScheduleMapper = (organizationId: string) => (booking: Booking): ISchedule => ({
   id: booking.id,

@@ -9,5 +9,7 @@ export interface EscapeRoomDTO {
   weekDays: number[]
   workHours: [number, number]
   interval: number
+  price: number
+  images: string[]
   location?: string
 }

@@ -26,8 +26,14 @@ export class EscapeRoomEntity {
   @Column()
   organizationId: string
 
+  @Column('numeric', { precision: 5, scale: 2 })
+  price: number
+
   @Column()
   location: string
+
+  @Column('varchar', { array: true }) // TODO: http* will load directly /images* will load from storage
+  images: string[]
 
   @ManyToOne(type => OrganizationEntity, organization => organization.escapeRooms)
   organization: OrganizationEntity
@@ -35,13 +41,13 @@ export class EscapeRoomEntity {
   @OneToMany(type => BookingEntity, booking => booking.escapeRoom)
   bookings: BookingEntity[]
 
-  @Column('integer', { array: true, nullable: true })
+  @Column('integer', { array: true })
   weekDays: number[]
 
-  @Column('integer', { array: true, nullable: true })
+  @Column('numeric', { precision: 5, scale: 1, array: true })
   workHours: number[]
 
-  @Column({ nullable: true })
+  @Column()
   interval: number // in minutes
 
   @UpdateDateColumn()
