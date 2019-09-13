@@ -3,14 +3,18 @@ import Paragraph from 'antd/lib/typography/Paragraph'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
 import styled from 'styled-components'
-import { EscapeRoom } from '../interfaces/escapeRoom'
+import { CreateEscapeRoom, EscapeRoom } from '../interfaces/escapeRoom'
+
+const StyledParagraph = styled(Paragraph)`
+  min-height: 105px;
+`
 
 const CoverImage = styled.img`
   object-fit: cover;
 `
 
 interface Props {
-  escapeRoom: EscapeRoom
+  escapeRoom: EscapeRoom | CreateEscapeRoom
 }
 
 function EscapeRoomCard({ escapeRoom }: Props) {
@@ -24,7 +28,9 @@ function EscapeRoomCard({ escapeRoom }: Props) {
     >
       <Card.Meta
         title={escapeRoom.name}
-        description={<Paragraph ellipsis={{ rows: 5 }}>{escapeRoom.description}</Paragraph>}
+        description={
+          <StyledParagraph ellipsis={{ rows: 5 }}>{escapeRoom.description}</StyledParagraph>
+        }
       />
     </Card>
   )

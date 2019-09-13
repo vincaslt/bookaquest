@@ -1,12 +1,23 @@
-import { Form, FormItem, Input, ResetButton, SubmitButton } from '@jbuschke/formik-antd'
-import { notification } from 'antd'
+import {
+  Form,
+  FormItem,
+  Input,
+  InputNumber,
+  ResetButton,
+  SubmitButton
+} from '@jbuschke/formik-antd'
+import { Col, notification, Row } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import * as Yup from 'yup'
 import * as api from '../../../api/application'
-import { CreateEscapeRoom, EscapeRoom } from '../../../interfaces/escapeRoom'
+import {
+  CreateEscapeRoom as CreateEscapeRoomType,
+  EscapeRoom
+} from '../../../interfaces/escapeRoom'
+import EscapeRoomCard from '../../../shared/EscapeRoomCard'
 
 const StyledForm = styled(Form)`
   max-width: 512px;
@@ -17,10 +28,11 @@ const StyledResetButton = styled(ResetButton)`
   margin-right: 16px;
 `
 
-const initialValues: CreateEscapeRoom = {
+const initialValues: CreateEscapeRoomType = {
   name: '',
   description: '',
   location: '',
+  price: 0,
   images: []
 }
 
@@ -34,16 +46,22 @@ interface Props {
 function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
   const { t } = useTranslation()
 
-  const validationSchema = Yup.object().shape<CreateEscapeRoom>({
+  const validationSchema = Yup.object().shape<CreateEscapeRoomType>({
     name: Yup.string().required(),
     description: Yup.string().required(),
     location: Yup.string().required(),
+    price: Yup.number()
+      .positive()
+      .required(),
     images: Yup.array()
       .of(Yup.string())
       .required()
   })
 
-  const handleSubmit = (values: CreateEscapeRoom, actions: FormikActions<CreateEscapeRoom>) => {
+  const handleSubmit = (
+    values: CreateEscapeRoomType,
+    actions: FormikActions<CreateEscapeRoomType>
+  ) => {
     api
       .createEscapeRoom(organizationId, values)
       .then(escapeRoom => {
@@ -70,30 +88,48 @@ function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
       initialValues={initialValues}
       onSubmit={handleSubmit}
     >
-      <StyledForm layout="vertical">
-        <FormItem name="name" hasFeedback label={t('Name')}>
-          <Input name="name" />
-        </FormItem>
+      {({ values }) => (
+        <Row gutter={24}>
+          <Col span={10}>
+            <Form layout="vertical">
+              <FormItem name="name" hasFeedback label={t('Name')}>
+                <Input name="name" />
+              </FormItem>
 
-        <FormItem name="location" hasFeedback label={t('Location')}>
-          <Input name="location" />
-        </FormItem>
+              <FormItem name="location" hasFeedback label={t('Location')}>
+                <Input name="location" />
+              </FormItem>
 
-        <FormItem name="description" hasFeedback label={t('Description')}>
-          <Input.TextArea name="description" rows={4} />
-        </FormItem>
+              <FormItem name="description" hasFeedback label={t('Description')}>
+                <Input.TextArea name="description" rows={4} />
+              </FormItem>
 
-        <FormItem name="images" hasFeedback label={t('Images')}>
-          <Input name="images[0]" />
-        </FormItem>
+              <FormItem name="price" hasFeedback label={t('Price')}>
+                <InputNumber name="price" min={0} />
+              </FormItem>
 
-        <FormItem name="action">
-          <StyledResetButton onClick={onCancel} disabled={false}>
-            {t('Cancel')}
-          </StyledResetButton>
-          <SubmitButton>{t('Create')}</SubmitButton>
-        </FormItem>
-      </StyledForm>
+              <FormItem name="images" hasFeedback label={t('Images')}>
+                <Input name="images[0]" />
+              </FormItem>
+
+              <FormItem name="action">
+                <StyledResetButton onClick={onCancel} disabled={false}>
+                  {t('Cancel')}
+                </StyledResetButton>
+                <SubmitButton>{t('Create')}</SubmitButton>
+              </FormItem>
+            </Form>
+          </Col>
+          <Col span={6}>
+            <EscapeRoomCard
+              escapeRoom={{
+                ...values,
+                images: values.images.length > 0 ? values.images : ['https://placehold.it/532x320']
+              }}
+            />
+          </Col>
+        </Row>
+      )}
     </Formik>
   )
 }

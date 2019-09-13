@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUrl } from 'class-validator'
 
 export class CreateEscapeRoomDTO {
   @IsNotEmpty()
@@ -11,6 +11,7 @@ export class CreateEscapeRoomDTO {
 
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   price: number
 
   // TODO: somehow validate if it's a valid image

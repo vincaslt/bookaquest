@@ -2,6 +2,7 @@ export interface CreateEscapeRoomDTO {
   name: string
   description: string
   images: string[]
+  price: number
   weekDays?: number[]
   workHours?: number[]
   interval?: number
@@ -19,5 +20,6 @@ export interface EscapeRoomDTO {
   weekDays: number[]
   workHours: number[]
   interval: number
+  price: number
   location?: string
 }

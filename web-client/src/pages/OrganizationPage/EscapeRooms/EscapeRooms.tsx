@@ -67,10 +67,9 @@ function EscapeRooms({ organizationId }: Props) {
           md: 2,
           lg: 2,
           xl: 3,
-          xxl: 3
+          xxl: 4
         }}
         loading={isLoading}
-        extra={<div>EXTRA</div>}
         dataSource={['new', ...escapeRooms]}
         renderItem={item => (
           <List.Item>
