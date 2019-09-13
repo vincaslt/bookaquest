@@ -1,11 +1,4 @@
-import {
-  Form,
-  FormItem,
-  InputNumber,
-  Slider,
-  SubmitButton,
-  TreeSelect
-} from '@jbuschke/formik-antd'
+import { Form, FormItem, Slider, SubmitButton, TreeSelect } from '@jbuschke/formik-antd'
 import { Col, notification, Row, TreeSelect as antdTreeSelect } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'

@@ -43,7 +43,7 @@
     "@jbuschke/formik-antd": "^1.0.0-preview.6",
     "@reach/router": "^1.2.1",
     "@toast-ui/react-calendar": "^1.0.2",
-    "antd": "^3.17.0",
+    "antd": "^3.23.2",
     "axios": "^0.18.0",
     "formik": "^1.5.4",
     "i18next": "^15.1.0",

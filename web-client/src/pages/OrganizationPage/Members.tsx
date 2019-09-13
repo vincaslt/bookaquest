@@ -1,4 +1,4 @@
-import { List } from 'antd'
+import { Descriptions, List } from 'antd'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import * as api from '../../api/application'
@@ -20,7 +20,7 @@ function Members({ organizationId }: Props) {
 
   return (
     <>
-      <h3>{t('Members')}</h3>
+      <Descriptions title={t('Members')} />
       <List loading={loading}>
         {members.map(member => (
           <List.Item key={member.userId} actions={[<a key="remove-user">{t('remove')}</a>]}>
