@@ -1,7 +1,6 @@
-import { hot } from 'react-hot-loader'
-
 import { Layout } from 'antd'
 import * as React from 'react'
+import { hot } from 'react-hot-loader'
 import styled from 'styled-components'
 import { Route, Switch } from 'wouter'
 import Booking from './features/Booking/Booking'

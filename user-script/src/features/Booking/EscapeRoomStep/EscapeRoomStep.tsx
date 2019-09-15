@@ -1,18 +1,8 @@
-import { Card, Col, Row, Spin } from 'antd'
-import splitEvery from 'ramda/es/splitEvery'
+import { List, Row } from 'antd'
 import * as React from 'react'
-import styled from 'styled-components'
+import EscapeRoomCard from '../../../../../commons/components/EscapeRoomCard'
+import { EscapeRoom } from '../../../../../commons/interfaces/escapeRoom'
 import * as api from '../../../api/application'
-import { EscapeRoom } from '../../../interfaces/escapeRoom'
-
-const Centered = styled.div`
-  display: flex;
-  justify-content: center;
-`
-
-const StyledRow = styled(Row)`
-  margin-bottom: 16px;
-`
 
 interface Props {
   organizationId: string
@@ -30,26 +20,25 @@ function EscapeRoomStep({ organizationId, onSelect }: Props) {
       .finally(() => setLoading(false))
   }, [])
 
-  const rows = splitEvery(3, escapeRooms)
-
-  return loading ? (
-    <Centered>
-      <Spin />
-    </Centered>
-  ) : (
-    <>
-      {rows.map((row, i) => (
-        <StyledRow type="flex" gutter={16} key={i}>
-          {row.map(escapeRoom => (
-            <Col span={8} key={escapeRoom.id}>
-              <Card onClick={() => onSelect(escapeRoom)} hoverable title={escapeRoom.name}>
-                {escapeRoom.description}
-              </Card>
-            </Col>
-          ))}
-        </StyledRow>
-      ))}
-    </>
+  return (
+    <List
+      grid={{
+        gutter: 16,
+        xs: 1,
+        sm: 1,
+        md: 2,
+        lg: 2,
+        xl: 3,
+        xxl: 2
+      }}
+      loading={loading}
+      dataSource={escapeRooms}
+      renderItem={item => (
+        <List.Item>
+          <EscapeRoomCard escapeRoom={item} />
+        </List.Item>
+      )}
+    />
   )
 }
 

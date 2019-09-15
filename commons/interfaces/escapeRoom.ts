@@ -1,4 +1,4 @@
-import { CreateEscapeRoomDTO, EscapeRoomDTO } from './dto/escapeRoom'
+import { EscapeRoomDTO, CreateEscapeRoomDTO } from './dto/escapeRoom'
 
 export type CreateEscapeRoom = CreateEscapeRoomDTO
 export type EscapeRoom = Omit<EscapeRoomDTO, 'createdAt' | 'updatedAt'> & {

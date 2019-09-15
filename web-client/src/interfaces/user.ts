@@ -4,7 +4,7 @@ import {
   UserInfoDTO,
   UserMembershipDTO,
   UserOrganizationDTO
-} from './dto/user'
+} from '../../../commons/interfaces/dto/user'
 
 export type CreateUser = CreateUserDTO
 

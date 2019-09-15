@@ -1,4 +1,4 @@
-import { EscapeRoomDTO } from './escapeRoom'
+import { EscapeRoomDTO } from "./escapeRoom";
 
 export interface BookingDTO {
   id: string

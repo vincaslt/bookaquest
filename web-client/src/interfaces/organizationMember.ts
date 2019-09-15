@@ -1,4 +1,4 @@
-import { OrganizationMemberDTO } from './dto/organizationMember'
+import { OrganizationMemberDTO } from '../../../commons/interfaces/dto/organizationMember'
 import { BasicUserInfo, fromBasicUserInfoDTO } from './user'
 
 export type OrganizationMember = Omit<OrganizationMemberDTO, 'user'> & {

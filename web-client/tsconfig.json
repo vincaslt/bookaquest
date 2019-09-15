@@ -21,6 +21,11 @@
     "noUnusedLocals": true,
     "noEmit": true,
     "jsx": "react",
+    "references": [
+      {
+        "path": "../commons"
+      }
+    ],
     "typeRoots": [
       "./node_modules/@types",
       "./src/typings"

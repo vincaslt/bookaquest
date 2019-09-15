@@ -4,12 +4,12 @@ import { Layout, Spin } from 'antd'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import '../../commons/utils/i18n'
 import PrivateRoutes from './PrivateRoutes'
 import PublicRoutes from './PublicRoutes'
 import useUser from './shared/hooks/useUser'
 import { withUserProvider } from './shared/providers/UserProvider'
 import SideMenu from './shared/SideMenu'
-import './utils/i18n'
 
 const AppSpinnerContainer = styled('div')`
   display: flex;

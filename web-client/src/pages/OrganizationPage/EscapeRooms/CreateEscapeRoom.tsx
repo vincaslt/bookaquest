@@ -12,12 +12,12 @@ import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import * as Yup from 'yup'
+import EscapeRoomCard from '../../../../../commons/components/EscapeRoomCard'
 import * as api from '../../../api/application'
 import {
   CreateEscapeRoom as CreateEscapeRoomType,
   EscapeRoom
 } from '../../../interfaces/escapeRoom'
-import EscapeRoomCard from '../../../shared/EscapeRoomCard'
 
 const StyledForm = styled(Form)`
   max-width: 512px;

@@ -1,8 +1,10 @@
-import 'antd/dist/antd.css'
+import '../lib'
 
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import '../lib'
+import initCommons from '../../commons'
 import App from './App'
+
+initCommons()
 
 ReactDOM.render(<App />, document.getElementById('root'))

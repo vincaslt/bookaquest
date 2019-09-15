@@ -4,9 +4,9 @@ import moment from 'moment'
 import * as React from 'react'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
+import { BookingWithEscapeRoom } from '../../../../commons/interfaces/booking'
+import { Organization } from '../../../../commons/interfaces/organization'
 import { getBooking, getOrganization } from '../../api/application'
-import { BookingWithEscapeRoom } from '../../interfaces/booking'
-import { Organization } from '../../interfaces/organization'
 
 const { Text } = Typography
 

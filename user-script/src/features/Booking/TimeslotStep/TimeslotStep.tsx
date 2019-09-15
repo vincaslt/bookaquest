@@ -1,9 +1,9 @@
 import { Button, DatePicker, Form } from 'antd'
 import moment, { Moment } from 'moment'
 import * as React from 'react'
+import { EscapeRoom } from '../../../../../commons/interfaces/escapeRoom'
+import { Timeslot } from '../../../../../commons/interfaces/timeslot'
 import * as api from '../../../api/application'
-import { EscapeRoom } from '../../../interfaces/escapeRoom'
-import { Timeslot } from '../../../interfaces/timeslot'
 
 interface Props {
   room: EscapeRoom

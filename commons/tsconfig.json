@@ -6,28 +6,24 @@
       "dom.iterable",
       "esnext"
     ],
-    "rootDir": ".",
     "outDir": "dist",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strict": true,
+    "suppressExcessPropertyErrors": false,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "noUnusedLocals": true,
-    "noEmit": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
     "jsx": "react",
-    "references": [
-      {
-        "path": "../commons"
-      }
-    ],
     "typeRoots": [
       "./node_modules/@types",
-      "./src/typings"
+      "./typings"
     ]
   },
   "exclude": [
