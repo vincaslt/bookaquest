@@ -12,11 +12,11 @@ import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import * as Yup from 'yup'
-import EscapeRoomCard from '../../../../../commons/components/EscapeRoomCard'
+import EscapeRoomCard from '@commons/components/EscapeRoomCard'
 import {
   CreateEscapeRoom as CreateEscapeRoomType,
   EscapeRoom
-} from '../../../../../commons/interfaces/escapeRoom'
+} from '@commons/interfaces/escapeRoom'
 import * as api from '../../../api/application'
 
 const StyledResetButton = styled(ResetButton)`

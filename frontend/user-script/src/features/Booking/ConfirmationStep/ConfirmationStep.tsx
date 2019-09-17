@@ -1,7 +1,7 @@
 import { Button } from 'antd'
 import * as React from 'react'
-import { EscapeRoom } from '../../../../../commons/interfaces/escapeRoom'
-import { Timeslot } from '../../../../../commons/interfaces/timeslot'
+import { EscapeRoom } from '@commons/interfaces/escapeRoom'
+import { Timeslot } from '@commons/interfaces/timeslot'
 import { BookingInfo } from '../BookingInfoStep/BookingInfoStep'
 
 interface Props {

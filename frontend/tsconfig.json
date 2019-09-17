@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./commons"
+    },
+    {
+      "path": "./user-script"
+    },
+    {
+      "path": "./web-client"
+    }
+  ]
+}

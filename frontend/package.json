@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "web:start": "parcel web-client/public/index.html --out-dir web-client/dist",
-    "web:build": "parcel build web-client/public/index.htm --out-dir web-client/distl",
-    "script:start": "parcel user-script/public/index.html --out-dir user-script/dist",
-    "script:build": "parcel build user-script/public/index.html --out-dir user-script/dist",
-    "commons:build": "tsc -b commons",
-    "parse-locales": "i18next --config i18next-parser.config.js"
+    "web:start": "parcel ./web-client/public/index.html -d web-client/dist",
+    "web:build": "parcel build web-client/public/index.html -d web-client/dist",
+    "script:start": "parcel user-script/public/index.html -d user-script/dist",
+    "script:build": "parcel build user-script/public/index.html -d user-script/dist",
+    "parse-locales": "i18next --config i18next-parser.config.js",
+    "build-ts": "tsc -b -v"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,10 @@
   "bugs": {
     "url": "https://github.com/vincaslt/bookings-manager/issues"
   },
+  "alias": {
+    "@commons": "~/commons",
+    "@commons/**/*": "~/commons/**/*"
+  },
   "homepage": "https://github.com/vincaslt/bookings-manager",
   "devDependencies": {
     "@babel/preset-typescript": "^7.6.0",
@@ -27,7 +31,7 @@
     "@types/reach__router": "^1.2.4",
     "@types/react": "^16.8.17",
     "@types/react-dom": "^16.8.4",
-    "@types/styled-components": "4.1.18",
+    "@types/styled-components": "^4.1.8",
     "@types/wouter": "^2.0.1",
     "@types/yup": "^0.26.13",
     "acorn": "^6.1.1",

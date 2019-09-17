@@ -1,5 +1,5 @@
+import config from '@commons/config'
 import Axios, { AxiosError } from 'axios'
-import config from '../../../commons/config'
 import { refreshAuthToken } from '../api/application'
 import { PublicRoutes } from '../constants/routes'
 import { JwtPayload } from '../interfaces/auth'

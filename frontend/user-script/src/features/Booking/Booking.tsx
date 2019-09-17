@@ -4,9 +4,9 @@ import moment from 'moment'
 import * as React from 'react'
 import styled from 'styled-components'
 import { useLocation, useRoute } from 'wouter'
-import { Booking } from '../../../../commons/interfaces/booking'
-import { EscapeRoom } from '../../../../commons/interfaces/escapeRoom'
-import { Timeslot } from '../../../../commons/interfaces/timeslot'
+import { Booking } from '@commons/interfaces/booking'
+import { EscapeRoom } from '@commons/interfaces/escapeRoom'
+import { Timeslot } from '@commons/interfaces/timeslot'
 import * as api from '../../api/application'
 import BookingInfoStep, { BookingInfo } from './BookingInfoStep/BookingInfoStep'
 import ConfirmationStep from './ConfirmationStep/ConfirmationStep'
@@ -29,8 +29,8 @@ enum BookingStep {
 // TODO check organization ID for undefined
 // TODO show availabilities, and escape room selection
 function Booking() {
-  const [match, params] = useRoute('/:organizationId')
-  const [location, setLocation] = useLocation()
+  const [, params] = useRoute('/:organizationId')
+  const [, setLocation] = useLocation()
   const [step, setStep] = React.useState<BookingStep>(BookingStep.EscapeRoom)
 
   const [selectedRoom, setSelectedRoom] = React.useState<EscapeRoom>()

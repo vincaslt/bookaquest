@@ -4,14 +4,14 @@ import {
   fromBookingDTO,
   fromBookingWithEscapeRoomDTO,
   toCreateBookingDTO
-} from '../../../commons/interfaces/booking'
-import { BookingDTO, BookingWithEscapeRoomDTO } from '../../../commons/interfaces/dto/booking'
-import { EscapeRoomDTO } from '../../../commons/interfaces/dto/escapeRoom'
-import { OrganizationDTO } from '../../../commons/interfaces/dto/organization'
-import { TimeslotDTO } from '../../../commons/interfaces/dto/timeslot'
-import { fromEscapeRoomDTO } from '../../../commons/interfaces/escapeRoom'
-import { fromOrganizationDTO } from '../../../commons/interfaces/organization'
-import { fromTimeslotDTO } from '../../../commons/interfaces/timeslot'
+} from '@commons/interfaces/booking'
+import { BookingDTO, BookingWithEscapeRoomDTO } from '@commons/interfaces/dto/booking'
+import { EscapeRoomDTO } from '@commons/interfaces/dto/escapeRoom'
+import { OrganizationDTO } from '@commons/interfaces/dto/organization'
+import { TimeslotDTO } from '@commons/interfaces/dto/timeslot'
+import { fromEscapeRoomDTO } from '@commons/interfaces/escapeRoom'
+import { fromOrganizationDTO } from '@commons/interfaces/organization'
+import { fromTimeslotDTO } from '@commons/interfaces/timeslot'
 
 const api = Axios.create({
   baseURL: 'http://localhost:3001'

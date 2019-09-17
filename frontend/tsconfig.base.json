@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "declaration": true,
+    "declarationMap": true,
+    "module": "esnext",
+    "jsx": "react",
+    "target": "es5",
+    "rootDir": ".",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@commons": ["./commons"],
+      "@commons/*": ["./commons/*"]
+    }
+  },
+  "compileOnSave": true,
+  "include": ["./typings/index.d.ts"]
+}

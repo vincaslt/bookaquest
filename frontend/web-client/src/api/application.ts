@@ -1,18 +1,14 @@
-import { fromBookingDTO } from '../../../commons/interfaces/booking'
+import { fromBookingDTO } from '@commons/interfaces/booking'
 import {
   AuthTokensDTO,
   RefreshTokenDTO,
   RequestRefreshTokenDTO
-} from '../../../commons/interfaces/dto/auth'
-import { BookingDTO } from '../../../commons/interfaces/dto/booking'
-import { EscapeRoomDTO } from '../../../commons/interfaces/dto/escapeRoom'
-import { OrganizationMemberDTO } from '../../../commons/interfaces/dto/organizationMember'
-import {
-  UserInfoDTO,
-  UserMembershipDTO,
-  UserOrganizationDTO
-} from '../../../commons/interfaces/dto/user'
-import { CreateEscapeRoom, fromEscapeRoomDTO } from '../../../commons/interfaces/escapeRoom'
+} from '@commons/interfaces/dto/auth'
+import { BookingDTO } from '@commons/interfaces/dto/booking'
+import { EscapeRoomDTO } from '@commons/interfaces/dto/escapeRoom'
+import { OrganizationMemberDTO } from '@commons/interfaces/dto/organizationMember'
+import { UserInfoDTO, UserMembershipDTO, UserOrganizationDTO } from '@commons/interfaces/dto/user'
+import { CreateEscapeRoom, fromEscapeRoomDTO } from '@commons/interfaces/escapeRoom'
 import { SignIn } from '../interfaces/auth'
 import { CreateOrganization, UpdateOrganization } from '../interfaces/organization'
 import { fromOrganizationMemberDTO } from '../interfaces/organizationMember'

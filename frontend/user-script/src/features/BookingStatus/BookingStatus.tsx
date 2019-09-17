@@ -4,8 +4,8 @@ import moment from 'moment'
 import * as React from 'react'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
-import { BookingWithEscapeRoom } from '../../../../commons/interfaces/booking'
-import { Organization } from '../../../../commons/interfaces/organization'
+import { BookingWithEscapeRoom } from '@commons/interfaces/booking'
+import { Organization } from '@commons/interfaces/organization'
 import { getBooking, getOrganization } from '../../api/application'
 
 const { Text } = Typography
@@ -36,7 +36,7 @@ const DetailsContainer = styled.div`
 // TODO: add "link to this page"
 // TODO: use Detail component? Or Description whatever
 function BookingStatus() {
-  const [match, params] = useRoute('/booking/:bookingId')
+  const [, params] = useRoute('/booking/:bookingId')
   const [booking, setBooking] = React.useState<BookingWithEscapeRoom>()
   const [organization, setOrganization] = React.useState<Organization>()
 

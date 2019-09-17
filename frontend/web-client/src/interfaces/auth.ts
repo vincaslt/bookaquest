@@ -1,4 +1,4 @@
-import { SignInDTO } from '../../../commons/interfaces/dto/auth'
+import { SignInDTO } from '@commons/interfaces/dto/auth'
 
 export interface JwtPayload {
   userId: string
