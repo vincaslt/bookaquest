@@ -38,6 +38,7 @@ interface Props {
 }
 
 // TODO: image upload, validation
+// TODO: location same as organization location
 function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
   const { t } = useTranslation()
 

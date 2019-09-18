@@ -9,4 +9,8 @@ import App from './App'
 
 initCommons()
 
+// TODO: em size paddings
+// TODO: translation extraction script
+// TODO: backend using frontend's DTOs
+
 ReactDOM.render(<App />, document.getElementById('root'))

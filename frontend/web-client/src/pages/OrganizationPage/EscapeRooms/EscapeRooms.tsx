@@ -87,7 +87,9 @@ function EscapeRooms({ organizationId }: Props) {
       />
     </>
   ) : (
-    <NoEscapeRooms onClickCTA={handleCreateClick} />
+    <Section>
+      <NoEscapeRooms onClickCTA={handleCreateClick} />
+    </Section>
   )
 }
 

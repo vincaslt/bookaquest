@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "npm run web:start & npm run script:start & npm run build-ts:watch",
+    "start": "start \"\" npm run web:start & start \"\" npm run script:start & start \"\" npm run build-ts:watch",
+    "start:windows": "start /b npm run web:start & start /b npm run script:start & start /b npm run build-ts:watch",
+    "start:unix": "npm run web:start & npm run script:start & npm run build-ts:watch",
     "web:start": "parcel ./web-client/index.html -p 1234 -d web-client/dist",
     "web:build": "parcel build web-client/index.html -d web-client/dist",
     "script:start": "parcel user-script/index.html -p 3000 -d user-script/dist",
