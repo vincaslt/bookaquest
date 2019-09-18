@@ -4,6 +4,10 @@
     "outDir": "dist"
   },
   "include": ["./src", "../typings/index.d.ts"],
+  "rootDir": ".",
+  "paths": {
+    "~/*": ["./*"]
+  },
   "references": [
     {
       "path": "../commons"

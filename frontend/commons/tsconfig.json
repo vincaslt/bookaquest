@@ -4,5 +4,9 @@
     "outDir": "dist",
     "composite": true
   },
+  "rootDir": ".",
+  "paths": {
+    "~/*": ["./*"]
+  },
   "exclude": ["./dist"]
 }

@@ -1,7 +1,7 @@
 import { List } from 'antd'
 import * as React from 'react'
-import EscapeRoomCard from '@commons/components/EscapeRoomCard'
-import { EscapeRoom } from '@commons/interfaces/escapeRoom'
+import EscapeRoomCard from '~/../commons/components/EscapeRoomCard'
+import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import * as api from '../../../api/application'
 
 interface Props {

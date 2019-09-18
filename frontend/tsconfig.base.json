@@ -6,7 +6,6 @@
     "module": "esnext",
     "jsx": "react",
     "target": "es5",
-    "rootDir": ".",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strict": true,
@@ -16,12 +15,7 @@
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "baseUrl": ".",
-    "paths": {
-      "~/*": ["./*"],
-      "@commons": ["./commons"],
-      "@commons/*": ["./commons/*"]
-    }
+    "typeRoots": ["./node_modules/@types", "./typings"]
   },
-  "compileOnSave": true,
-  "include": ["./typings/index.d.ts"]
+  "compileOnSave": true
 }

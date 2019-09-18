@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "web:start": "parcel ./web-client/public/index.html -d web-client/dist",
-    "web:build": "parcel build web-client/public/index.html -d web-client/dist",
-    "script:start": "parcel user-script/public/index.html -d user-script/dist",
-    "script:build": "parcel build user-script/public/index.html -d user-script/dist",
+    "start": "npm run web:start & npm run script:start & npm run build-ts:watch",
+    "web:start": "parcel ./web-client/index.html -p 1234 -d web-client/dist",
+    "web:build": "parcel build web-client/index.html -d web-client/dist",
+    "script:start": "parcel user-script/index.html -p 3000 -d user-script/dist",
+    "script:build": "parcel build user-script/index.html -d user-script/dist",
     "parse-locales": "i18next --config i18next-parser.config.js",
-    "build-ts": "tsc -b -v"
+    "build-ts": "tsc -b -v",
+    "build-ts:watch": "tsc -b -v -w"
   },
   "repository": {
     "type": "git",
@@ -18,10 +20,6 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/vincaslt/bookings-manager/issues"
-  },
-  "alias": {
-    "@commons": "~/commons",
-    "@commons/**/*": "~/commons/**/*"
   },
   "homepage": "https://github.com/vincaslt/bookings-manager",
   "devDependencies": {

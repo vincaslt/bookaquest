@@ -1,7 +1,7 @@
 import { Descriptions, List } from 'antd'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
-import useLoading from '@commons/hooks/useLoading'
+import useLoading from '~/../commons/hooks/useLoading'
 import * as api from '../../api/application'
 import { OrganizationMember } from '../../interfaces/organizationMember'
 
