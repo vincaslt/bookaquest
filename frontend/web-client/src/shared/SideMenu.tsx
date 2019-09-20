@@ -1,8 +1,8 @@
 import { Link, Location } from '@reach/router'
 import { Icon, Layout, Menu } from 'antd'
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { useI18n } from '~/../commons/utils/i18n'
 import { PrivateRoutes } from '../constants/routes'
 import useUser from './hooks/useUser'
 
@@ -37,7 +37,7 @@ function MenuLink({ to, icon, text, ...rest }: MenuLinkProps) {
 }
 
 function SideMenu() {
-  const { t } = useTranslation()
+  const { t } = useI18n()
   const { logout } = useUser()
 
   return (
@@ -48,22 +48,22 @@ function SideMenu() {
             <MenuLink
               key={PrivateRoutes.Dashboard}
               to={PrivateRoutes.Dashboard}
-              text={t('Dashboard')}
+              text={`Dashboard`}
               icon="dashboard"
             />
             <MenuLink
               key={PrivateRoutes.Bookings}
               to={PrivateRoutes.Bookings}
-              text={t('Bookings')}
+              text={`Bookings`}
               icon="schedule"
             />
             <MenuLink
               key={PrivateRoutes.Organization}
               to={PrivateRoutes.Organization}
-              text={t('Organization')}
+              text={`Organization`}
               icon="apartment"
             />
-            <MenuLink key="logout" onClick={logout} text={t('Logout')} icon="logout" />
+            <MenuLink key="logout" onClick={logout} text={`Logout`} icon="logout" />
           </Menu>
         )}
       </Location>

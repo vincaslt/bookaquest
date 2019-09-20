@@ -2,9 +2,9 @@ import { Form, FormItem, Input, SubmitButton } from '@jbuschke/formik-antd'
 import { notification } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import * as Yup from 'yup'
+import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
 import { CreateOrganization } from '../../../interfaces/organization'
 import { UserMembership } from '../../../interfaces/user'
@@ -25,7 +25,7 @@ interface Props {
 }
 
 function CreateOrganizationForm({ onCreateOrganization }: Props) {
-  const { t } = useTranslation()
+  const { t } = useI18n()
 
   const validationSchema = Yup.object().shape<CreateOrganization>({
     name: Yup.string().required(),
@@ -41,17 +41,17 @@ function CreateOrganizationForm({ onCreateOrganization }: Props) {
       .then(memberships => {
         onCreateOrganization(memberships)
         notification.open({
-          message: t('Success'),
+          message: t`Success`,
           type: 'success',
-          description: t('Organization has been created')
+          description: t`Organization has been created`
         })
       })
       .catch(() => {
         actions.setSubmitting(false)
         notification.open({
-          message: t('Error'),
+          message: t`Error`,
           type: 'error',
-          description: t('Please try again in a moment')
+          description: t`Please try again in a moment`
         })
       })
   }
@@ -63,20 +63,20 @@ function CreateOrganizationForm({ onCreateOrganization }: Props) {
       onSubmit={handleSubmit}
     >
       <StyledForm layout="vertical">
-        <FormItem name="name" hasFeedback label={t('Name')}>
+        <FormItem name="name" hasFeedback label={t`Name`}>
           <Input name="name" />
         </FormItem>
 
-        <FormItem name="website" hasFeedback label={t('Website')}>
+        <FormItem name="website" hasFeedback label={t`Website`}>
           <Input name="website" type="url" />
         </FormItem>
 
-        <FormItem name="location" hasFeedback label={t('Location')}>
+        <FormItem name="location" hasFeedback label={t`Location`}>
           <Input name="location" />
         </FormItem>
 
         <FormItem name="action">
-          <SubmitButton>{t('Create')}</SubmitButton>
+          <SubmitButton>{t`Create`}</SubmitButton>
         </FormItem>
       </StyledForm>
     </Formik>

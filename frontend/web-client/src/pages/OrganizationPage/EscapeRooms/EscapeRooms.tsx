@@ -1,11 +1,11 @@
 import { List } from 'antd'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import EscapeRoomCard from '~/../commons/components/EscapeRoomCard'
 import useLoading from '~/../commons/hooks/useLoading'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
+import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
 import Section from '../../../shared/layout/Section'
 import CreateEscapeRoom from './CreateEscapeRoom'
@@ -29,7 +29,7 @@ interface Props {
 }
 
 function EscapeRooms({ organizationId }: Props) {
-  const { t } = useTranslation()
+  const { t } = useI18n()
   const [isLoading, withLoading] = useLoading(true)
   const [isCreating, setIsCreating] = React.useState(false)
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([])
@@ -76,7 +76,7 @@ function EscapeRooms({ organizationId }: Props) {
             {typeof item === 'string' ? (
               <AspectRatio ratio="532/320">
                 <NewEscapeRoomCard onClick={handleCreateClick}>
-                  {t('New Escape Room')}
+                  {t`New Escape Room`}
                 </NewEscapeRoomCard>
               </AspectRatio>
             ) : (

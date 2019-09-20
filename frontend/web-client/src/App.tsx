@@ -2,8 +2,8 @@ import { hot } from 'react-hot-loader'
 
 import { Layout, Spin } from 'antd'
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { useI18n } from '~/../commons/utils/i18n'
 import PrivateRoutes from './PrivateRoutes'
 import PublicRoutes from './PublicRoutes'
 import useUser from './shared/hooks/useUser'
@@ -37,7 +37,7 @@ const StyledHeader = styled(Layout.Header)`
 
 function App() {
   const { isLoading, userInfo } = useUser()
-  const { ready } = useTranslation(undefined, { useSuspense: false })
+  const { ready } = useI18n(undefined, { useSuspense: false })
 
   if (isLoading || !ready) {
     return (

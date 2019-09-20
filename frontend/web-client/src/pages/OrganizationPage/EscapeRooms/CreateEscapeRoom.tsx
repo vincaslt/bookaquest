@@ -9,7 +9,6 @@ import {
 import { Col, notification, Row } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import * as Yup from 'yup'
 import EscapeRoomCard from '~/../commons/components/EscapeRoomCard'
@@ -17,6 +16,7 @@ import {
   CreateEscapeRoom as CreateEscapeRoomType,
   EscapeRoom
 } from '~/../commons/interfaces/escapeRoom'
+import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
 
 const StyledResetButton = styled(ResetButton)`
@@ -40,7 +40,7 @@ interface Props {
 // TODO: image upload, validation
 // TODO: location same as organization location
 function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
-  const { t } = useTranslation()
+  const { t } = useI18n()
 
   const validationSchema = Yup.object().shape<CreateEscapeRoomType>({
     name: Yup.string().required(),
@@ -62,18 +62,18 @@ function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
       .createEscapeRoom(organizationId, values)
       .then(escapeRoom => {
         notification.open({
-          message: t('Success'),
+          message: t`Success`,
           type: 'success',
-          description: t('Escape room has been created')
+          description: t`Escape room has been created`
         })
         onCreateDone(escapeRoom)
       })
       .catch(() => {
         actions.setSubmitting(false)
         notification.open({
-          message: t('Error'),
+          message: t`Error`,
           type: 'error',
-          description: t('Please try again in a moment')
+          description: t`Please try again in a moment`
         })
       })
   }
@@ -88,31 +88,31 @@ function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
         <Row gutter={24}>
           <Col span={10}>
             <Form layout="vertical">
-              <FormItem name="name" hasFeedback label={t('Name')}>
+              <FormItem name="name" hasFeedback label={t`Name`}>
                 <Input name="name" />
               </FormItem>
 
-              <FormItem name="location" hasFeedback label={t('Location')}>
+              <FormItem name="location" hasFeedback label={t`Location`}>
                 <Input name="location" />
               </FormItem>
 
-              <FormItem name="description" hasFeedback label={t('Description')}>
+              <FormItem name="description" hasFeedback label={t`Description`}>
                 <Input.TextArea name="description" rows={4} />
               </FormItem>
 
-              <FormItem name="price" hasFeedback label={t('Price')}>
+              <FormItem name="price" hasFeedback label={t`Price`}>
                 <InputNumber name="price" min={0} />
               </FormItem>
 
-              <FormItem name="images" hasFeedback label={t('Images')}>
+              <FormItem name="images" hasFeedback label={t`Images`}>
                 <Input name="images[0]" />
               </FormItem>
 
               <FormItem name="action">
                 <StyledResetButton onClick={onCancel} disabled={false}>
-                  {t('Cancel')}
+                  {t`Cancel`}
                 </StyledResetButton>
-                <SubmitButton>{t('Create')}</SubmitButton>
+                <SubmitButton>{t`Create`}</SubmitButton>
               </FormItem>
             </Form>
           </Col>

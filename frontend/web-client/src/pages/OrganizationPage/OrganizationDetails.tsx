@@ -1,7 +1,7 @@
 import { Descriptions, Typography } from 'antd'
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../api/application'
 import { UserOrganization } from '../../interfaces/user'
 
@@ -22,28 +22,28 @@ interface Props {
 }
 
 function OrganizationDetails({ organization, onUpdateOrganization }: Props) {
-  const { t } = useTranslation()
+  const { t } = useI18n()
 
   const handleChange = (key: 'name' | 'website' | 'location') => (value: string) =>
     api.updateOrganization(organization.id, { [key]: value }).then(onUpdateOrganization)
 
   return (
     <>
-      <Descriptions title={t('Organization details')} />
+      <Descriptions title={t`Organization details`} />
       <DetailContainer>
-        <DetailLabel>{t('ID:')}</DetailLabel>
+        <DetailLabel>{t`ID:`}</DetailLabel>
         <Text copyable>{organization.id}</Text>
       </DetailContainer>
       <DetailContainer>
-        <DetailLabel>{t('Name:')}</DetailLabel>
+        <DetailLabel>{t`Name:`}</DetailLabel>
         <Text editable={{ onChange: handleChange('name') }}>{organization.name}</Text>
       </DetailContainer>
       <DetailContainer>
-        <DetailLabel>{t('Website:')}</DetailLabel>
+        <DetailLabel>{t`Website:`}</DetailLabel>
         <Text editable={{ onChange: handleChange('website') }}>{organization.website}</Text>
       </DetailContainer>
       <DetailContainer>
-        <DetailLabel>{t('Location:')}</DetailLabel>
+        <DetailLabel>{t`Location:`}</DetailLabel>
         <Text editable={{ onChange: handleChange('location') }}>{organization.location}</Text>
       </DetailContainer>
     </>

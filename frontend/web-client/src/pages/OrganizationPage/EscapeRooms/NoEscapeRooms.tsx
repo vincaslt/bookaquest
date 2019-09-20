@@ -1,7 +1,7 @@
 import { Button, Typography } from 'antd'
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { useI18n } from '~/../commons/utils/i18n'
 import startBuildingSvg from './start-building.svg'
 
 const Container = styled.div`
@@ -24,22 +24,20 @@ interface Props {
 }
 
 function NoEscapeRooms({ onClickCTA }: Props) {
-  const { t } = useTranslation()
+  const { t } = useI18n()
 
   return (
     <Container>
       <NewEscapeRoomImage src={startBuildingSvg} alt="new escape room image" />
 
-      <Typography.Title>{t('Escape Rooms')}</Typography.Title>
+      <Typography.Title>{t`Escape Rooms`}</Typography.Title>
       <Typography.Text type="secondary">
-        {t(
-          `You don't yet have any escape rooms in your organization.
-          Add your first escape room to start accepting bookings.`
-        )}
+        {t`You don't yet have any escape rooms in your organization.
+          Add your first escape room to start accepting bookings.`}
       </Typography.Text>
 
       <StyledButton type="primary" onClick={onClickCTA}>
-        {t('Add Escape Room')}
+        {t`Add Escape Room`}
       </StyledButton>
     </Container>
   )

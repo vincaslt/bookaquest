@@ -2,7 +2,7 @@ import { Form, FormItem, Slider, SubmitButton, TreeSelect } from '@jbuschke/form
 import { Col, notification, Row, TreeSelect as antdTreeSelect } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
+import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../api/application'
 
 const { TreeNode } = antdTreeSelect
@@ -24,16 +24,16 @@ interface Props {
 // TODO: use moment weekdays
 // TODO: divide work hours by interval */
 function CreateScheduleForm({ organizationId }: Props) {
-  const { t } = useTranslation()
+  const { t } = useI18n()
 
   const handleSubmit = (schedule: CreateSchedule, actions: FormikActions<CreateSchedule>) =>
     api
       .updateOrganization(organizationId, schedule)
       .then(() => {
         notification.open({
-          message: t('Success'),
+          message: t`Success`,
           type: 'success',
-          description: t('Organization has been created')
+          description: t`Organization has been created`
         })
       })
       .finally(() => actions.setSubmitting(false))
@@ -43,8 +43,8 @@ function CreateScheduleForm({ organizationId }: Props) {
       <Form layout="vertical">
         <Row gutter={16}>
           <Col span={8}>
-            <FormItem name="weekDays" hasFeedback label={t('Weekdays')}>
-              <TreeSelect name="weekDays" treeCheckable placeholder={t('Weekdays')}>
+            <FormItem name="weekDays" hasFeedback label={t`Weekdays`}>
+              <TreeSelect name="weekDays" treeCheckable placeholder={t`Weekdays`}>
                 <TreeNode value={1} title="Monday" />
                 <TreeNode value={2} title="Tuesday" />
                 <TreeNode value={3} title="Wednesday" />
@@ -56,7 +56,7 @@ function CreateScheduleForm({ organizationId }: Props) {
             </FormItem>
           </Col>
         </Row>
-        <FormItem name="workHours" hasFeedback label={t('Work hours')}>
+        <FormItem name="workHours" hasFeedback label={t`Work hours`}>
           <Slider
             name="workHours"
             marks={{
@@ -92,7 +92,7 @@ function CreateScheduleForm({ organizationId }: Props) {
           />
         </FormItem>
         <FormItem name="action">
-          <SubmitButton>{t('Submit')}</SubmitButton>
+          <SubmitButton>{t`Submit`}</SubmitButton>
         </FormItem>
       </Form>
     </Formik>
