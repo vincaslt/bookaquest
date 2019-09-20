@@ -38,5 +38,8 @@
   "User has been created": "User has been created",
   "Full name": "Full name",
   "Email": "Email",
-  "Register": "Register"
+  "Register": "Register",
+  "Dashboard": "Dashboard",
+  "Bookings": "Bookings",
+  "Organization": "Organization"
 }

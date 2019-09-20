@@ -23,7 +23,7 @@ function CreateOrganizationSplash(props: RouteComponentProps) {
   return (
     <SplashContainer>
       <SplashImage src={crossroadsSvg} />
-      <Typography.Title>{t('Welcome!')}</Typography.Title>
+      <Typography.Title>{t`Welcome!`}</Typography.Title>
       <Typography.Text type="secondary">
         {t`To begin collecting bookings for your escape rooms,
           we need some information about your organization`}

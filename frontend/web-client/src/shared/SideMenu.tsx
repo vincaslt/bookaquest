@@ -48,19 +48,19 @@ function SideMenu() {
             <MenuLink
               key={PrivateRoutes.Dashboard}
               to={PrivateRoutes.Dashboard}
-              text={`Dashboard`}
+              text={t`Dashboard`}
               icon="dashboard"
             />
             <MenuLink
               key={PrivateRoutes.Bookings}
               to={PrivateRoutes.Bookings}
-              text={`Bookings`}
+              text={t`Bookings`}
               icon="schedule"
             />
             <MenuLink
               key={PrivateRoutes.Organization}
               to={PrivateRoutes.Organization}
-              text={`Organization`}
+              text={t`Organization`}
               icon="apartment"
             />
             <MenuLink key="logout" onClick={logout} text={`Logout`} icon="logout" />

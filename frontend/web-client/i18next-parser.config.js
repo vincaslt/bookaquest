@@ -1,6 +1,7 @@
 module.exports = {
   default: [
     {
+      functions: ['t', 'tt'],
       lexer: ['TypescriptLexer'],
       tsOptions: {
         jsx: 'Preserve',

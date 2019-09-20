@@ -42,8 +42,6 @@ function App() {
   if (isLoading || !ready) {
     return (
       <AppSpinnerContainer>
-        {isLoading && 'dwdw'}
-        {!ready && 'dawdw2'}
         <Spin size="large" />
       </AppSpinnerContainer>
     )
