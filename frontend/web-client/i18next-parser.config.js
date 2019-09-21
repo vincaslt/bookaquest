@@ -9,11 +9,11 @@ module.exports = {
       }
     }
   ],
-  input: ['src/**/*.{ts,tsx}'],
+  input: ['../commons/**/*.{ts,tsx}', 'src/**/*.{ts,tsx}'],
   keySeparator: false,
   locales: ['en', 'lt'],
   namespaceSeparator: false,
-  output: 'public/locales/$LOCALE/$NAMESPACE.json',
+  output: 'web-client/public/locales/$LOCALE/$NAMESPACE.json',
   useKeysAsDefaultValue: true,
   verbose: true
 }
