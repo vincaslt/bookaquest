@@ -15,7 +15,7 @@
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "baseUrl": ".",
-    "typeRoots": ["./node_modules/@types", "./typings"]
+    "typeRoots": ["./node_modules/@types", "./commons/typings"]
   },
   "compileOnSave": true
 }

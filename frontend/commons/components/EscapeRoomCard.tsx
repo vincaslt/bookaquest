@@ -15,11 +15,20 @@ const CoverImage = styled.img`
 
 interface Props {
   escapeRoom: EscapeRoom | CreateEscapeRoom
+  onSelect?: (escapeRoom: EscapeRoom) => void
 }
 
-function EscapeRoomCard({ escapeRoom }: Props) {
+function EscapeRoomCard({ escapeRoom, onSelect }: Props) {
+  const handleSelect = () => {
+    if (onSelect && 'id' in escapeRoom) {
+      onSelect(escapeRoom)
+    }
+  }
+
   return (
     <Card
+      hoverable={!!onSelect}
+      onClick={handleSelect}
       cover={
         <AspectRatio ratio="532/320">
           <CoverImage src={escapeRoom.images[0]} alt={`${escapeRoom.name} cover image`} />

@@ -1,4 +1,4 @@
-declare interface JwtPayload {
+export interface JwtPayload {
   userId: string
   expires: Date
 }

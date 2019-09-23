@@ -33,9 +33,9 @@ function EscapeRoomStep({ organizationId, onSelect }: Props) {
       }}
       loading={loading}
       dataSource={escapeRooms}
-      renderItem={item => (
+      renderItem={escapeRoom => (
         <List.Item>
-          <EscapeRoomCard escapeRoom={item} />
+          <EscapeRoomCard escapeRoom={escapeRoom} onSelect={onSelect} />
         </List.Item>
       )}
     />

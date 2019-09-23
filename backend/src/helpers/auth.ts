@@ -1,4 +1,5 @@
 import { RefreshTokenEntity } from '@app/entities/RefreshTokenEntity'
+import { JwtPayload } from '@app/lib/interfaces'
 import { randomFillSync } from 'crypto'
 import { sign, verify } from 'jsonwebtoken'
 import { getRepository, MoreThan } from 'typeorm'

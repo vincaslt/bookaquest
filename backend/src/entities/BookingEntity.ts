@@ -9,6 +9,12 @@ import {
   Unique
 } from 'typeorm'
 
+export enum BookingStatus {
+  Accepted = 'ACCEPTED',
+  Rejected = 'REJECTED',
+  Pending = 'PENDING'
+}
+
 @Entity({ name: 'booking' })
 @Unique('UQ_TIMESLOT', ['startDate', 'endDate', 'escapeRoomId'])
 export class BookingEntity {
@@ -33,6 +39,12 @@ export class BookingEntity {
 
   @Column()
   escapeRoomId: string
+
+  @Column({ nullable: true })
+  comment?: string
+
+  @Column('enum', { enum: BookingStatus })
+  status: BookingStatus
 
   @ManyToOne(type => EscapeRoomEntity, escapeRoom => escapeRoom.bookings)
   escapeRoom: EscapeRoomEntity

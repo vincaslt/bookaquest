@@ -1,8 +1,10 @@
 import { toBookingDTO, toBookingWithEscapeRoomDTO } from '@app/dto/BookingDTO'
 import { CreateBookingDTO } from '@app/dto/CreateBookingDTO'
-import { BookingEntity } from '@app/entities/BookingEntity'
+import { BookingEntity, BookingStatus } from '@app/entities/BookingEntity'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
+import { isOrganizationMember } from '@app/helpers/organizationHelpers'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
+import { withAuth } from '@app/lib/decorators/withAuth'
 import { withBody } from '@app/lib/decorators/withBody'
 import withParams from '@app/lib/decorators/withParams'
 import withQuery from '@app/lib/decorators/withQuery'
@@ -31,9 +33,13 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
     const overlap = await bookingRepo.findOne({
       where: [
         {
-          startDate: Between(dto.startDate, dto.endDate)
+          startDate: Between(dto.startDate, dto.endDate),
+          status: BookingStatus.Accepted
         },
-        { endDate: Between(dto.startDate, dto.endDate) }
+        {
+          endDate: Between(dto.startDate, dto.endDate),
+          status: BookingStatus.Accepted
+        }
       ]
     })
 
@@ -42,7 +48,9 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
 
-    const booking = await bookingRepo.save(bookingRepo.create({ ...dto, escapeRoomId }))
+    const booking = await bookingRepo.save(
+      bookingRepo.create({ ...dto, status: BookingStatus.Pending, escapeRoomId })
+    )
 
     return send(res, STATUS_SUCCESS.OK, toBookingDTO(booking))
   })
@@ -70,13 +78,14 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       where: {
         escapeRoomId,
         endDate: MoreThan(startOfDay(bookingDate)),
-        startDate: LessThan(startOfDay(addDays(bookingDate, 1)))
+        startDate: LessThan(startOfDay(addDays(bookingDate, 1))),
+        status: BookingStatus.Accepted
       }
     })
 
     const [startHour, endHour] = escapeRoom.workHours
 
-    // TODO: work hours interval of date
+    // TODO: work hours interval of date because need timezone
     const timeslots = times(i => {
       const start = setMinutes(startOfDay(bookingDate), startHour * 60 + i * escapeRoom.interval)
       const end = setMinutes(
@@ -103,8 +112,35 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
   })
 )
 
+const rejectBooking = withAuth(({ userId }) =>
+  withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
+    const bookingRepo = getRepository(BookingEntity)
+
+    const booking = await bookingRepo.findOne(bookingId, { relations: ['escapeRoom'] })
+
+    if (!booking) {
+      return send(res, STATUS_ERROR.NOT_FOUND)
+    }
+
+    if (!isOrganizationMember(booking.escapeRoom.organizationId, userId)) {
+      return send(res, STATUS_ERROR.FORBIDDEN)
+    }
+
+    // TODO: check permissions when implemented
+    if (booking.status !== BookingStatus.Pending) {
+      return send(res, STATUS_ERROR.BAD_REQUEST)
+    }
+
+    await bookingRepo.update(bookingId, { status: BookingStatus.Rejected })
+    // TODO: send email
+
+    return send(res, STATUS_SUCCESS.OK)
+  })
+)
+
 export default [
   post('/escape-room/:escapeRoomId/booking', createBooking),
   get('/escape-room/:escapeRoomId/availability', getAvailability),
-  get('/booking/:bookingId', getBooking)
+  get('/booking/:bookingId', getBooking),
+  post('/booking/:bookingId/reject', rejectBooking)
 ]

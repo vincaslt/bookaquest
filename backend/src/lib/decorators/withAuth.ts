@@ -1,6 +1,7 @@
 import { verifyToken } from '@app/helpers/auth'
 import { STATUS_ERROR } from '@app/lib/constants'
 import { RequestHandler, send } from 'micro'
+import { JwtPayload } from '../interfaces'
 
 export function withAuth(handler: (payload: JwtPayload) => RequestHandler): RequestHandler {
   return async (req, res) => {

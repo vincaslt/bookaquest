@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist"
   },
-  "include": ["./src", "../typings/index.d.ts"],
+  "include": ["./src", "../commons/typings/index.d.ts"],
   "rootDir": ".",
   "paths": {
     "~/*": ["./*"]
