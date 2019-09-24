@@ -8,6 +8,7 @@ export interface BookingDTO {
   email: string
   phoneNumber: string
   escapeRoomId: string
+  status: string
   createdAt: string
 }
 

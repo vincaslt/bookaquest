@@ -15,7 +15,7 @@ import { withBody } from '@app/lib/decorators/withBody'
 import withParams from '@app/lib/decorators/withParams'
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
-import { getManager, getRepository, In, LessThan } from 'typeorm'
+import { getManager, getRepository, In, MoreThan } from 'typeorm'
 
 // TODO: check user organization limits? Pay per organization
 const createOrganization = withAuth(({ userId }) =>
@@ -87,7 +87,7 @@ const listBookings = withAuth(({ userId }) =>
 
     const escapeRoomIds = organization.escapeRooms.map(({ id }) => id)
     const bookings = await bookingRepo.find({
-      where: { escapeRoomId: In(escapeRoomIds), endDate: LessThan(new Date()) }
+      where: { escapeRoomId: In(escapeRoomIds), endDate: MoreThan(new Date()) }
     })
 
     return send(res, STATUS_SUCCESS.OK, bookings.map(toBookingDTO))

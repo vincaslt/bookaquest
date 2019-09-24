@@ -83,3 +83,10 @@ export const getOrganizationMembers = withAuth(headers => (organizationId: strin
     .get<OrganizationMemberDTO[]>(`/organization/${organizationId}/member`, { headers })
     .then(res => res.data.map(fromOrganizationMemberDTO))
 )
+
+export const rejectBooking = withAuth(headers => (bookingId: string) =>
+  api
+    .put<BookingDTO>(`/booking/${bookingId}/reject`, undefined, { headers })
+    .then(res => res.data)
+    .then(fromBookingDTO)
+)

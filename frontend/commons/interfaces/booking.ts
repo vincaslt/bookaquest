@@ -2,10 +2,17 @@ import omit from 'ramda/es/omit'
 import { BookingDTO, BookingWithEscapeRoomDTO, CreateBookingDTO } from './dto/booking'
 import { EscapeRoom, fromEscapeRoomDTO } from './escapeRoom'
 
-export type Booking = Omit<BookingDTO, 'startDate' | 'endDate' | 'createdAt'> & {
+export enum BookingStatus {
+  Accepted = 'ACCEPTED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED'
+}
+
+export type Booking = Omit<BookingDTO, 'startDate' | 'endDate' | 'createdAt' | 'status'> & {
   startDate: Date
   endDate: Date
   createdAt: Date
+  status: BookingStatus
 }
 
 export type BookingWithEscapeRoom = Omit<
@@ -29,7 +36,8 @@ export function fromBookingDTO(dto: BookingDTO): Booking {
     ...dto,
     startDate: new Date(dto.startDate),
     endDate: new Date(dto.endDate),
-    createdAt: new Date(dto.createdAt)
+    createdAt: new Date(dto.createdAt),
+    status: dto.status as BookingStatus
   }
 }
 

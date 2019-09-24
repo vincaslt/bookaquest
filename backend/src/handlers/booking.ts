@@ -10,7 +10,7 @@ import withParams from '@app/lib/decorators/withParams'
 import withQuery from '@app/lib/decorators/withQuery'
 import { addDays, areIntervalsOverlapping, isAfter, setMinutes, startOfDay } from 'date-fns'
 import { send } from 'micro'
-import { get, post } from 'microrouter'
+import { get, post, put } from 'microrouter'
 import { times } from 'ramda'
 import { Between, getRepository, LessThan, MoreThan } from 'typeorm'
 
@@ -131,16 +131,17 @@ const rejectBooking = withAuth(({ userId }) =>
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
 
-    await bookingRepo.update(bookingId, { status: BookingStatus.Rejected })
+    booking.status = BookingStatus.Rejected
+
+    const savedBooking = await bookingRepo.save(booking)
     // TODO: send email
 
-    return send(res, STATUS_SUCCESS.OK)
+    return send(res, STATUS_SUCCESS.OK, toBookingDTO(savedBooking))
   })
 )
-
 export default [
   post('/escape-room/:escapeRoomId/booking', createBooking),
   get('/escape-room/:escapeRoomId/availability', getAvailability),
   get('/booking/:bookingId', getBooking),
-  post('/booking/:bookingId/reject', rejectBooking)
+  put('/booking/:bookingId/reject', rejectBooking)
 ]
