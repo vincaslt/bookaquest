@@ -5,10 +5,11 @@ import styled from 'styled-components'
 import EscapeRoomCard from '~/../commons/components/EscapeRoomCard'
 import useLoading from '~/../commons/hooks/useLoading'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
+import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
 import Section from '../../../shared/layout/Section'
-import CreateEscapeRoom from './CreateEscapeRoom'
+import CreateEscapeRoomForm from './CreateEscapeRoomForm'
 import NoEscapeRooms from './NoEscapeRooms'
 
 const NewEscapeRoomCard = styled.button`
@@ -25,10 +26,11 @@ const NewEscapeRoomCard = styled.button`
 `
 
 interface Props {
+  organization?: Organization
   organizationId: string
 }
 
-function EscapeRooms({ organizationId }: Props) {
+function EscapeRooms({ organizationId, organization }: Props) {
   const { t } = useI18n()
   const [isLoading, withLoading] = useLoading(true)
   const [isCreating, setIsCreating] = React.useState(false)
@@ -45,13 +47,13 @@ function EscapeRooms({ organizationId }: Props) {
     setIsCreating(false)
   }
 
-  if (isCreating) {
+  if (isCreating && organization) {
     return (
       <Section>
-        <CreateEscapeRoom
+        <CreateEscapeRoomForm
           onCancel={handleCancel}
           onCreateDone={handleCreateDone}
-          organizationId={organizationId}
+          organization={organization}
         />
       </Section>
     )
@@ -70,15 +72,17 @@ function EscapeRooms({ organizationId }: Props) {
           xxl: 4
         }}
         loading={isLoading}
-        dataSource={['new', ...escapeRooms]}
+        dataSource={[...escapeRooms, 'new']}
         renderItem={item => (
           <List.Item>
             {typeof item === 'string' ? (
-              <AspectRatio ratio="532/320">
-                <NewEscapeRoomCard onClick={handleCreateClick}>
-                  {t`New Escape Room`}
-                </NewEscapeRoomCard>
-              </AspectRatio>
+              organization && (
+                <AspectRatio ratio="532/320">
+                  <NewEscapeRoomCard onClick={handleCreateClick}>
+                    {t`New Escape Room`}
+                  </NewEscapeRoomCard>
+                </AspectRatio>
+              )
             ) : (
               <EscapeRoomCard escapeRoom={item} />
             )}

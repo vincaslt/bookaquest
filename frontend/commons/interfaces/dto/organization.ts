@@ -1,23 +1,27 @@
+import { BusinessHoursDTO } from './businessHours'
+
 export interface OrganizationDTO {
   id: string
   name: string
   website: string
   location: string
-  weekDays: number[]
-  workHours: number[]
   createdAt: string
+  businessHours?: BusinessHoursDTO[]
+  timezone?: string
 }
 
 export interface CreateOrganizationDTO {
   name: string
   website: string
   location: string
+  businessHours?: BusinessHoursDTO[]
+  timezone?: string
 }
 
 export interface UpdateOrganizationDTO {
   name?: string
   website?: string
   location?: string
-  weekDays?: number[]
-  workHours?: number[]
+  businessHours?: BusinessHoursDTO[]
+  timezone?: string
 }

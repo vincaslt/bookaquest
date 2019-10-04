@@ -1,8 +1,10 @@
 import omit from 'ramda/es/omit'
+import { BusinessHours } from './businessHours'
 import { OrganizationDTO } from './dto/organization'
 
-export type Organization = Omit<OrganizationDTO, 'createdAt'> & {
+export type Organization = Omit<OrganizationDTO, 'createdAt' | 'businessHours'> & {
   createdAt: Date
+  businessHours?: BusinessHours[]
 }
 
 export function fromOrganizationDTO(dto: OrganizationDTO): Organization {

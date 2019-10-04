@@ -7,8 +7,8 @@ import { useI18n } from '~/../commons/utils/i18n'
 import PrivateRoutes from './PrivateRoutes'
 import PublicRoutes from './PublicRoutes'
 import useUser from './shared/hooks/useUser'
+import SideMenu from './shared/layout/SideMenu'
 import { withUserProvider } from './shared/providers/UserProvider'
-import SideMenu from './shared/SideMenu'
 
 const AppSpinnerContainer = styled('div')`
   display: flex;

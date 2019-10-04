@@ -3,8 +3,9 @@ import { CreateOrganizationDTO } from '@app/dto/CreateOrganizationDTO'
 import { toOrganizationDTO } from '@app/dto/OrganizationDTO'
 import { toMemberDTO } from '@app/dto/OrganizationMemberDTO'
 import { UpdateOrganizationDTO } from '@app/dto/UpdateOrganizationDTO'
-import { toUserMembershipDTO, toUserOrganizationDTO } from '@app/dto/UserInfoDTO'
+import { toUserMembershipDTO } from '@app/dto/UserInfoDTO'
 import { BookingEntity } from '@app/entities/BookingEntity'
+import { OrganizationBusinessHoursEntity } from '@app/entities/OrganizationBusinessHoursEntity'
 import { OrganizationEntity } from '@app/entities/OrganizationEntity'
 import { OrganizationMembershipEntity } from '@app/entities/OrganizationMembershipEntity'
 import { UserEntity } from '@app/entities/UserEntity'
@@ -20,27 +21,39 @@ import { getManager, getRepository, In, MoreThan } from 'typeorm'
 // TODO: check user organization limits? Pay per organization
 const createOrganization = withAuth(({ userId }) =>
   withBody(CreateOrganizationDTO, dto => async (req, res) => {
-    const userRepo = getRepository(UserEntity)
-    const organizationRepo = getRepository(OrganizationEntity)
-    const organizationMembershipRepo = getRepository(OrganizationMembershipEntity)
+    try {
+      await getManager().transaction(async trans => {
+        const organizationRepo = trans.getRepository(OrganizationEntity)
+        const organizationMembershipRepo = trans.getRepository(OrganizationMembershipEntity)
+        const businessHoursRepo = trans.getRepository(OrganizationBusinessHoursEntity)
 
-    await getManager().transaction(async transactionalManager => {
-      const newOrganization = organizationRepo.create({ ...dto })
-      const organization = await transactionalManager.save(newOrganization)
+        const newOrganization = organizationRepo.create({ ...dto, businessHours: [] })
+        const organization = await organizationRepo.save(newOrganization)
 
-      const newMember = organizationMembershipRepo.create({
-        isOwner: true,
-        organization,
-        userId
+        const businessHours = dto.businessHours
+          ? businessHoursRepo.create(
+              dto.businessHours.map(hours => ({ organizationId: organization.id, ...hours }))
+            )
+          : []
+        await businessHoursRepo.save(businessHours)
+
+        const newMember = organizationMembershipRepo.create({
+          isOwner: true,
+          organization,
+          userId
+        })
+        await organizationMembershipRepo.save(newMember)
       })
-      await transactionalManager.save(newMember)
-    })
 
-    const user = await userRepo.findOne(userId, {
-      relations: ['memberships', 'memberships.organization']
-    })
+      const userRepo = getRepository(UserEntity)
+      const user = await userRepo.findOne(userId, {
+        relations: ['memberships', 'memberships.organization']
+      })
 
-    return send(res, STATUS_SUCCESS.OK, user ? user.memberships.map(toUserMembershipDTO) : [])
+      return send(res, STATUS_SUCCESS.OK, user ? user.memberships.map(toUserMembershipDTO) : [])
+    } catch (e) {
+      return send(res, STATUS_ERROR.INTERNAL)
+    }
   })
 )
 
@@ -54,16 +67,48 @@ const updateOrganization = withAuth(({ userId }) =>
         return send(res, STATUS_ERROR.FORBIDDEN)
       }
 
-      const organization = await organizationRepo.findOne(organizationId)
+      const organization = await organizationRepo.findOne(organizationId, {
+        relations: ['businessHours']
+      })
 
       if (!organization) {
         return send(res, STATUS_ERROR.BAD_REQUEST)
       }
 
-      const updatedOrganization = organizationRepo.merge(organization, dto)
-      const savedOrganization = await organizationRepo.save(updatedOrganization)
+      try {
+        await getManager().transaction(async trans => {
+          const transBusinessHoursRepo = trans.getRepository(OrganizationBusinessHoursEntity)
+          const transOrganizationRepo = trans.getRepository(OrganizationEntity)
 
-      return send(res, STATUS_SUCCESS.OK, toUserOrganizationDTO(savedOrganization))
+          await transBusinessHoursRepo.remove(organization.businessHours)
+
+          const businessHours = dto.businessHours
+            ? transBusinessHoursRepo.create(
+                dto.businessHours.map(hours => ({ ...hours, organizationId: organization.id }))
+              )
+            : []
+
+          const updatedOrganization = transOrganizationRepo.merge(organization, {
+            ...dto,
+            businessHours
+          })
+
+          await transOrganizationRepo.save(updatedOrganization)
+          await transBusinessHoursRepo.save(businessHours)
+        })
+
+        const savedOrganization = await organizationRepo.findOne(organizationId, {
+          relations: ['businessHours']
+        })
+
+        return send(
+          res,
+          STATUS_SUCCESS.OK,
+          savedOrganization && toOrganizationDTO(savedOrganization)
+        )
+      } catch (e) {
+        return send(res, STATUS_ERROR.INTERNAL)
+      }
     })
   )
 )
@@ -86,9 +131,12 @@ const listBookings = withAuth(({ userId }) =>
     }
 
     const escapeRoomIds = organization.escapeRooms.map(({ id }) => id)
-    const bookings = await bookingRepo.find({
-      where: { escapeRoomId: In(escapeRoomIds), endDate: MoreThan(new Date()) }
-    })
+
+    const bookings = escapeRoomIds.length
+      ? await bookingRepo.find({
+          where: { escapeRoomId: In(escapeRoomIds), endDate: MoreThan(new Date()) }
+        })
+      : []
 
     return send(res, STATUS_SUCCESS.OK, bookings.map(toBookingDTO))
   })
@@ -114,7 +162,9 @@ const listMembers = withAuth(({ userId }) =>
 const getOrganization = withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
   const organizationRepo = getRepository(OrganizationEntity)
 
-  const organization = await organizationRepo.findOne(organizationId)
+  const organization = await organizationRepo.findOne(organizationId, {
+    relations: ['businessHours']
+  })
 
   if (!organization) {
     return send(res, STATUS_ERROR.NOT_FOUND)

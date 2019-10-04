@@ -28,7 +28,7 @@ const createUser = withBody(CreateUserDTO, dto => async (req, res) => {
 const getAuthUserInfo = withAuth(({ userId }) => async (req, res) => {
   const userRepo = getRepository(UserEntity)
   const user = await userRepo.findOne(userId, {
-    relations: ['memberships', 'memberships.organization']
+    relations: ['memberships']
   })
 
   if (!user) {

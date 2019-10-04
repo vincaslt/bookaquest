@@ -12,10 +12,9 @@ import * as React from 'react'
 import styled from 'styled-components'
 import * as Yup from 'yup'
 import EscapeRoomCard from '~/../commons/components/EscapeRoomCard'
-import {
-  CreateEscapeRoom as CreateEscapeRoomType,
-  EscapeRoom
-} from '~/../commons/interfaces/escapeRoom'
+import { BusinessHours } from '~/../commons/interfaces/businessHours'
+import { CreateEscapeRoom, EscapeRoom } from '~/../commons/interfaces/escapeRoom'
+import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
 
@@ -23,26 +22,30 @@ const StyledResetButton = styled(ResetButton)`
   margin-right: 16px;
 `
 
-const initialValues: CreateEscapeRoomType = {
-  name: '',
-  description: '',
-  location: '',
-  price: 0,
-  images: []
-}
-
 interface Props {
-  organizationId: string
+  organization: Organization
   onCreateDone: (escapeRoom: EscapeRoom) => void
   onCancel: () => void
 }
 
 // TODO: image upload, validation
 // TODO: location same as organization location
-function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
+// TODO: translated validation messages for forms
+function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
   const { t } = useI18n()
 
-  const validationSchema = Yup.object().shape<CreateEscapeRoomType>({
+  const initialValues: CreateEscapeRoom = {
+    name: '',
+    description: '',
+    location: '',
+    price: 0,
+    images: [],
+    interval: 60, // TODO: add input
+    timezone: organization.timezone!,
+    businessHours: organization.businessHours!
+  }
+
+  const validationSchema = Yup.object().shape<CreateEscapeRoom>({
     name: Yup.string().required(),
     description: Yup.string().required(),
     location: Yup.string().required(),
@@ -51,15 +54,26 @@ function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
       .required(),
     images: Yup.array()
       .of(Yup.string())
+      .required(),
+    interval: Yup.number()
+      .min(10)
+      .required(),
+    timezone: Yup.string().required(),
+    businessHours: Yup.array()
+      .of(
+        Yup.object<BusinessHours>({
+          weekday: Yup.number().required(),
+          hours: Yup.array()
+            .of(Yup.number())
+            .required()
+        })
+      )
       .required()
   })
 
-  const handleSubmit = (
-    values: CreateEscapeRoomType,
-    actions: FormikActions<CreateEscapeRoomType>
-  ) => {
+  const handleSubmit = (values: CreateEscapeRoom, actions: FormikActions<CreateEscapeRoom>) => {
     api
-      .createEscapeRoom(organizationId, values)
+      .createEscapeRoom(organization.id, values)
       .then(escapeRoom => {
         notification.open({
           message: t`Success`,
@@ -130,4 +144,4 @@ function CreateEscapeRoom({ organizationId, onCreateDone, onCancel }: Props) {
   )
 }
 
-export default CreateEscapeRoom
+export default CreateEscapeRoomForm

@@ -14,7 +14,7 @@
     "script:build": "parcel build user-script/index.html --out-dir user-script/dist",
     "i18n": "npm run web:i18n & npm run script:i18n",
     "build-ts": "tsc -b -v",
-    "build-ts:watch": "tsc -b -v -w"
+    "build-ts:watch": "tsc -b -v -w ./commons"
   },
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.6.0",
+    "@types/date-fns": "^2.6.0",
     "@types/node": "^12.7.5",
     "@types/ramda": "^0.26.15",
     "@types/reach__router": "^1.2.4",
@@ -87,8 +88,12 @@
     "react-dom": "^16.8.6",
     "react-i18next": "^10.9.0",
     "react-popper": "^1.3.4",
+    "react-use": "^12.2.2",
     "styled-components": "^4.3.2",
+    "tailwindcss": "^1.1.2",
+    "timezone-support": "^2.0.2",
     "tui-calendar": "^1.12.5",
+    "tzjs": "^1.0.4",
     "wouter": "^2.2.1",
     "yup": "^0.27.0",
     "zoid": "^9.0.31"

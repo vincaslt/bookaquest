@@ -1,9 +1,9 @@
 import { Col, Empty, Icon, Row, Steps } from 'antd'
 import Paragraph from 'antd/lib/typography/Paragraph'
-import moment from 'moment'
 import * as React from 'react'
 import styled from 'styled-components'
 import { useLocation, useRoute } from 'wouter'
+import WorkHours from '~/../commons/components/WorkHours'
 import { Booking } from '~/../commons/interfaces/booking'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
@@ -123,9 +123,7 @@ function Booking() {
                       <Paragraph>{selectedRoom.description}</Paragraph>
                       <div>Location: {selectedRoom.location}</div>
                       <div>
-                        Work hours:{' '}
-                        {selectedRoom.weekDays.map(weekday => moment.weekdays(weekday)).join(', ')}{' '}
-                        {selectedRoom.workHours[0]} to {selectedRoom.workHours[1]}
+                        Work hours: <WorkHours businessHours={selectedRoom.businessHours} />
                       </div>
                     </>
                   )}

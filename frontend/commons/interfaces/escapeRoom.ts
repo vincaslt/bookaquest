@@ -1,9 +1,14 @@
+import { BusinessHours } from './businessHours'
 import { CreateEscapeRoomDTO, EscapeRoomDTO } from './dto/escapeRoom'
 
-export type CreateEscapeRoom = CreateEscapeRoomDTO
-export type EscapeRoom = Omit<EscapeRoomDTO, 'createdAt' | 'updatedAt'> & {
+export type CreateEscapeRoom = Omit<CreateEscapeRoomDTO, 'businessHours'> & {
+  businessHours: BusinessHours[]
+}
+
+export type EscapeRoom = Omit<EscapeRoomDTO, 'createdAt' | 'updatedAt' | 'businessHours'> & {
   createdAt: Date
   updatedAt: Date
+  businessHours: BusinessHours[]
 }
 
 export function fromEscapeRoomDTO(dto: EscapeRoomDTO): EscapeRoom {

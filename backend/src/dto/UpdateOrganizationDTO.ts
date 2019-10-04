@@ -1,28 +1,26 @@
-import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator'
+import { BusinessHoursDTO } from '@app/dto/BusinessHoursDTO'
+import { Type } from 'class-transformer'
+import { IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator'
 
 export class UpdateOrganizationDTO {
   @IsOptional()
   @IsString()
-  name: string
+  name?: string
 
   @IsOptional()
   @IsUrl()
-  website: string
-
-  // TODO: validate 0-24/1-7
-  @IsOptional()
-  @IsNumber(undefined, { each: true })
-  weekDays: number[]
+  website?: string
 
   @IsOptional()
-  @IsNumber(undefined, { each: true })
-  workHours: number[]
-
-  @IsOptional()
-  @IsNumber()
-  interval: number
+  @ValidateNested({ each: true })
+  @Type(() => BusinessHoursDTO)
+  businessHours?: BusinessHoursDTO[]
 
   @IsOptional()
   @IsString()
-  location: string
+  timezone?: string
+
+  @IsOptional()
+  @IsString()
+  location?: string
 }

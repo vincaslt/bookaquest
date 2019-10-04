@@ -6,22 +6,15 @@ import {
 } from '~/../commons/interfaces/dto/auth'
 import { BookingDTO } from '~/../commons/interfaces/dto/booking'
 import { EscapeRoomDTO } from '~/../commons/interfaces/dto/escapeRoom'
+import { OrganizationDTO } from '~/../commons/interfaces/dto/organization'
 import { OrganizationMemberDTO } from '~/../commons/interfaces/dto/organizationMember'
-import {
-  UserInfoDTO,
-  UserMembershipDTO,
-  UserOrganizationDTO
-} from '~/../commons/interfaces/dto/user'
+import { UserInfoDTO, UserMembershipDTO } from '~/../commons/interfaces/dto/user'
 import { CreateEscapeRoom, fromEscapeRoomDTO } from '~/../commons/interfaces/escapeRoom'
+import { fromOrganizationDTO } from '~/../commons/interfaces/organization'
 import { SignIn } from '../interfaces/auth'
 import { CreateOrganization, UpdateOrganization } from '../interfaces/organization'
 import { fromOrganizationMemberDTO } from '../interfaces/organizationMember'
-import {
-  CreateUser,
-  fromUserInfoDTO,
-  fromUserMembershipDTO,
-  fromUserOrganizationDTO
-} from '../interfaces/user'
+import { CreateUser, fromUserInfoDTO, fromUserMembershipDTO } from '../interfaces/user'
 import { api, withAuth } from '../utils/apiHelpers'
 
 // TODO: should be CreateUser and convert to DTO before sending
@@ -67,9 +60,9 @@ export const createOrganization = withAuth(headers => (dto: CreateOrganization) 
 export const updateOrganization = withAuth(
   headers => (organizationId: string, dto: UpdateOrganization) =>
     api
-      .put<UserOrganizationDTO>(`/organization/${organizationId}`, dto, { headers })
+      .put<OrganizationDTO>(`/organization/${organizationId}`, dto, { headers })
       .then(res => res.data)
-      .then(fromUserOrganizationDTO)
+      .then(fromOrganizationDTO)
 )
 
 export const getOrganizationBookings = withAuth(headers => (organizationId: string) =>
@@ -90,3 +83,9 @@ export const rejectBooking = withAuth(headers => (bookingId: string) =>
     .then(res => res.data)
     .then(fromBookingDTO)
 )
+
+export const getOrganization = (organizationId: string) =>
+  api
+    .get<OrganizationDTO>(`/organization/${organizationId}`)
+    .then(res => res.data)
+    .then(fromOrganizationDTO)

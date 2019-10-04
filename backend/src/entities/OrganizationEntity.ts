@@ -1,4 +1,5 @@
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
+import { OrganizationBusinessHoursEntity } from '@app/entities/OrganizationBusinessHoursEntity'
 import { OrganizationMembershipEntity } from '@app/entities/OrganizationMembershipEntity'
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
@@ -23,11 +24,11 @@ export class OrganizationEntity {
   @OneToMany(type => EscapeRoomEntity, escapeRoom => escapeRoom.organization)
   escapeRooms: EscapeRoomEntity[]
 
-  @Column('integer', { array: true, nullable: true })
-  weekDays?: number[]
+  @OneToMany(type => OrganizationBusinessHoursEntity, businessHours => businessHours.organization)
+  businessHours: OrganizationBusinessHoursEntity[]
 
-  @Column('numeric', { array: true, precision: 5, scale: 2, nullable: true })
-  workHours?: number[]
+  @Column({ nullable: true })
+  timezone?: string
 
   @CreateDateColumn()
   createdAt: Date

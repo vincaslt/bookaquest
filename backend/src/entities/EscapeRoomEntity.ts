@@ -1,4 +1,5 @@
 import { BookingEntity } from '@app/entities/BookingEntity'
+import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
 import { OrganizationEntity } from '@app/entities/OrganizationEntity'
 import {
   Column,
@@ -41,11 +42,11 @@ export class EscapeRoomEntity {
   @OneToMany(type => BookingEntity, booking => booking.escapeRoom)
   bookings: BookingEntity[]
 
-  @Column('integer', { array: true })
-  weekDays: number[]
+  @OneToMany(type => EscapeRoomBusinessHoursEntity, businessHours => businessHours.escapeRoom)
+  businessHours: EscapeRoomBusinessHoursEntity[]
 
-  @Column('numeric', { precision: 5, scale: 1, array: true })
-  workHours: number[]
+  @Column({ nullable: true })
+  timezone: string
 
   @Column()
   interval: number // in minutes

@@ -1,6 +1,7 @@
 import { toBookingDTO, toBookingWithEscapeRoomDTO } from '@app/dto/BookingDTO'
 import { CreateBookingDTO } from '@app/dto/CreateBookingDTO'
 import { BookingEntity, BookingStatus } from '@app/entities/BookingEntity'
+import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
@@ -8,7 +9,7 @@ import { withAuth } from '@app/lib/decorators/withAuth'
 import { withBody } from '@app/lib/decorators/withBody'
 import withParams from '@app/lib/decorators/withParams'
 import withQuery from '@app/lib/decorators/withQuery'
-import { addDays, areIntervalsOverlapping, isAfter, setMinutes, startOfDay } from 'date-fns'
+import { addDays, areIntervalsOverlapping, getDay, isAfter, setMinutes, startOfDay } from 'date-fns'
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
 import { times } from 'ramda'
@@ -17,7 +18,9 @@ import { Between, getRepository, LessThan, MoreThan } from 'typeorm'
 const getBooking = withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
   const bookingRepo = getRepository(BookingEntity)
 
-  const booking = await bookingRepo.findOne(bookingId, { relations: ['escapeRoom'] })
+  const booking = await bookingRepo.findOne(bookingId, {
+    relations: ['escapeRoom', 'escapeRoom.businessHours']
+  })
 
   if (!booking) {
     return send(res, STATUS_ERROR.NOT_FOUND)
@@ -60,6 +63,7 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
   withQuery(['date'], ({ date }) => async (req, res) => {
     const escapeRoomRepo = getRepository(EscapeRoomEntity)
     const bookingRepo = getRepository(BookingEntity)
+    const businessHoursEntity = getRepository(EscapeRoomBusinessHoursEntity)
 
     // TODO: Maybe do the check and get bookings with one query?
     const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId)
@@ -83,9 +87,17 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       }
     })
 
-    const [startHour, endHour] = escapeRoom.workHours
+    const businessHours = await businessHoursEntity.findOne({
+      where: { escapeRoomId, weekday: getDay(bookingDate) }
+    })
 
-    // TODO: work hours interval of date because need timezone
+    if (!businessHours) {
+      return send(res, STATUS_SUCCESS.OK, [])
+    }
+
+    const [startHour, endHour] = businessHours.hours
+
+    // TODO: calculations are using local timezone, should use escapeRoom's
     const timeslots = times(i => {
       const start = setMinutes(startOfDay(bookingDate), startHour * 60 + i * escapeRoom.interval)
       const end = setMinutes(

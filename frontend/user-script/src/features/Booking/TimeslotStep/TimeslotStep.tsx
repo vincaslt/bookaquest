@@ -12,7 +12,9 @@ interface Props {
 
 function TimeslotStep({ room, onSelect }: Props) {
   const isDayDisabled = (current?: Moment) =>
-    !!current && (current < moment().startOf('day') || !room.weekDays.includes(current.weekday()))
+    !!current &&
+    (current < moment().startOf('day') ||
+      !room.businessHours.find(({ weekday }) => current.weekday()))
 
   const [date, setDate] = React.useState(isDayDisabled(moment()) ? undefined : moment())
   const [timeslots, setTimeslots] = React.useState<Timeslot[]>([])

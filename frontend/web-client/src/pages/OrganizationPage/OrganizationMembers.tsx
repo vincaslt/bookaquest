@@ -9,7 +9,7 @@ interface Props {
   organizationId: string
 }
 
-function Members({ organizationId }: Props) {
+function OrganizationMembers({ organizationId }: Props) {
   const [loading, withLoading] = useLoading(true)
   const [members, setMembers] = React.useState<OrganizationMember[]>([])
   const { t } = useI18n()
@@ -33,4 +33,4 @@ function Members({ organizationId }: Props) {
   )
 }
 
-export default Members
+export default OrganizationMembers

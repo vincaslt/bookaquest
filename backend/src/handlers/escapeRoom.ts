@@ -1,6 +1,7 @@
 import { CreateEscapeRoomDTO } from '@app/dto/CreateEscapeRoomDTO'
 import { toEscapeRoomDTO } from '@app/dto/EscapeRoomDTO'
 import { UpdateEscapeRoomDTO } from '@app/dto/UpdateEscapeRoomDTO'
+import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
 import { OrganizationEntity } from '@app/entities/OrganizationEntity'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
@@ -10,13 +11,12 @@ import { withBody } from '@app/lib/decorators/withBody'
 import withParams from '@app/lib/decorators/withParams'
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
-import { getRepository } from 'typeorm'
+import { getManager, getRepository } from 'typeorm'
 
 // TODO: check organization escape room limits, how many it has already
 const createEscapeRoom = withAuth(({ userId }) =>
   withParams(['organizationId'], ({ organizationId }) =>
     withBody(CreateEscapeRoomDTO, dto => async (req, res) => {
-      const escapeRoomRepo = getRepository(EscapeRoomEntity)
       const organizationRepo = getRepository(OrganizationEntity)
 
       // TODO: util method to get with relation and check existance, return monad
@@ -31,17 +31,25 @@ const createEscapeRoom = withAuth(({ userId }) =>
         return send(res, STATUS_ERROR.FORBIDDEN)
       }
 
-      // TODO: maybe make interval (duration) mandatory when creating schedule for escape room
-      const schedule = {
-        interval: dto.interval || 60,
-        workHours: dto.workHours || organization.workHours,
-        weekDays: dto.weekDays || organization.weekDays
+      try {
+        const savedRoom = await getManager().transaction(async trans => {
+          const transEscapeRoomRepo = trans.getRepository(EscapeRoomEntity)
+          const transBusinessHoursRepo = trans.getRepository(EscapeRoomBusinessHoursEntity)
+
+          const newEscapeRoom = transEscapeRoomRepo.create({ ...dto, organizationId })
+          const escapeRoom = await transEscapeRoomRepo.save(newEscapeRoom)
+
+          const businessHours = transBusinessHoursRepo.create(
+            dto.businessHours.map(hours => ({ escapeRoomId: escapeRoom.id, ...hours }))
+          )
+          await transBusinessHoursRepo.save(businessHours)
+          return escapeRoom
+        })
+
+        return send(res, STATUS_SUCCESS.OK, toEscapeRoomDTO(savedRoom))
+      } catch (e) {
+        return send(res, STATUS_ERROR.INTERNAL)
       }
-
-      const newEscapeRoom = escapeRoomRepo.create({ ...dto, ...schedule, organizationId })
-      await escapeRoomRepo.save(newEscapeRoom)
-
-      return send(res, STATUS_SUCCESS.OK, toEscapeRoomDTO(newEscapeRoom))
     })
   )
 )
@@ -61,11 +69,36 @@ const updateEscapeRoom = withAuth(({ userId }) =>
         return send(res, STATUS_ERROR.FORBIDDEN)
       }
 
-      escapeRoomRepo.merge(escapeRoom, dto)
+      try {
+        await getManager().transaction(async trans => {
+          const transEscapeRoomRepo = trans.getRepository(EscapeRoomEntity)
+          const transBusinessHoursRepo = trans.getRepository(EscapeRoomBusinessHoursEntity)
 
-      await escapeRoomRepo.save(escapeRoom)
+          await transBusinessHoursRepo.remove(escapeRoom.businessHours)
 
-      return send(res, STATUS_SUCCESS.OK)
+          const businessHours = dto.businessHours
+            ? transBusinessHoursRepo.create(
+                dto.businessHours.map(hours => ({ ...hours, escapeRoomId: escapeRoom.id }))
+              )
+            : []
+
+          const updatedEscapeRoom = transEscapeRoomRepo.merge(escapeRoom, {
+            ...dto,
+            businessHours
+          })
+
+          await transEscapeRoomRepo.save(updatedEscapeRoom)
+          await transBusinessHoursRepo.save(businessHours)
+        })
+
+        const savedEscapeRoom = await escapeRoomRepo.findOne(escapeRoomId, {
+          relations: ['businessHours']
+        })
+
+        return send(res, STATUS_SUCCESS.OK, savedEscapeRoom && toEscapeRoomDTO(savedEscapeRoom))
+      } catch (e) {
+        return send(res, STATUS_ERROR.INTERNAL)
+      }
     })
   )
 )
@@ -76,7 +109,10 @@ const updateEscapeRoom = withAuth(({ userId }) =>
 const listEscapeRooms = withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
   const escapeRoomRepo = getRepository(EscapeRoomEntity)
 
-  const organizationEscapeRooms = await escapeRoomRepo.find({ where: { organizationId } })
+  const organizationEscapeRooms = await escapeRoomRepo.find({
+    where: { organizationId },
+    relations: ['businessHours']
+  })
 
   return organizationEscapeRooms.map(toEscapeRoomDTO)
 })

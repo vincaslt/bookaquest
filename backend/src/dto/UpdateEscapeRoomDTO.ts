@@ -1,24 +1,26 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { BusinessHoursDTO } from '@app/dto/BusinessHoursDTO'
+import { Type } from 'class-transformer'
+import { IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 export class UpdateEscapeRoomDTO {
   @IsOptional()
   @IsString()
-  name: string
+  name?: string
 
   @IsOptional()
   @IsString()
-  description: string
-
-  // TODO: validate 0-24/1-7
-  @IsOptional()
-  @IsNumber(undefined, { each: true })
-  weekDays: number[]
+  description?: string
 
   @IsOptional()
-  @IsNumber(undefined, { each: true })
-  workHours: number[]
+  @ValidateNested({ each: true })
+  @Type(() => BusinessHoursDTO)
+  businessHours?: BusinessHoursDTO[]
+
+  @IsOptional()
+  @IsString()
+  timezone?: string
 
   @IsOptional()
   @IsNumber()
-  interval: number
+  interval?: number
 }

@@ -1,17 +1,7 @@
-export interface UserOrganizationDTO {
-  id: string
-  name: string
-  website: string
-  location: string
-  weekDays: number[]
-  workHours: number[]
-  createdAt: string
-}
-
 export interface UserMembershipDTO {
   isOwner: boolean
   createdAt: string
-  organization: UserOrganizationDTO
+  organizationId: string
 }
 
 export interface BasicUserInfoDTO {

@@ -1,12 +1,14 @@
+import { BusinessHoursDTO } from './businessHours'
+
 export interface CreateEscapeRoomDTO {
   name: string
   description: string
   images: string[]
   price: number
-  weekDays?: number[]
-  workHours?: number[]
-  interval?: number
-  location?: string
+  businessHours: BusinessHoursDTO[]
+  timezone: string
+  interval: number
+  location: string
 }
 
 export interface EscapeRoomDTO {
@@ -14,12 +16,12 @@ export interface EscapeRoomDTO {
   organizationId: string
   name: string
   description: string
+  images: string[]
   createdAt: string
   updatedAt: string
-  images: string[]
-  weekDays: number[]
-  workHours: [number, number]
+  businessHours: BusinessHoursDTO[]
+  timezone: string
   interval: number
   price: number
-  location?: string
+  location: string
 }

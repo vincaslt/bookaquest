@@ -18,6 +18,7 @@ export const UserProvider = ({ children }: Props) => {
   const [isLoading, setIsLoading] = React.useState(false)
   const [userInfo, setUserInfo] = React.useState<UserInfo | null>(null)
 
+  // TODO: refreshing token actually logs out... fixit
   React.useEffect(() => {
     const accessToken = localStorage.getItem('accessToken')
     const refreshToken = localStorage.getItem('refreshToken')
