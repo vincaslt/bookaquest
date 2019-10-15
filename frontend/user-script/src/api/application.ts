@@ -8,10 +8,10 @@ import {
 import { BookingDTO, BookingWithEscapeRoomDTO } from '~/../commons/interfaces/dto/booking'
 import { EscapeRoomDTO } from '~/../commons/interfaces/dto/escapeRoom'
 import { OrganizationDTO } from '~/../commons/interfaces/dto/organization'
-import { TimeslotDTO } from '~/../commons/interfaces/dto/timeslot'
+import { AvailabilityDTO } from '~/../commons/interfaces/dto/timeslot'
 import { fromEscapeRoomDTO } from '~/../commons/interfaces/escapeRoom'
 import { fromOrganizationDTO } from '~/../commons/interfaces/organization'
-import { fromTimeslotDTO } from '~/../commons/interfaces/timeslot'
+import { fromAvailabilityDTO } from '~/../commons/interfaces/timeslot'
 
 const api = Axios.create({
   baseURL: 'http://localhost:3001'
@@ -40,7 +40,8 @@ export const createBooking = (booking: CreateBooking) =>
     .then(res => res.data)
     .then(fromBookingDTO)
 
-export const getAvailability = (escapeRoomId: string, date: Date) =>
+export const getAvailability = (escapeRoomId: string, from: Date, to: Date) =>
   api
-    .get<TimeslotDTO[]>(`escape-room/${escapeRoomId}/availability`, { params: { date } })
-    .then(res => res.data.map(fromTimeslotDTO))
+    .get<AvailabilityDTO>(`escape-room/${escapeRoomId}/availability`, { params: { from, to } })
+    .then(res => res.data)
+    .then(fromAvailabilityDTO)

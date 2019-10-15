@@ -9,7 +9,15 @@ import { withAuth } from '@app/lib/decorators/withAuth'
 import { withBody } from '@app/lib/decorators/withBody'
 import withParams from '@app/lib/decorators/withParams'
 import withQuery from '@app/lib/decorators/withQuery'
-import { addDays, areIntervalsOverlapping, getDay, isAfter, setMinutes, startOfDay } from 'date-fns'
+import {
+  addDays,
+  areIntervalsOverlapping,
+  differenceInCalendarDays,
+  getISODay,
+  isAfter,
+  setMinutes,
+  startOfDay
+} from 'date-fns'
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
 import { times } from 'ramda'
@@ -60,67 +68,73 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
 )
 
 const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
-  withQuery(['date'], ({ date }) => async (req, res) => {
+  withQuery(['from', 'to'], ({ from, to }) => async (req, res) => {
+    const dateNow = new Date()
+    const fromDay = from && startOfDay(new Date(from))
+    const toDay = to && startOfDay(new Date(to))
+
+    if (!fromDay || !toDay || differenceInCalendarDays(toDay, fromDay) > 35) {
+      return send(res, STATUS_ERROR.BAD_REQUEST)
+    }
+
     const escapeRoomRepo = getRepository(EscapeRoomEntity)
     const bookingRepo = getRepository(BookingEntity)
     const businessHoursEntity = getRepository(EscapeRoomBusinessHoursEntity)
 
-    // TODO: Maybe do the check and get bookings with one query?
     const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId)
 
     if (!escapeRoom) {
       return send(res, STATUS_ERROR.NOT_FOUND)
     }
 
-    const bookingDate = date && new Date(date)
-
-    if (!bookingDate || bookingDate < startOfDay(new Date())) {
-      return send(res, STATUS_ERROR.BAD_REQUEST)
-    }
-
     const activeBookings = await bookingRepo.find({
       where: {
         escapeRoomId,
-        endDate: MoreThan(startOfDay(bookingDate)),
-        startDate: LessThan(startOfDay(addDays(bookingDate, 1))),
+        endDate: MoreThan(fromDay),
+        startDate: LessThan(toDay),
         status: BookingStatus.Accepted
       }
     })
 
-    const businessHours = await businessHoursEntity.findOne({
-      where: { escapeRoomId, weekday: getDay(bookingDate) }
+    const allBusinessHours = await businessHoursEntity.find({
+      where: { escapeRoomId }
     })
 
-    if (!businessHours) {
-      return send(res, STATUS_SUCCESS.OK, [])
-    }
+    const availability = times(day => {
+      const date = addDays(fromDay, day)
+      const dayOfweek = getISODay(date)
+      const businessHours = allBusinessHours.find(({ weekday }) => weekday === dayOfweek)
 
-    const [startHour, endHour] = businessHours.hours
+      if (date < startOfDay(dateNow) || !businessHours) {
+        return null
+      }
 
-    // TODO: calculations are using local timezone, should use escapeRoom's
-    const timeslots = times(i => {
-      const start = setMinutes(startOfDay(bookingDate), startHour * 60 + i * escapeRoom.interval)
-      const end = setMinutes(
-        startOfDay(bookingDate),
-        startHour * 60 + (i + 1) * escapeRoom.interval
-      )
-      return { start, end }
-    }, ((endHour - startHour) * 60) / escapeRoom.interval)
+      const [startHour, endHour] = businessHours.hours
+      console.log('asda', ((endHour - startHour) * 60) / escapeRoom.interval)
+      // TODO: calculations are using local timezone, should use escapeRoom's
+      const timeslots = times(i => {
+        const start = setMinutes(date, startHour * 60 + i * escapeRoom.interval)
+        const end = setMinutes(date, startHour * 60 + (i + 1) * escapeRoom.interval)
+        return { start, end }
+      }, ((endHour - startHour) * 60) / escapeRoom.interval)
 
-    const availableTimeslots = timeslots.filter(({ start, end }) => {
-      return (
-        isAfter(start, new Date()) &&
-        activeBookings.every(
-          booking =>
-            !areIntervalsOverlapping(
-              { start, end },
-              { start: booking.startDate, end: booking.endDate }
-            )
+      const availableTimeslots = timeslots.filter(({ start, end }) => {
+        return (
+          isAfter(start, dateNow) &&
+          activeBookings.every(
+            booking =>
+              !areIntervalsOverlapping(
+                { start, end },
+                { start: booking.startDate, end: booking.endDate }
+              )
+          )
         )
-      )
-    })
+      })
 
-    return send(res, STATUS_SUCCESS.OK, availableTimeslots)
+      return { date, availableTimeslots }
+    }, differenceInCalendarDays(toDay, fromDay)).filter(Boolean)
+
+    return send(res, STATUS_SUCCESS.OK, availability)
   })
 )
 

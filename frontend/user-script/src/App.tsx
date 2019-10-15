@@ -1,10 +1,28 @@
-import { Layout } from 'antd'
+import { Layout, Spin } from 'antd'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import styled from 'styled-components'
+import { createGlobalStyle } from 'styled-components'
 import { Route, Switch } from 'wouter'
+import { useI18n } from '~/../commons/utils/i18n'
 import Booking from './features/Booking/Booking'
 import BookingStatus from './features/BookingStatus/BookingStatus'
+
+const AppSpinnerContainer = styled('div')`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+`
+
+const GlobalStyle = createGlobalStyle`
+  .ant-steps-item-custom .ant-steps-item-icon > .ant-steps-icon {
+    width: auto;
+    display: flex;
+    align-items: center;
+  }
+`
 
 const ContentContainer = styled(Layout)`
   min-height: 100vh;
@@ -27,8 +45,18 @@ const Footer = styled(Layout.Footer)`
 
 // TODO: footer link
 function App() {
+  const { ready } = useI18n(undefined, { useSuspense: false })
+
+  if (!ready) {
+    return (
+      <AppSpinnerContainer>
+        <Spin size="large" />
+      </AppSpinnerContainer>
+    )
+  }
   return (
     <ContentContainer>
+      <GlobalStyle />
       <Switch>
         <Route path="/booking/:organizationId" component={BookingStatus} />
         <Route path="/:organizationId" component={Booking} />

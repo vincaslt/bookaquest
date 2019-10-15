@@ -1,8 +1,18 @@
+import { Locale } from 'date-fns'
+import localeEn from 'date-fns/locale/en-US'
+import localeLt from 'date-fns/locale/lt'
 import i18next, { TOptions } from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import Backend from 'i18next-xhr-backend'
 import { initReactI18next, Namespace, useTranslation, UseTranslationOptions } from 'react-i18next'
 import config from '../config'
+
+const fallbackLng = 'en'
+
+const localeMapping: { [key: string]: Locale } = {
+  lt: localeLt,
+  en: localeEn
+}
 
 function initI18n() {
   i18next
@@ -10,7 +20,7 @@ function initI18n() {
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
-      fallbackLng: 'en',
+      fallbackLng,
       load: 'languageOnly',
       keySeparator: false,
       nsSeparator: false,
@@ -24,6 +34,7 @@ function initI18n() {
 
 export const useI18n = (ns?: Namespace, options?: UseTranslationOptions) => {
   const i18n = useTranslation(ns, options)
+  const dateFnsLocale = localeMapping[i18n.i18n.language] || localeMapping[fallbackLng]
 
   function tt<T extends any[]>(opts: TOptions = {}) {
     return (parts: TemplateStringsArray, ...values: T) => {
@@ -44,7 +55,7 @@ export const useI18n = (ns?: Namespace, options?: UseTranslationOptions) => {
     return tt(undefined)(parts, ...values)
   }
 
-  return { ...i18n, t, tt }
+  return { ...i18n, t, tt, dateFnsLocale }
 }
 
 export default initI18n

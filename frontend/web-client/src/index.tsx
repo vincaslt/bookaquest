@@ -1,7 +1,6 @@
 import '@fullcalendar/core/main.css'
 import '@fullcalendar/daygrid/main.css'
 import '@fullcalendar/timegrid/main.css'
-import 'tailwindcss/dist/tailwind.css'
 
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'

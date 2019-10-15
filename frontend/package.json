@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "start \"\" npm run web:start & start \"\" npm run script:start & start \"\" npm run build-ts:watch",
+    "start": "npm run build-tailwind && start \"\" npm run web:start & start \"\" npm run script:start & start \"\" npm run build-ts:watch",
     "start:windows": "start /b npm run web:start & start /b npm run script:start & start /b npm run build-ts:watch",
     "start:unix": "npm run web:start & npm run script:start & npm run build-ts:watch",
     "web:i18n": "i18next --config web-client/i18next-parser.config.js",
@@ -13,6 +13,7 @@
     "script:start": "parcel user-script/index.html -p 3000 --out-dir user-script/dist",
     "script:build": "parcel build user-script/index.html --out-dir user-script/dist",
     "i18n": "npm run web:i18n & npm run script:i18n",
+    "build-tailwind": "tailwind build node_modules/tailwindcss/tailwind.css -o commons/tailwind.css -c commons/tailwind.config.js",
     "build-ts": "tsc -b -v",
     "build-ts:watch": "tsc -b -v -w ./commons"
   },
@@ -64,6 +65,7 @@
     "typescript": "^3.6.3"
   },
   "dependencies": {
+    "@ant-design/colors": "^3.2.2",
     "@fullcalendar/core": "^4.3.1",
     "@fullcalendar/daygrid": "^4.3.0",
     "@fullcalendar/interaction": "^4.3.0",
@@ -94,6 +96,7 @@
     "timezone-support": "^2.0.2",
     "tui-calendar": "^1.12.5",
     "tzjs": "^1.0.4",
+    "user-script": "^1.1.1",
     "wouter": "^2.2.1",
     "yup": "^0.27.0",
     "zoid": "^9.0.31"

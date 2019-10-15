@@ -21,7 +21,7 @@ function BookingsPage(props: RouteComponentProps) {
 
   React.useEffect(() => {
     if (membership) {
-      withLoading(api.getOrganizationBookings(membership.organization.id).then(setBookings))
+      withLoading(api.getOrganizationBookings(membership.organizationId).then(setBookings))
     }
 
     popupContainer.current = document.createElement('div')

@@ -1,14 +1,13 @@
 import { Col, Empty, Icon, Row, Steps } from 'antd'
-import Paragraph from 'antd/lib/typography/Paragraph'
 import * as React from 'react'
 import styled from 'styled-components'
 import { useLocation, useRoute } from 'wouter'
-import WorkHours from '~/../commons/components/WorkHours'
 import { Booking } from '~/../commons/interfaces/booking'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
 import * as api from '../../api/application'
 import BookingInfoStep, { BookingInfo } from './BookingInfoStep/BookingInfoStep'
+import BookingSummary from './BookingSummary/BookingSummary'
 import ConfirmationStep from './ConfirmationStep/ConfirmationStep'
 import EscapeRoomStep from './EscapeRoomStep/EscapeRoomStep'
 import TimeslotStep from './TimeslotStep/TimeslotStep'
@@ -116,18 +115,7 @@ function Booking() {
               {step === BookingStep.EscapeRoom ? (
                 <Empty description="Pick an escape room" />
               ) : (
-                <>
-                  {selectedRoom && (
-                    <>
-                      <h1>{selectedRoom.name}</h1>
-                      <Paragraph>{selectedRoom.description}</Paragraph>
-                      <div>Location: {selectedRoom.location}</div>
-                      <div>
-                        Work hours: <WorkHours businessHours={selectedRoom.businessHours} />
-                      </div>
-                    </>
-                  )}
-                </>
+                <BookingSummary selectedRoom={selectedRoom} />
               )}
             </Section>
           </Col>

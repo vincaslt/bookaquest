@@ -9,10 +9,6 @@ const StyledParagraph = styled(Paragraph)`
   min-height: 105px;
 `
 
-const CoverImage = styled.img`
-  object-fit: cover;
-`
-
 interface Props {
   escapeRoom: EscapeRoom | CreateEscapeRoom
   onSelect?: (escapeRoom: EscapeRoom) => void
@@ -31,7 +27,11 @@ function EscapeRoomCard({ escapeRoom, onSelect }: Props) {
       onClick={handleSelect}
       cover={
         <AspectRatio ratio="532/320">
-          <CoverImage src={escapeRoom.images[0]} alt={`${escapeRoom.name} cover image`} />
+          <img
+            className="object-cover"
+            src={escapeRoom.images[0]}
+            alt={`${escapeRoom.name} cover image`}
+          />
         </AspectRatio>
       }
     >
