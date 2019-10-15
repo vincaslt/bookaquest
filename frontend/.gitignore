@@ -12,3 +12,6 @@ yarn-error.log*
 
 # IDE
 .vscode
+
+# Generated files
+commons/tailwind.css
