@@ -1,8 +1,7 @@
-import { Card, Typography } from 'antd'
+import { Card, Divider, Icon, Rate, Typography } from 'antd'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
 import styled from 'styled-components'
-import WorkHours from '~/../commons/components/WorkHours'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { useI18n } from '~/../commons/utils/i18n'
 
@@ -29,23 +28,65 @@ function BookingSummary({ selectedRoom }: Props) {
       <div className="flex justify-between">
         <div>
           <Title level={3}>{selectedRoom.name}</Title>
+          <div className="flex flex-wrap font-semibold">
+            <div className="mb-4 flex items-baseline">
+              <Icon type="team" className="flex mr-1" />
+              {t`2-6 players`}
+              <Divider type="vertical" />
+            </div>
+            <div className="mb-4 flex items-baseline">
+              <Icon type="clock-circle" className="flex mr-1" />
+              {t`${selectedRoom.interval} min`}
+              <Divider type="vertical" />
+            </div>
+            <div className="mb-4 flex items-center">
+              {t`Difficulty`}
+              <div className="ml-2 flex items-center">
+                <Icon type="lock" theme="filled" />
+                <Icon type="lock" theme="filled" />
+                <Icon type="lock" theme="filled" />
+                <Icon type="lock" />
+                <Icon type="lock" />
+              </div>
+            </div>
+          </div>
           <Paragraph>{selectedRoom.description}</Paragraph>
         </div>
-        <StyledCard
-          className="ml-5 mb-5"
-          cover={
-            <AspectRatio ratio="532/320">
-              <img className="object-cover" src={selectedRoom.images[0]} />
-            </AspectRatio>
-          }
-        >
-          <Card.Meta
-            title={t`Work hours`}
-            description={<WorkHours businessHours={selectedRoom.businessHours} />}
-          />
-        </StyledCard>
+        <div>
+          <StyledCard
+            className="ml-5 mb-5"
+            cover={
+              <AspectRatio ratio="532/320">
+                <img className="object-cover" src={selectedRoom.images[0]} />
+              </AspectRatio>
+            }
+          >
+            <Card.Meta
+              title={t`Contacts`}
+              description={
+                <>
+                  <div className="mb-2 mr-4 flex items-baseline">
+                    <Icon type="home" className="flex mr-2" theme="filled" />
+                    {selectedRoom.location}
+                  </div>
+                  <div className="mb-2 flex items-center">
+                    <Icon type="phone" className="flex mr-2" theme="filled" />
+                    +1234567890
+                  </div>
+                  <div className="mb-2 flex items-center">
+                    <Icon type="mail" className="flex mr-2" theme="filled" />
+                    support@escapium.com
+                  </div>
+                  <div className="mb-2 flex items-center">
+                    <Icon type="skype" className="flex mr-2" theme="filled" />
+                    escapium
+                  </div>
+                </>
+              }
+            />
+          </StyledCard>
+        </div>
       </div>
-      <div>Location: {selectedRoom.location}</div>
     </>
   )
 }

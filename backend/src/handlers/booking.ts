@@ -110,7 +110,7 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       }
 
       const [startHour, endHour] = businessHours.hours
-      console.log('asda', ((endHour - startHour) * 60) / escapeRoom.interval)
+
       // TODO: calculations are using local timezone, should use escapeRoom's
       const timeslots = times(i => {
         const start = setMinutes(date, startHour * 60 + i * escapeRoom.interval)
