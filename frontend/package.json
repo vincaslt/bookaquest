@@ -1,7 +1,7 @@
 {
-  "name": "bookings-manager-frontend",
+  "name": "bookaquest",
   "version": "1.0.0",
-  "description": "",
+  "description": "Escape room booking management system",
   "scripts": {
     "start": "npm run build-tailwind && start \"\" npm run web:start & start \"\" npm run script:start & start \"\" npm run build-ts:watch",
     "start:windows": "start /b npm run web:start & start /b npm run script:start & start /b npm run build-ts:watch",
