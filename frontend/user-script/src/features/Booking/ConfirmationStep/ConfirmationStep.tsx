@@ -1,6 +1,6 @@
-import { Button, Divider, Icon, Statistic, Typography } from 'antd'
-import { format } from 'date-fns'
+import { Button, Divider, Statistic, Typography } from 'antd'
 import * as React from 'react'
+import Time from '~/../commons/components/Time'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
 import { useI18n } from '~/../commons/utils/i18n'
@@ -16,7 +16,7 @@ interface Props {
 }
 
 function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, onSubmit }: Props) {
-  const { t, dateFnsLocale } = useI18n()
+  const { t } = useI18n()
 
   const participants = 4
 
@@ -32,13 +32,12 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, onSubmit }: Props
             </div>
             <div>
               <span className="font-semibold mr-2">{t`Date:`}</span>
-              {format(timeslot.start, 'PPP', { locale: dateFnsLocale })}
+
+              <Time date={timeslot.start} type="date" />
             </div>
             <div>
               <span className="font-semibold mr-2">{t`Time:`}</span>
-              {format(timeslot.start, 'p', { locale: dateFnsLocale })}
-              {' - '}
-              {format(timeslot.end, 'p', { locale: dateFnsLocale })}
+              <Time date={[timeslot.start, timeslot.end]} />
             </div>
           </div>
           <div>

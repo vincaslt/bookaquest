@@ -1,7 +1,8 @@
-import { format, set } from 'date-fns'
+import { set } from 'date-fns'
 import prop from 'ramda/es/prop'
 import sortBy from 'ramda/es/sortBy'
 import * as React from 'react'
+import Time from '~/../commons/components/Time'
 import { BusinessHours } from '../interfaces/businessHours'
 import { useI18n } from '../utils/i18n'
 
@@ -10,11 +11,8 @@ interface Props {
 }
 
 const sortByWeekday = sortBy(prop('weekday'))
-const toTime = (hours: number) => {
-  // TODO: use locale setting for format 24h or 12h
-  const time = set(new Date(), { hours: Math.floor(hours), minutes: (hours % 1) * 60 })
-  return format(time, 'HH:mm')
-}
+const toTime = (hours: number) =>
+  set(new Date(), { hours: Math.floor(hours), minutes: (hours % 1) * 60 })
 
 function WorkHours({ businessHours = [] }: Props) {
   const { t } = useI18n()
@@ -35,7 +33,7 @@ function WorkHours({ businessHours = [] }: Props) {
           <div className="mb-1" key={weekday}>
             <span className="font-medium mr-2">{weekdays[weekday - 1]}</span>
             <span>
-              {toTime(hours[0])} - {toTime(hours[1])}
+              <Time date={[toTime(hours[0]), toTime(hours[1])]} />
             </span>
           </div>
         ))

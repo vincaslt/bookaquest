@@ -1,9 +1,9 @@
 import { Button, Col, Result, Row, Spin, Steps, Typography } from 'antd'
 import Paragraph from 'antd/lib/typography/Paragraph'
-import moment from 'moment'
 import * as React from 'react'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
+import Time from '~/../commons/components/Time'
 import { BookingWithEscapeRoom } from '~/../commons/interfaces/booking'
 import { Organization } from '~/../commons/interfaces/organization'
 import { getBooking, getOrganization } from '../../api/application'
@@ -68,7 +68,6 @@ function BookingStatus() {
     )
   }
 
-  const startDate = moment(booking.startDate).format('LLLL')
   const escapeRoom = booking.escapeRoom
 
   return (
@@ -85,7 +84,10 @@ function BookingStatus() {
               <Paragraph>
                 <Text strong>Details</Text>
                 <div>Name: {booking.name}</div>
-                <div>Date: {startDate}</div>
+                <div>
+                  {'Date: '}
+                  <Time date={booking.startDate} type={{ format: 'PPPp' }} />
+                </div>
                 <div>Escape room: {booking.escapeRoom.name}</div>
               </Paragraph>
               <Paragraph>
@@ -112,7 +114,12 @@ function BookingStatus() {
               />
               <Steps.Step
                 title="Play!"
-                description={`Show up on ${moment(booking.startDate).format('LLLL')}`}
+                description={
+                  <>
+                    {'Show up on '}
+                    <Time date={booking.startDate} type={{ format: 'PPPp' }} />
+                  </>
+                }
               />
             </Steps>
           </Result>

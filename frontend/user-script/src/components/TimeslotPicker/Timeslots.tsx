@@ -1,6 +1,6 @@
 import { Button, Icon, List } from 'antd'
-import { format } from 'date-fns'
 import * as React from 'react'
+import Time from '~/../commons/components/Time'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
 import { useI18n } from '~/../commons/utils/i18n'
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 function Timeslots({ loading, onSelect, timeslots = [] }: Props) {
-  const { t, dateFnsLocale } = useI18n()
+  const { t } = useI18n()
 
   const handleSelect = (timeslot: Timeslot) => () => onSelect(timeslot)
 
@@ -28,9 +28,7 @@ function Timeslots({ loading, onSelect, timeslots = [] }: Props) {
             <List.Item className="flex justify-between">
               <div className="flex text-base items-center font-bold">
                 <Icon type="clock-circle" className="mr-2" />
-                {format(timeslot.start, 'p', { locale: dateFnsLocale })}
-                {' - '}
-                {format(timeslot.end, 'p', { locale: dateFnsLocale })}
+                <Time date={[timeslot.start, timeslot.end]} />
               </div>
 
               <Button
