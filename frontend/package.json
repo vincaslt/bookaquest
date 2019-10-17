@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vincaslt/bookings-manager.git"
+    "url": "git+https://github.com/vincasltbookaquest.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vincaslt/bookings-manager/issues"
+    "url": "https://github.com/vincasltbookaquest/issues"
   },
-  "homepage": "https://github.com/vincaslt/bookings-manager",
+  "homepage": "https://bookaquest.com",
   "staticFiles": {
     "watcherGlob": "**",
     "staticPath": [
@@ -87,6 +87,7 @@
     "reach-router": "^0.0.0",
     "react": "^16.8.6",
     "react-aspect-ratio": "^1.0.40",
+    "react-countdown-now": "^2.1.1",
     "react-dom": "^16.8.6",
     "react-i18next": "^10.9.0",
     "react-popper": "^1.3.4",

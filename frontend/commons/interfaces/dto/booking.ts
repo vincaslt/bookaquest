@@ -10,6 +10,7 @@ export interface BookingDTO {
   escapeRoomId: string
   status: string
   createdAt: string
+  comment: string | null
 }
 
 export interface BookingWithEscapeRoomDTO extends BookingDTO {

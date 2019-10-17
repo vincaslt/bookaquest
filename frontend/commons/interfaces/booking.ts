@@ -17,11 +17,12 @@ export type Booking = Omit<BookingDTO, 'startDate' | 'endDate' | 'createdAt' | '
 
 export type BookingWithEscapeRoom = Omit<
   BookingWithEscapeRoomDTO,
-  'startDate' | 'endDate' | 'createdAt' | 'escapeRoom'
+  'startDate' | 'endDate' | 'createdAt' | 'escapeRoom' | 'status'
 > & {
   startDate: Date
   endDate: Date
   createdAt: Date
+  status: BookingStatus
   escapeRoom: EscapeRoom
 }
 
@@ -47,6 +48,7 @@ export function fromBookingWithEscapeRoomDTO(dto: BookingWithEscapeRoomDTO): Boo
     startDate: new Date(dto.startDate),
     endDate: new Date(dto.endDate),
     createdAt: new Date(dto.createdAt),
+    status: dto.status as BookingStatus,
     escapeRoom: fromEscapeRoomDTO(dto.escapeRoom)
   }
 }

@@ -6,7 +6,7 @@ import { createGlobalStyle } from 'styled-components'
 import { Route, Switch } from 'wouter'
 import { useI18n } from '~/../commons/utils/i18n'
 import Booking from './features/Booking/Booking'
-import BookingStatus from './features/BookingStatus/BookingStatus'
+import BookingItinerary from './features/BookingItinerary/BookingItinerary'
 
 const AppSpinnerContainer = styled('div')`
   display: flex;
@@ -58,7 +58,7 @@ function App() {
     <ContentContainer>
       <GlobalStyle />
       <Switch>
-        <Route path="/booking/:organizationId" component={BookingStatus} />
+        <Route path="/booking/:organizationId" component={BookingItinerary} />
         <Route path="/:organizationId" component={Booking} />
       </Switch>
       <Footer>

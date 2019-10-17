@@ -1,4 +1,4 @@
-import { Card, Divider, Icon, Rate, Typography } from 'antd'
+import { Card, Divider, Icon, Typography } from 'antd'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
 import styled from 'styled-components'

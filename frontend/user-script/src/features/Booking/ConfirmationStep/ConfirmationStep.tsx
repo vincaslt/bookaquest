@@ -6,7 +6,7 @@ import { Timeslot } from '~/../commons/interfaces/timeslot'
 import { useI18n } from '~/../commons/utils/i18n'
 import { BookingInfo } from '../BookingInfoStep/BookingInfoStep'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 interface Props {
   escapeRoom: EscapeRoom
@@ -27,31 +27,30 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, onSubmit }: Props
           <div className="mb-6">
             <Title level={4}>{t`Booking info`}</Title>
             <div>
-              <span className="font-semibold mr-2">{t`Escape room:`}</span>
+              <Text strong className="mr-2">{t`Escape room:`}</Text>
               {escapeRoom.name}
             </div>
             <div>
-              <span className="font-semibold mr-2">{t`Date:`}</span>
-
+              <Text strong className="mr-2">{t`Date:`}</Text>
               <Time date={timeslot.start} type="date" />
             </div>
             <div>
-              <span className="font-semibold mr-2">{t`Time:`}</span>
+              <Text strong className="mr-2">{t`Time:`}</Text>
               <Time date={[timeslot.start, timeslot.end]} />
             </div>
           </div>
           <div>
             <Title level={4}>{t`Contact info`}</Title>
             <div>
-              <span className="font-semibold mr-2">{t`Name:`}</span>
+              <Text strong className="mr-2">{t`Name:`}</Text>
               {bookingInfo.name}
             </div>
             <div>
-              <span className="font-semibold mr-2">{t`Email:`}</span>
+              <Text strong className="mr-2">{t`Email:`}</Text>
               {bookingInfo.email}
             </div>
             <div>
-              <span className="font-semibold mr-2">{t`Phone:`}</span>
+              <Text strong className="mr-2">{t`Phone:`}</Text>
               {bookingInfo.phoneNumber}
             </div>
           </div>
