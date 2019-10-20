@@ -4,6 +4,7 @@ import { UpdateEscapeRoomDTO } from '@app/dto/UpdateEscapeRoomDTO'
 import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
 import { OrganizationEntity } from '@app/entities/OrganizationEntity'
+import { isBetween } from '@app/helpers/number'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
 import { withAuth } from '@app/lib/decorators/withAuth'
@@ -11,8 +12,10 @@ import { withBody } from '@app/lib/decorators/withBody'
 import withParams from '@app/lib/decorators/withParams'
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
+import { prop, uniqBy } from 'ramda'
 import { getManager, getRepository } from 'typeorm'
 
+// TODO: Escape room interval missing
 // TODO: check organization escape room limits, how many it has already
 const createEscapeRoom = withAuth(({ userId }) =>
   withParams(['organizationId'], ({ organizationId }) =>
@@ -29,6 +32,17 @@ const createEscapeRoom = withAuth(({ userId }) =>
       // TODO: check permissions when implemented
       if (!isOrganizationMember(organizationId, userId)) {
         return send(res, STATUS_ERROR.FORBIDDEN)
+      }
+
+      const hasDuplicateWeekday =
+        uniqBy(prop('weekday'), dto.businessHours).length !== dto.businessHours.length
+      const badHoursFormat = dto.businessHours.some(
+        ({ hours, weekday }) =>
+          hours.some(hour => !isBetween(hour, [0, 24])) || !isBetween(weekday, [1, 7])
+      )
+
+      if (hasDuplicateWeekday || badHoursFormat) {
+        return send(res, STATUS_ERROR.BAD_REQUEST)
       }
 
       try {
@@ -48,6 +62,7 @@ const createEscapeRoom = withAuth(({ userId }) =>
 
         return send(res, STATUS_SUCCESS.OK, toEscapeRoomDTO(savedRoom))
       } catch (e) {
+        // TODO: logging
         return send(res, STATUS_ERROR.INTERNAL)
       }
     })

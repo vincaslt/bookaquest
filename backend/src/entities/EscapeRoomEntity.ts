@@ -30,6 +30,9 @@ export class EscapeRoomEntity {
   @Column('numeric', { precision: 5, scale: 2 })
   price: number
 
+  @Column('numeric', { array: true })
+  participants: [number, number]
+
   @Column()
   location: string
 

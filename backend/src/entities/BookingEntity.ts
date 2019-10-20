@@ -35,6 +35,9 @@ export class BookingEntity {
   email: string
 
   @Column()
+  participants: number
+
+  @Column()
   phoneNumber: string
 
   @Column()

@@ -17,6 +17,7 @@ import { CreateEscapeRoom, EscapeRoom } from '~/../commons/interfaces/escapeRoom
 import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
+import RangeNumberInput from '../../../shared/components/RangeNumberInput'
 
 const StyledResetButton = styled(ResetButton)`
   margin-right: 16px;
@@ -41,6 +42,7 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
     price: 0,
     images: [],
     interval: 60, // TODO: add input
+    participants: [],
     timezone: organization.timezone!,
     businessHours: organization.businessHours!
   }
@@ -55,6 +57,10 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
     images: Yup.array()
       .of(Yup.string())
       .required(),
+    participants: Yup.array()
+      .of(Yup.number()) // TODO: fix this test, not working
+      .required()
+      .test('rangeTest', 'Invalid range', ([from, to]: [number, number]) => from <= to),
     interval: Yup.number()
       .min(10)
       .required(),
@@ -92,13 +98,15 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
       })
   }
 
+  // TODO: show error / disallow, when organization has no working hours (or show a working hours picker)
+
   return (
     <Formik
       validationSchema={validationSchema}
       initialValues={initialValues}
       onSubmit={handleSubmit}
     >
-      {({ values }) => (
+      {({ values, setFieldValue, setFieldTouched }) => (
         <Row gutter={24}>
           <Col span={10}>
             <Form layout="vertical">
@@ -116,6 +124,21 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
 
               <FormItem name="price" hasFeedback label={t`Price`}>
                 <InputNumber name="price" min={0} />
+              </FormItem>
+
+              <FormItem name="interval" hasFeedback label={t`Interval`}>
+                <InputNumber name="interval" min={10} />
+              </FormItem>
+
+              <FormItem name="participants" hasFeedback label={t`Participants`}>
+                <RangeNumberInput
+                  name="participants"
+                  min={0}
+                  value={values.participants as [number?, number?]}
+                  onChange={value => setFieldValue('participants', value)}
+                  onBlur={() => setFieldTouched('participants', true)}
+                  placeholder={[t`From`, t`To`]}
+                />
               </FormItem>
 
               <FormItem name="images" hasFeedback label={t`Images`}>

@@ -9,6 +9,7 @@ export interface BookingDTO {
   phoneNumber: string
   escapeRoomId: string
   status: string
+  participants: number
   createdAt: string
   comment: string | null
 }
@@ -23,4 +24,5 @@ export interface CreateBookingDTO {
   name: string
   phoneNumber: string
   email: string
+  participants: number
 }

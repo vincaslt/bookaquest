@@ -9,6 +9,7 @@ export interface CreateEscapeRoomDTO {
   timezone: string
   interval: number
   location: string
+  participants: number[]
 }
 
 export interface EscapeRoomDTO {

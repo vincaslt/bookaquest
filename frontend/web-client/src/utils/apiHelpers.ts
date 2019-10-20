@@ -18,6 +18,7 @@ function createAuthHeaders(accessToken: string) {
   return { Authorization: `Bearer ${accessToken}` }
 }
 
+// TODO: this seems like it might not be refreshing expired tokens but insteal logging out
 export function withAuth<Args extends any[], T>(
   request: (headers: { Authorization: string }) => (...args: Args) => Promise<T>
 ) {

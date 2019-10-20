@@ -3,6 +3,7 @@ import { CreateBookingDTO } from '@app/dto/CreateBookingDTO'
 import { BookingEntity, BookingStatus } from '@app/entities/BookingEntity'
 import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
+import { isBetween } from '@app/helpers/number'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
 import { withAuth } from '@app/lib/decorators/withAuth'
@@ -13,6 +14,7 @@ import {
   addDays,
   areIntervalsOverlapping,
   differenceInCalendarDays,
+  differenceInMinutes,
   getISODay,
   isAfter,
   setMinutes,
@@ -39,7 +41,22 @@ const getBooking = withParams(['bookingId'], ({ bookingId }) => async (req, res)
 
 const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
   withBody(CreateBookingDTO, dto => async (req, res) => {
+    const escapeRoomRepo = getRepository(EscapeRoomEntity)
     const bookingRepo = getRepository(BookingEntity)
+
+    const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId)
+
+    if (!escapeRoom) {
+      return send(res, STATUS_ERROR.NOT_FOUND)
+    }
+
+    // TODO: validate if starts at timeslot start
+    if (
+      differenceInMinutes(dto.startDate, dto.endDate) !== escapeRoom.interval ||
+      !isBetween(dto.participants, escapeRoom.participants)
+    ) {
+      return send(res, STATUS_ERROR.BAD_REQUEST)
+    }
 
     const overlap = await bookingRepo.findOne({
       where: [
@@ -54,7 +71,6 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       ]
     })
 
-    // TODO: also validate if the timeslot itself is valid, not just random hours (working hours, interval, etc.)
     if (overlap) {
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }

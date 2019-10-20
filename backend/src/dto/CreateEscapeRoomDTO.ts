@@ -1,6 +1,16 @@
 import { BusinessHoursDTO } from '@app/dto/BusinessHoursDTO'
 import { Type } from 'class-transformer'
-import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUrl, ValidateNested } from 'class-validator'
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+  IsUrl,
+  ValidateNested
+} from 'class-validator'
 
 export class CreateEscapeRoomDTO {
   @IsNotEmpty()
@@ -37,4 +47,11 @@ export class CreateEscapeRoomDTO {
   @IsNotEmpty()
   @IsString()
   location: string
+
+  @IsNotEmpty()
+  @IsNumber(undefined, { each: true })
+  @IsArray()
+  @ArrayMaxSize(2)
+  @ArrayMinSize(2)
+  participants: [number, number]
 }
