@@ -84,6 +84,13 @@ export const rejectBooking = withAuth(headers => (bookingId: string) =>
     .then(fromBookingDTO)
 )
 
+export const acceptBooking = withAuth(headers => (bookingId: string) =>
+  api
+    .put<BookingDTO>(`/booking/${bookingId}/accept`, undefined, { headers })
+    .then(res => res.data)
+    .then(fromBookingDTO)
+)
+
 export const getOrganization = (organizationId: string) =>
   api
     .get<OrganizationDTO>(`/organization/${organizationId}`)

@@ -18,8 +18,6 @@ interface Props {
 function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, onSubmit }: Props) {
   const { t } = useI18n()
 
-  const participants = 4
-
   return (
     <>
       <div className="flex justify-between">
@@ -59,7 +57,7 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, onSubmit }: Props
           <Title level={4}>{t`Price`}</Title>
           <div className="flex justify-between">
             <span>{t`Participants`}</span>
-            <span className="font-bold">{participants}</span>
+            <span className="font-bold">{bookingInfo.participants}</span>
           </div>
           <div className="flex justify-between">
             <span>{t`Per participant`}</span>
@@ -70,7 +68,7 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, onSubmit }: Props
             <Button type="link" className="p-0">{t`Apply a discount`}</Button>
             <Statistic
               className="font-bold text-green-500"
-              value={escapeRoom.price * participants}
+              value={escapeRoom.price * bookingInfo.participants}
               suffix="$"
             />
           </div>

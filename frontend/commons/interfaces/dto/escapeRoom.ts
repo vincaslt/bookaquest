@@ -25,4 +25,5 @@ export interface EscapeRoomDTO {
   interval: number
   price: number
   location: string
+  participants: [number, number]
 }

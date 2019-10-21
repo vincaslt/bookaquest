@@ -50,11 +50,11 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       return send(res, STATUS_ERROR.NOT_FOUND)
     }
 
+    const invalidInterval = differenceInMinutes(dto.endDate, dto.startDate) !== escapeRoom.interval
+    const invalidParticipants = !isBetween(dto.participants, escapeRoom.participants)
+
     // TODO: validate if starts at timeslot start
-    if (
-      differenceInMinutes(dto.startDate, dto.endDate) !== escapeRoom.interval ||
-      !isBetween(dto.participants, escapeRoom.participants)
-    ) {
+    if (invalidInterval || invalidParticipants) {
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
 
@@ -181,9 +181,39 @@ const rejectBooking = withAuth(({ userId }) =>
     return send(res, STATUS_SUCCESS.OK, toBookingDTO(savedBooking))
   })
 )
+
+const acceptBooking = withAuth(({ userId }) =>
+  withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
+    const bookingRepo = getRepository(BookingEntity)
+
+    const booking = await bookingRepo.findOne(bookingId, { relations: ['escapeRoom'] })
+
+    if (!booking) {
+      return send(res, STATUS_ERROR.NOT_FOUND)
+    }
+
+    if (!isOrganizationMember(booking.escapeRoom.organizationId, userId)) {
+      return send(res, STATUS_ERROR.FORBIDDEN)
+    }
+
+    // TODO: check permissions when implemented
+    if (booking.status !== BookingStatus.Pending) {
+      return send(res, STATUS_ERROR.BAD_REQUEST)
+    }
+
+    booking.status = BookingStatus.Accepted
+
+    const savedBooking = await bookingRepo.save(booking)
+    // TODO: send email
+
+    return send(res, STATUS_SUCCESS.OK, toBookingDTO(savedBooking))
+  })
+)
+
 export default [
   post('/escape-room/:escapeRoomId/booking', createBooking),
   get('/escape-room/:escapeRoomId/availability', getAvailability),
   get('/booking/:bookingId', getBooking),
-  put('/booking/:bookingId/reject', rejectBooking)
+  put('/booking/:bookingId/reject', rejectBooking),
+  put('/booking/:bookingId/accept', acceptBooking)
 ]

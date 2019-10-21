@@ -23,6 +23,8 @@ function BookingSummary({ selectedRoom }: Props) {
     return null
   }
 
+  const [minParticipants, maxParticipants] = selectedRoom.participants
+
   return (
     <>
       <div className="flex justify-between">
@@ -31,7 +33,7 @@ function BookingSummary({ selectedRoom }: Props) {
           <div className="flex flex-wrap font-semibold">
             <div className="mb-4 flex items-baseline">
               <Icon type="team" className="flex mr-1" />
-              {t`2-6 players`}
+              {t`${minParticipants}-${maxParticipants} players`}
               <Divider type="vertical" />
             </div>
             <div className="mb-4 flex items-baseline">

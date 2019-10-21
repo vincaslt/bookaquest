@@ -23,6 +23,14 @@ function PendingEventModal({ setBookings, booking, onClose }: Props) {
     onClose()
   }
 
+  const handleAccept = async () => {
+    const updatedBooking = await withLoading(api.acceptBooking(booking.id))
+    setBookings(bookings =>
+      bookings.map(b => (booking.id === updatedBooking.id ? updatedBooking : b))
+    )
+    onClose()
+  }
+
   return (
     <Modal
       onCancel={onClose}
@@ -32,7 +40,7 @@ function PendingEventModal({ setBookings, booking, onClose }: Props) {
         <Button key="reject" loading={loading} type="danger" onClick={handleReject}>
           {t`Reject`}
         </Button>,
-        <Button key="accept" type="primary">
+        <Button key="accept" type="primary" onClick={handleAccept}>
           {t`Accept`}
         </Button>
       ]}

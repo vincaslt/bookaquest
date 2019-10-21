@@ -94,8 +94,8 @@ function Booking() {
               {step === BookingStep.EscapeRoom && (
                 <EscapeRoomStep organizationId={organizationId} onSelect={handleSelectEscapeRoom} />
               )}
-              {step === BookingStep.BookingInfo && (
-                <BookingInfoStep onSubmit={handleSubmitBookingInfo} />
+              {step === BookingStep.BookingInfo && selectedRoom && (
+                <BookingInfoStep onSubmit={handleSubmitBookingInfo} room={selectedRoom} />
               )}
               {step === BookingStep.Timeslot && selectedRoom && (
                 <TimeslotStep onSelect={handleSelectTimeslot} room={selectedRoom} />
