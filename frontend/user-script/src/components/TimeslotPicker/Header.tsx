@@ -16,7 +16,7 @@ interface Props {
 
 const Header = ({ month, onPrev, onNext }: Props) => {
   return (
-    <thead className="bg-red-500 text-white">
+    <thead className="bg-red-600 text-white">
       <tr className="text-center">
         <th colSpan={7}>
           <div className="flex flex-1 justify-between">

@@ -1,3 +1,4 @@
+import { red } from '@ant-design/colors'
 import { Tooltip } from 'antd'
 import { getDate, getMonth, isBefore, isSameDay, startOfDay } from 'date-fns'
 import * as React from 'react'
@@ -23,7 +24,7 @@ const DayButton = styled.button<DayButtonProps>`
     !selected &&
     css`
       &:not(:disabled):hover span {
-        background-color: #f56565;
+        background-color: ${red[6]};
         color: white;
       }
     `}
@@ -48,7 +49,7 @@ function Day({ date, currentMonth, onSelect, timeslotCount, selected = false }: 
   const notCurrentMonthClass = getMonth(date) !== currentMonth ? 'bg-gray-100' : emptyClass
   const disabledClass = isDisabled ? 'bg-gray-100 text-gray-300' : notCurrentMonthClass
 
-  const todayClass = isSameDay(date, now) ? 'border-2 border-red-500' : ''
+  const todayClass = isSameDay(date, now) ? 'border-2 border-red-600' : ''
 
   const handleClick = () => onSelect(date)
 
