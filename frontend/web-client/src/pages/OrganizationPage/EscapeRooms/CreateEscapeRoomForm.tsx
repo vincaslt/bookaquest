@@ -3,10 +3,11 @@ import {
   FormItem,
   Input,
   InputNumber,
+  Rate,
   ResetButton,
   SubmitButton
 } from '@jbuschke/formik-antd'
-import { Col, notification, Row } from 'antd'
+import { Col, Icon, notification, Row } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
 import styled from 'styled-components'
@@ -38,13 +39,14 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
   const initialValues: CreateEscapeRoom = {
     name: '',
     description: '',
-    location: '',
+    location: organization.location,
     price: 0,
     images: [],
-    interval: 60, // TODO: add input
+    interval: 60,
     participants: [],
     timezone: organization.timezone!,
-    businessHours: organization.businessHours!
+    businessHours: organization.businessHours!,
+    difficulty: 1
   }
 
   const validationSchema = Yup.object().shape<CreateEscapeRoom>({
@@ -52,18 +54,22 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
     description: Yup.string().required(),
     location: Yup.string().required(),
     price: Yup.number()
-      .positive()
-      .required(),
+      .required()
+      .positive(),
     images: Yup.array()
       .of(Yup.string())
       .required(),
     participants: Yup.array()
-      .of(Yup.number()) // TODO: fix this test, not working
+      .of(Yup.number())
       .required()
       .test('rangeTest', 'Invalid range', ([from, to]: [number, number]) => from <= to),
     interval: Yup.number()
-      .min(10)
-      .required(),
+      .required()
+      .min(10),
+    difficulty: Yup.number()
+      .required()
+      .min(1)
+      .max(5),
     timezone: Yup.string().required(),
     businessHours: Yup.array()
       .of(
@@ -120,6 +126,10 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
 
               <FormItem name="description" hasFeedback label={t`Description`}>
                 <Input.TextArea name="description" rows={4} />
+              </FormItem>
+
+              <FormItem name="difficulty" hasFeedback label={t`Difficulty`}>
+                <Rate name="difficulty" character={<Icon type="lock" theme="filled" />} />
               </FormItem>
 
               <FormItem name="price" hasFeedback label={t`Price`}>

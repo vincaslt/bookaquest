@@ -49,10 +49,13 @@ export class EscapeRoomEntity {
   businessHours: EscapeRoomBusinessHoursEntity[]
 
   @Column({ nullable: true })
-  timezone: string
+  timezone?: string
 
   @Column()
   interval: number // in minutes
+
+  @Column()
+  difficulty: number // 1-5
 
   @UpdateDateColumn()
   updatedAt: Date

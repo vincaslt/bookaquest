@@ -1,4 +1,5 @@
 import { Card, Divider, Icon, Typography } from 'antd'
+import times from 'ramda/es/times'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
 import styled from 'styled-components'
@@ -44,11 +45,18 @@ function BookingSummary({ selectedRoom }: Props) {
             <div className="mb-4 flex items-center">
               {t`Difficulty`}
               <div className="ml-2 flex items-center">
-                <Icon type="lock" theme="filled" />
-                <Icon type="lock" theme="filled" />
-                <Icon type="lock" theme="filled" />
-                <Icon type="lock" />
-                <Icon type="lock" />
+                {times(
+                  () => (
+                    <Icon type="lock" theme="filled" />
+                  ),
+                  selectedRoom.difficulty
+                )}
+                {times(
+                  () => (
+                    <Icon type="lock" />
+                  ),
+                  5 - selectedRoom.difficulty
+                )}
               </div>
             </div>
           </div>

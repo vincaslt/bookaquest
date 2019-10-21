@@ -4,11 +4,14 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsPositive,
   IsString,
   IsUrl,
+  Max,
+  Min,
   ValidateNested
 } from 'class-validator'
 
@@ -54,4 +57,11 @@ export class CreateEscapeRoomDTO {
   @ArrayMaxSize(2)
   @ArrayMinSize(2)
   participants: [number, number]
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  difficulty: number
 }

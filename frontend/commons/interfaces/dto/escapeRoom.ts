@@ -10,6 +10,7 @@ export interface CreateEscapeRoomDTO {
   interval: number
   location: string
   participants: number[]
+  difficulty: number
 }
 
 export interface EscapeRoomDTO {
@@ -25,5 +26,6 @@ export interface EscapeRoomDTO {
   interval: number
   price: number
   location: string
+  difficulty: number
   participants: [number, number]
 }
