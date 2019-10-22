@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer'
-import { IsDate, IsEmail, IsNotEmpty, IsNumber, IsPhoneNumber, Matches } from 'class-validator'
+import {
+  IsDate,
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsPhoneNumber,
+  IsString,
+  Matches
+} from 'class-validator'
 
 export class CreateBookingDTO {
   @IsNotEmpty()
@@ -27,4 +35,8 @@ export class CreateBookingDTO {
   @IsNotEmpty()
   @IsNumber()
   participants: number
+
+  @IsNotEmpty()
+  @IsString()
+  paymentToken: string
 }

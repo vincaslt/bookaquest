@@ -23,7 +23,10 @@ import {
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
 import { times } from 'ramda'
+import * as Stripe from 'stripe'
 import { Between, getRepository, LessThan, MoreThan } from 'typeorm'
+
+const stripe = new Stripe('sk_test_GfJ1gplk9DzZCnaUpEkhRT1D005yKw18dY')
 
 const getBooking = withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
   const bookingRepo = getRepository(BookingEntity)
@@ -74,6 +77,13 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
     if (overlap) {
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
+
+    await stripe.charges.create({
+      amount: dto.participants * escapeRoom.price * 100,
+      currency: 'eur',
+      description: 'An example charge',
+      source: dto.paymentToken
+    })
 
     const booking = await bookingRepo.save(
       bookingRepo.create({ ...dto, status: BookingStatus.Pending, escapeRoomId })

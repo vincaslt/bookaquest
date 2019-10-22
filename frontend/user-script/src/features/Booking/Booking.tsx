@@ -1,11 +1,11 @@
 import { Col, Empty, Icon, Row, Steps } from 'antd'
 import * as React from 'react'
+import { Elements } from 'react-stripe-elements'
 import styled from 'styled-components'
-import { useLocation, useRoute } from 'wouter'
+import { useRoute } from 'wouter'
 import { Booking } from '~/../commons/interfaces/booking'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
-import * as api from '../../api/application'
 import BookingInfoStep, { BookingInfo } from './BookingInfoStep/BookingInfoStep'
 import BookingSummary from './BookingSummary/BookingSummary'
 import ConfirmationStep from './ConfirmationStep/ConfirmationStep'
@@ -29,7 +29,6 @@ enum BookingStep {
 // TODO show availabilities, and escape room selection
 function Booking() {
   const [, params] = useRoute('/:organizationId')
-  const [, setLocation] = useLocation()
   const [step, setStep] = React.useState<BookingStep>(BookingStep.EscapeRoom)
 
   const [selectedRoom, setSelectedRoom] = React.useState<EscapeRoom>()
@@ -55,18 +54,6 @@ function Booking() {
   const handleSelectTimeslot = (timeslotInfo: Timeslot) => {
     setTimeslot(timeslotInfo)
     setStep(BookingStep.Confirmation)
-  }
-
-  const handleConfirmation = async () => {
-    if (timeslot && selectedRoom && bookingInfo) {
-      const { id } = await api.createBooking({
-        ...bookingInfo,
-        startDate: timeslot.start,
-        endDate: timeslot.end,
-        escapeRoomId: selectedRoom.id
-      })
-      setLocation(`/booking/${id}`)
-    }
   }
 
   const currentStep = {
@@ -101,12 +88,13 @@ function Booking() {
                 <TimeslotStep onSelect={handleSelectTimeslot} room={selectedRoom} />
               )}
               {step === BookingStep.Confirmation && timeslot && bookingInfo && selectedRoom && (
-                <ConfirmationStep
-                  bookingInfo={bookingInfo}
-                  escapeRoom={selectedRoom}
-                  timeslot={timeslot}
-                  onSubmit={handleConfirmation}
-                />
+                <Elements>
+                  <ConfirmationStep
+                    bookingInfo={bookingInfo}
+                    escapeRoom={selectedRoom}
+                    timeslot={timeslot}
+                  />
+                </Elements>
               )}
             </Section>
           </Col>

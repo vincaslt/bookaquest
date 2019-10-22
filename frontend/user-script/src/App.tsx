@@ -1,6 +1,7 @@
 import { Layout, Spin } from 'antd'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
+import { StripeProvider } from 'react-stripe-elements'
 import styled from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
 import { Route, Switch } from 'wouter'
@@ -44,6 +45,7 @@ const Footer = styled(Layout.Footer)`
 `
 
 // TODO: footer link
+// TODO: load stripe keys from api (DB)
 function App() {
   const { ready } = useI18n(undefined, { useSuspense: false })
 
@@ -57,10 +59,12 @@ function App() {
   return (
     <ContentContainer>
       <GlobalStyle />
-      <Switch>
-        <Route path="/booking/:organizationId" component={BookingItinerary} />
-        <Route path="/:organizationId" component={Booking} />
-      </Switch>
+      <StripeProvider apiKey="pk_test_RBJXD9Q0peOpWei9vzqLBjUl001D6kkTMW">
+        <Switch>
+          <Route path="/booking/:organizationId" component={BookingItinerary} />
+          <Route path="/:organizationId" component={Booking} />
+        </Switch>
+      </StripeProvider>
       <Footer>
         Powered by <a href="#">BookaQuest</a>
       </Footer>

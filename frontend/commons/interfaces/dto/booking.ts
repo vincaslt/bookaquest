@@ -25,4 +25,5 @@ export interface CreateBookingDTO {
   phoneNumber: string
   email: string
   participants: number
+  paymentToken: string
 }

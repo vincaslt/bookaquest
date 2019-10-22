@@ -6,7 +6,10 @@ import { CreateBooking } from '~/../commons/interfaces/booking'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { useI18n } from '~/../commons/utils/i18n'
 
-export type BookingInfo = Omit<CreateBooking, 'startDate' | 'endDate' | 'escapeRoomId'>
+export type BookingInfo = Omit<
+  CreateBooking,
+  'startDate' | 'endDate' | 'escapeRoomId' | 'paymentToken'
+>
 
 interface Props {
   room: EscapeRoom
