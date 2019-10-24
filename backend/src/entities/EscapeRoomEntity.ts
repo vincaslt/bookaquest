@@ -57,6 +57,9 @@ export class EscapeRoomEntity {
   @Column()
   difficulty: number // 1-5
 
+  @Column({ default: false })
+  paymentEnabled: boolean
+
   @UpdateDateColumn()
   updatedAt: Date
 

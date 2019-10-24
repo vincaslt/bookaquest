@@ -3,6 +3,7 @@ import { CreateBookingDTO } from '@app/dto/CreateBookingDTO'
 import { BookingEntity, BookingStatus } from '@app/entities/BookingEntity'
 import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
+import { PaymentDetailsEntity } from '@app/entities/PaymentDetailsEntity'
 import { isBetween } from '@app/helpers/number'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
@@ -26,8 +27,6 @@ import { times } from 'ramda'
 import * as Stripe from 'stripe'
 import { Between, getRepository, LessThan, MoreThan } from 'typeorm'
 
-const stripe = new Stripe('sk_test_GfJ1gplk9DzZCnaUpEkhRT1D005yKw18dY')
-
 const getBooking = withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
   const bookingRepo = getRepository(BookingEntity)
 
@@ -46,8 +45,9 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
   withBody(CreateBookingDTO, dto => async (req, res) => {
     const escapeRoomRepo = getRepository(EscapeRoomEntity)
     const bookingRepo = getRepository(BookingEntity)
+    const paymentDetailsRepo = getRepository(PaymentDetailsEntity)
 
-    const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId)
+    const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId, { relations: ['organization'] })
 
     if (!escapeRoom) {
       return send(res, STATUS_ERROR.NOT_FOUND)
@@ -77,17 +77,31 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
     if (overlap) {
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
+    let status = BookingStatus.Pending
 
-    await stripe.charges.create({
-      amount: dto.participants * escapeRoom.price * 100,
-      currency: 'eur',
-      description: 'An example charge',
-      source: dto.paymentToken
-    })
+    if (escapeRoom.paymentEnabled) {
+      const paymentDetails = await paymentDetailsRepo.findOne({
+        where: { organizationId: escapeRoom.organization.id }
+      })
 
-    const booking = await bookingRepo.save(
-      bookingRepo.create({ ...dto, status: BookingStatus.Pending, escapeRoomId })
-    )
+      // TODO: log error "payments disabled"
+      if (!paymentDetails || !dto.paymentToken) {
+        return send(res, STATUS_ERROR.BAD_REQUEST)
+      }
+
+      const stripe = new Stripe(paymentDetails.paymentSecretKey)
+
+      await stripe.charges.create({
+        amount: dto.participants * escapeRoom.price * 100,
+        currency: 'eur',
+        description: 'An example charge',
+        source: dto.paymentToken
+      })
+
+      status = BookingStatus.Accepted
+    }
+
+    const booking = await bookingRepo.save(bookingRepo.create({ ...dto, status, escapeRoomId }))
 
     return send(res, STATUS_SUCCESS.OK, toBookingDTO(booking))
   })

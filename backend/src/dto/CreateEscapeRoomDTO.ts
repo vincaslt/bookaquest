@@ -4,9 +4,11 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   IsUrl,
@@ -64,4 +66,8 @@ export class CreateEscapeRoomDTO {
   @Min(1)
   @Max(5)
   difficulty: number
+
+  @IsOptional()
+  @IsBoolean()
+  paymentEnabled?: boolean
 }

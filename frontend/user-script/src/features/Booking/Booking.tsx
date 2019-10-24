@@ -1,11 +1,13 @@
 import { Col, Empty, Icon, Row, Steps } from 'antd'
 import * as React from 'react'
-import { Elements } from 'react-stripe-elements'
+import { Elements, StripeProvider } from 'react-stripe-elements'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
 import { Booking } from '~/../commons/interfaces/booking'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
+import { Organization } from '~/../commons/interfaces/organization'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
+import { getOrganization } from '../../api/application'
 import BookingInfoStep, { BookingInfo } from './BookingInfoStep/BookingInfoStep'
 import BookingSummary from './BookingSummary/BookingSummary'
 import ConfirmationStep from './ConfirmationStep/ConfirmationStep'
@@ -30,16 +32,28 @@ enum BookingStep {
 function Booking() {
   const [, params] = useRoute('/:organizationId')
   const [step, setStep] = React.useState<BookingStep>(BookingStep.EscapeRoom)
+  const [organization, setOrganization] = React.useState<Organization>()
 
   const [selectedRoom, setSelectedRoom] = React.useState<EscapeRoom>()
   const [bookingInfo, setBookingInfo] = React.useState<BookingInfo>()
   const [timeslot, setTimeslot] = React.useState<Timeslot>()
 
-  if (!params) {
+  const organizationId = params && params.organizationId
+
+  React.useEffect(() => {
+    if (organizationId) {
+      const fetchOrganizationData = async () => {
+        const _organization = await getOrganization(organizationId)
+        setOrganization(_organization)
+      }
+
+      fetchOrganizationData()
+    }
+  }, [organizationId])
+
+  if (!organizationId) {
     return null // TODO: redirect to error?
   }
-
-  const { organizationId } = params
 
   const handleSelectEscapeRoom = (room: EscapeRoom) => {
     setSelectedRoom(room)
@@ -87,15 +101,27 @@ function Booking() {
               {step === BookingStep.Timeslot && selectedRoom && (
                 <TimeslotStep onSelect={handleSelectTimeslot} room={selectedRoom} />
               )}
-              {step === BookingStep.Confirmation && timeslot && bookingInfo && selectedRoom && (
-                <Elements>
-                  <ConfirmationStep
-                    bookingInfo={bookingInfo}
-                    escapeRoom={selectedRoom}
-                    timeslot={timeslot}
-                  />
-                </Elements>
-              )}
+              {step === BookingStep.Confirmation &&
+                timeslot &&
+                bookingInfo &&
+                selectedRoom &&
+                organization && (
+                  <StripeProvider
+                    apiKey={
+                      organization.paymentDetails
+                        ? organization.paymentDetails.paymentClientKey
+                        : ''
+                    }
+                  >
+                    <Elements>
+                      <ConfirmationStep
+                        bookingInfo={bookingInfo}
+                        escapeRoom={selectedRoom}
+                        timeslot={timeslot}
+                      />
+                    </Elements>
+                  </StripeProvider>
+                )}
             </Section>
           </Col>
           <Col span={12}>

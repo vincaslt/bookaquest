@@ -17,6 +17,7 @@ const login = withBody(SignInDTO, dto => async (req, res) => {
   const user = await userRepo.findOne({
     where: { email: dto.email },
     relations: ['memberships', 'memberships.organization']
+    // select: ['password'] // TODO: enable when fixed
   })
 
   if (!user) {

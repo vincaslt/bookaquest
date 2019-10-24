@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   Matches
@@ -36,7 +37,7 @@ export class CreateBookingDTO {
   @IsNumber()
   participants: number
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   paymentToken: string
 }
