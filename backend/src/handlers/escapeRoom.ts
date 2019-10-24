@@ -89,21 +89,26 @@ const updateEscapeRoom = withAuth(({ userId }) =>
           const transEscapeRoomRepo = trans.getRepository(EscapeRoomEntity)
           const transBusinessHoursRepo = trans.getRepository(EscapeRoomBusinessHoursEntity)
 
-          await transBusinessHoursRepo.remove(escapeRoom.businessHours)
+          const options = { ...dto }
 
-          const businessHours = dto.businessHours
-            ? transBusinessHoursRepo.create(
-                dto.businessHours.map(hours => ({ ...hours, escapeRoomId: escapeRoom.id }))
-              )
-            : []
+          if (dto.businessHours) {
+            await transBusinessHoursRepo.remove(escapeRoom.businessHours)
 
-          const updatedEscapeRoom = transEscapeRoomRepo.merge(escapeRoom, {
-            ...dto,
-            businessHours
-          })
+            options.businessHours = transBusinessHoursRepo.create(
+              dto.businessHours.map(hours => ({ ...hours, escapeRoomId: escapeRoom.id }))
+            )
+          }
+
+          const updatedEscapeRoom = await transEscapeRoomRepo.preload(options)
+
+          if (!updatedEscapeRoom) {
+            throw new Error('Escape room not found')
+          }
 
           await transEscapeRoomRepo.save(updatedEscapeRoom)
-          await transBusinessHoursRepo.save(businessHours)
+          if (options.businessHours) {
+            await transBusinessHoursRepo.save(options.businessHours)
+          }
         })
 
         const savedEscapeRoom = await escapeRoomRepo.findOne(escapeRoomId, {

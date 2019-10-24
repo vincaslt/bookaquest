@@ -1,11 +1,11 @@
 import { BusinessHoursDTO } from './businessHours'
 
-interface CreatePaymentDetailsDTO {
+export interface CreatePaymentDetailsDTO {
   paymentClientKey: string
   paymentSecretKey: string
 }
 
-interface PaymentDetailsDTO {
+export interface PaymentDetailsDTO {
   paymentClientKey: string
 }
 

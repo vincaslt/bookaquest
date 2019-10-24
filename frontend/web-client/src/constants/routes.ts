@@ -3,7 +3,8 @@ import * as pathToRegexp from 'path-to-regexp'
 export enum PrivateRoutes {
   Dashboard = '/',
   Bookings = '/bookings',
-  Organization = '/organization'
+  Organization = '/organization',
+  Payments = '/payments'
 }
 
 export enum PublicRoutes {

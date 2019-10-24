@@ -91,36 +91,44 @@ const updateOrganization = withAuth(({ userId }) =>
           const transOrganizationRepo = trans.getRepository(OrganizationEntity)
           const transPaymentDetailsRepo = trans.getRepository(PaymentDetailsEntity)
 
-          await transBusinessHoursRepo.remove(organization.businessHours)
-
-          const businessHours = dto.businessHours
-            ? transBusinessHoursRepo.create(
-                dto.businessHours.map(hours => ({ ...hours, organizationId: organization.id }))
-              )
-            : []
-
-          if (organization.paymentDetails) {
-            await transPaymentDetailsRepo.remove(organization.paymentDetails)
+          const options = {
+            ...dto,
+            id: organizationId
           }
 
-          let paymentDetails
+          if (dto.businessHours) {
+            await transBusinessHoursRepo.remove(organization.businessHours)
+
+            options.businessHours = transBusinessHoursRepo.create(
+              dto.businessHours.map(hours => ({ ...hours, organizationId: organization.id }))
+            )
+          }
+
           if (dto.paymentDetails) {
-            paymentDetails = transPaymentDetailsRepo.create({
+            if (organization.paymentDetails) {
+              await transPaymentDetailsRepo.remove(organization.paymentDetails)
+            }
+
+            options.paymentDetails = transPaymentDetailsRepo.create({
               ...dto.paymentDetails,
               organizationId
             })
           }
 
-          const updatedOrganization = transOrganizationRepo.merge(organization, {
-            ...dto,
-            businessHours,
-            paymentDetails
-          })
+          const updatedOrganization = await transOrganizationRepo.preload(options)
+
+          if (!updatedOrganization) {
+            throw new Error('Organization not found')
+          }
 
           await transOrganizationRepo.save(updatedOrganization)
-          await transBusinessHoursRepo.save(businessHours)
-          if (paymentDetails) {
-            await transPaymentDetailsRepo.save(paymentDetails)
+
+          if (options.businessHours) {
+            await transBusinessHoursRepo.save(options.businessHours)
+          }
+
+          if (options.paymentDetails) {
+            await transPaymentDetailsRepo.save(options.paymentDetails)
           }
         })
 

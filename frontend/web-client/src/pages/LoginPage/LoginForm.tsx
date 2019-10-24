@@ -12,14 +12,14 @@ const initialValues: SignIn = {
   password: ''
 }
 
+const validationSchema = Yup.object().shape<SignIn>({
+  email: Yup.string().required(),
+  password: Yup.string().required()
+})
+
 function LoginForm() {
   const { t } = useI18n()
   const { login } = useUser()
-
-  const validationSchema = Yup.object().shape<SignIn>({
-    email: Yup.string().required(),
-    password: Yup.string().required()
-  })
 
   const handleSubmit = async (values: SignIn, actions: FormikActions<SignIn>) => {
     await login(values)

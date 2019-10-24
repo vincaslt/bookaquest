@@ -5,7 +5,8 @@ import {
   InputNumber,
   Rate,
   ResetButton,
-  SubmitButton
+  SubmitButton,
+  Switch
 } from '@jbuschke/formik-antd'
 import { Col, Icon, notification, Row } from 'antd'
 import { Formik, FormikActions } from 'formik'
@@ -46,7 +47,8 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
     participants: [],
     timezone: organization.timezone!,
     businessHours: organization.businessHours!,
-    difficulty: 1
+    difficulty: 1,
+    paymentEnabled: false
   }
 
   const validationSchema = Yup.object().shape<CreateEscapeRoom>({
@@ -71,6 +73,7 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
       .min(1)
       .max(5),
     timezone: Yup.string().required(),
+    paymentEnabled: Yup.boolean().required(),
     businessHours: Yup.array()
       .of(
         Yup.object<BusinessHours>({
@@ -105,14 +108,14 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
   }
 
   // TODO: show error / disallow, when organization has no working hours (or show a working hours picker)
-
+  // TODO: validate accept payments in backend - to have payment codes first
   return (
     <Formik
       validationSchema={validationSchema}
       initialValues={initialValues}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue, setFieldTouched }) => (
+      {({ values, errors, setFieldValue, setFieldTouched }) => (
         <Row gutter={24}>
           <Col span={10}>
             <Form layout="vertical">
@@ -153,6 +156,10 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
 
               <FormItem name="images" hasFeedback label={t`Images`}>
                 <Input name="images[0]" />
+              </FormItem>
+
+              <FormItem name="paymentsEnabled" hasFeedback label={t`Accept payments`}>
+                <Switch name="paymentEnabled" disabled={!organization.paymentDetails} />
               </FormItem>
 
               <FormItem name="action">

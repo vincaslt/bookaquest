@@ -17,9 +17,7 @@ export class PaymentDetailsEntity {
   @Column()
   organizationId: string
 
-  @OneToOne(type => OrganizationEntity, organization => organization.paymentDetails, {
-    cascade: true
-  })
+  @OneToOne(type => OrganizationEntity, organization => organization.paymentDetails)
   @JoinColumn()
   organization: OrganizationEntity
 }
