@@ -1,10 +1,12 @@
 import { BusinessHoursDTO } from '@app/dto/BusinessHoursDTO'
+import { PricingType } from '@app/entities/EscapeRoomEntity'
 import { Type } from 'class-transformer'
 import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
   IsBoolean,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -70,4 +72,8 @@ export class CreateEscapeRoomDTO {
   @IsOptional()
   @IsBoolean()
   paymentEnabled?: boolean
+
+  @IsNotEmpty()
+  @IsEnum(PricingType)
+  pricingType?: PricingType
 }

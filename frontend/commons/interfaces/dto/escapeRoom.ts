@@ -11,6 +11,7 @@ export interface CreateEscapeRoomDTO {
   location: string
   participants: number[]
   difficulty: number
+  pricingType?: string
   paymentEnabled?: boolean
 }
 
@@ -30,4 +31,5 @@ export interface EscapeRoomDTO {
   difficulty: number
   paymentEnabled: boolean
   participants: [number, number]
+  pricingType: string
 }

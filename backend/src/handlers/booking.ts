@@ -2,7 +2,7 @@ import { toBookingDTO, toBookingWithEscapeRoomDTO } from '@app/dto/BookingDTO'
 import { CreateBookingDTO } from '@app/dto/CreateBookingDTO'
 import { BookingEntity, BookingStatus } from '@app/entities/BookingEntity'
 import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
-import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
+import { EscapeRoomEntity, PricingType } from '@app/entities/EscapeRoomEntity'
 import { PaymentDetailsEntity } from '@app/entities/PaymentDetailsEntity'
 import { isBetween } from '@app/helpers/number'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
@@ -98,7 +98,10 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       const stripe = new Stripe(paymentDetails.paymentSecretKey)
 
       await stripe.charges.create({
-        amount: dto.participants * escapeRoom.price * 100,
+        amount:
+          (escapeRoom.pricingType === PricingType.FLAT
+            ? escapeRoom.price
+            : dto.participants * escapeRoom.price) * 100,
         currency: 'eur',
         description: 'An example charge',
         source: dto.paymentToken

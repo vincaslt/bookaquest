@@ -12,6 +12,11 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 
+export enum PricingType {
+  PER_PERSON = 'per_person',
+  FLAT = 'flat'
+}
+
 @Entity({ name: 'escape_room' })
 export class EscapeRoomEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -26,6 +31,9 @@ export class EscapeRoomEntity {
 
   @Column()
   organizationId: string
+
+  @Column('enum', { enum: PricingType, default: PricingType.FLAT })
+  pricingType: PricingType
 
   @Column('numeric', { precision: 5, scale: 2 })
   price: number

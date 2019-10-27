@@ -5,7 +5,7 @@ import { injectStripe, ReactStripeElements } from 'react-stripe-elements'
 import styled from 'styled-components'
 import { useLocation } from 'wouter'
 import useLoading from '~/../commons/hooks/useLoading'
-import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
+import { EscapeRoom, PricingType } from '~/../commons/interfaces/escapeRoom'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
@@ -57,6 +57,8 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) 
     setLocation(`/booking/${id}`)
   }
 
+  const isFlatPrice = escapeRoom.pricingType === PricingType.FLAT
+
   return (
     <div>
       <div className="flex justify-between mb-8">
@@ -86,7 +88,7 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) 
             <span className="font-bold">{bookingInfo.participants}</span>
           </div>
           <div className="flex justify-between">
-            <span>{t`Per participant`}</span>
+            <span>{isFlatPrice ? t`Group price` : t`Per participant`}</span>
             <span className="font-bold">${escapeRoom.price}</span>
           </div>
           <Divider>{t`Total`}</Divider>
@@ -94,7 +96,7 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) 
             <Button type="link" className="p-0">{t`Apply a discount`}</Button>
             <Statistic
               className="font-bold text-green-500"
-              value={escapeRoom.price * bookingInfo.participants}
+              value={isFlatPrice ? escapeRoom.price : escapeRoom.price * bookingInfo.participants}
               suffix="$"
             />
           </div>
