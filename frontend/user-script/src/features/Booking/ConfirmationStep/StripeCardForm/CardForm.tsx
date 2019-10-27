@@ -1,18 +1,17 @@
-import { Button, Input, Typography } from 'antd'
+import { Alert, Button, Input } from 'antd'
 import FormItem from 'antd/lib/form/FormItem'
 import * as React from 'react'
 import { CardCVCElement, CardExpiryElement, CardNumberElement } from 'react-stripe-elements'
 import { useI18n } from '~/../commons/utils/i18n'
 import './CardForm.css'
 
-const { Text } = Typography
-
 interface Props {
   onSubmit: (info: { name: string }) => void
+  loading: boolean
 }
 
 // TODO: proper validations and form handling
-function CardForm({ onSubmit }: Props) {
+function CardForm({ onSubmit, loading }: Props) {
   const { t } = useI18n()
   const [name, setName] = React.useState('')
 
@@ -22,6 +21,11 @@ function CardForm({ onSubmit }: Props) {
 
   return (
     <>
+      <Alert
+        type="warning"
+        message={t`Your card will be charged`}
+        description={t`Your booking will be completed after payment`}
+      />
       <FormItem style={{ marginBottom: 15 }} label={t`Name on card`}>
         <Input placeholder={t`Name Surname`} value={name} onChange={e => setName(e.target.value)} />
       </FormItem>
@@ -45,10 +49,9 @@ function CardForm({ onSubmit }: Props) {
         </FormItem>
       </div>
 
-      <Button className="mt-2 mr-4" type="primary" onClick={handleSubmit}>
+      <Button loading={loading} className="mt-2 mr-4" type="primary" onClick={handleSubmit}>
         {t`Pay`}
       </Button>
-      <Text type="secondary">{t`Your card will be charged`}</Text>
     </>
   )
 }

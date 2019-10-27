@@ -13,13 +13,15 @@ import withParams from '@app/lib/decorators/withParams'
 import withQuery from '@app/lib/decorators/withQuery'
 import {
   addDays,
+  addSeconds,
   areIntervalsOverlapping,
   differenceInCalendarDays,
   differenceInMinutes,
   getISODay,
   isAfter,
   setMinutes,
-  startOfDay
+  startOfDay,
+  subSeconds
 } from 'date-fns'
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
@@ -61,14 +63,18 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
 
+    const dateInterval = Between(addSeconds(dto.startDate, 1), subSeconds(dto.endDate, 1))
+
     const overlap = await bookingRepo.findOne({
       where: [
         {
-          startDate: Between(dto.startDate, dto.endDate),
+          escapeRoomId,
+          startDate: dateInterval,
           status: BookingStatus.Accepted
         },
         {
-          endDate: Between(dto.startDate, dto.endDate),
+          escapeRoomId,
+          endDate: dateInterval,
           status: BookingStatus.Accepted
         }
       ]
@@ -158,8 +164,8 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
         return { start, end }
       }, ((endHour - startHour) * 60) / escapeRoom.interval)
 
-      const availableTimeslots = timeslots.filter(({ start, end }) => {
-        return (
+      const availableTimeslots = timeslots.filter(
+        ({ start, end }) =>
           isAfter(start, dateNow) &&
           activeBookings.every(
             booking =>
@@ -168,8 +174,7 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
                 { start: booking.startDate, end: booking.endDate }
               )
           )
-        )
-      })
+      )
 
       return { date, availableTimeslots }
     }, differenceInCalendarDays(toDay, fromDay)).filter(Boolean)

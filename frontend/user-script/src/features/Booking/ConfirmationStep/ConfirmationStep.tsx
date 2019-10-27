@@ -4,15 +4,17 @@ import * as React from 'react'
 import { injectStripe, ReactStripeElements } from 'react-stripe-elements'
 import styled from 'styled-components'
 import { useLocation } from 'wouter'
-import Time from '~/../commons/components/Time'
+import useLoading from '~/../commons/hooks/useLoading'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
 import { BookingInfo } from '../BookingInfoStep/BookingInfoStep'
+import ContactInfo from './Details/ContactInfo'
+import ReservationInfo from './Details/ReservationInfo'
 import CardForm from './StripeCardForm/CardForm'
 
-const { Title, Text } = Typography
+const { Title } = Typography
 
 const BookingPriceContainer = styled.div`
   min-width: 256px;
@@ -27,6 +29,7 @@ interface Props extends ReactStripeElements.InjectedStripeProps {
 function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) {
   const { t } = useI18n()
   const [, setLocation] = useLocation()
+  const [paymentLoading, , withFnLoading] = useLoading()
 
   const handleSubmit = async (paymentInfo?: { name: string }) => {
     const options: CreateBooking = {
@@ -61,14 +64,19 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) 
           {escapeRoom.paymentEnabled ? (
             <>
               <Title level={4}>{t`Payment details`}</Title>
-              <CardForm onSubmit={handleSubmit} />
+              <CardForm onSubmit={withFnLoading(handleSubmit)} loading={paymentLoading} />
             </>
           ) : (
-            <Alert
-              message={t`This is only a reservation`}
-              description={t`Escape room operator will need to confirm it after it's requested`}
-              type="info"
-            />
+            <div className="flex flex-col">
+              <Title level={4}>{t`Reservation info`}</Title>
+              <ReservationInfo escapeRoom={escapeRoom} timeslot={timeslot} className="mb-4" />
+              <ContactInfo bookingInfo={bookingInfo} className="mb-4" />
+              <Alert
+                message={t`This is a reservation`}
+                description={t`Escape room operator will need to confirm your reservation. Payment will be done upon arrival.`}
+                type="info"
+              />
+            </div>
           )}
         </div>
         <BookingPriceContainer className="pl-4 w-2/5">
@@ -98,37 +106,15 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) 
           )}
         </BookingPriceContainer>
       </div>
-      <Divider orientation="left">{t`Booking info`}</Divider>
-      <div className="flex">
-        <div className="mr-8">
-          <div>
-            <Text strong className="mr-2">{t`Escape room:`}</Text>
-            {escapeRoom.name}
+      {escapeRoom.paymentEnabled && (
+        <>
+          <Divider orientation="left">{t`Booking info`}</Divider>
+          <div className="flex">
+            <ReservationInfo escapeRoom={escapeRoom} timeslot={timeslot} className="mr-8" />
+            <ContactInfo bookingInfo={bookingInfo} />
           </div>
-          <div>
-            <Text strong className="mr-2">{t`Date:`}</Text>
-            <Time date={timeslot.start} type="date" />
-          </div>
-          <div>
-            <Text strong className="mr-2">{t`Time:`}</Text>
-            <Time date={[timeslot.start, timeslot.end]} />
-          </div>
-        </div>
-        <div>
-          <div>
-            <Text strong className="mr-2">{t`Name:`}</Text>
-            {bookingInfo.name}
-          </div>
-          <div>
-            <Text strong className="mr-2">{t`Email:`}</Text>
-            {bookingInfo.email}
-          </div>
-          <div>
-            <Text strong className="mr-2">{t`Phone:`}</Text>
-            {bookingInfo.phoneNumber}
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   )
 }
