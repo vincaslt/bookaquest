@@ -1,6 +1,7 @@
 import { BusinessHoursDTO } from '@app/dto/BusinessHoursDTO'
+import { PricingType } from '@app/entities/EscapeRoomEntity'
 import { Type } from 'class-transformer'
-import { IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 export class UpdateEscapeRoomDTO {
   @IsOptional()
@@ -23,4 +24,8 @@ export class UpdateEscapeRoomDTO {
   @IsOptional()
   @IsNumber()
   interval?: number
+
+  @IsOptional()
+  @IsEnum(PricingType)
+  pricingType?: PricingType
 }

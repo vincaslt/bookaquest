@@ -8,6 +8,7 @@ import { BookingEntity } from '@app/entities/BookingEntity'
 import { OrganizationBusinessHoursEntity } from '@app/entities/OrganizationBusinessHoursEntity'
 import { OrganizationEntity } from '@app/entities/OrganizationEntity'
 import { OrganizationMembershipEntity } from '@app/entities/OrganizationMembershipEntity'
+import { PaymentDetailsEntity } from '@app/entities/PaymentDetailsEntity'
 import { UserEntity } from '@app/entities/UserEntity'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
@@ -23,26 +24,35 @@ const createOrganization = withAuth(({ userId }) =>
   withBody(CreateOrganizationDTO, dto => async (req, res) => {
     try {
       await getManager().transaction(async trans => {
-        const organizationRepo = trans.getRepository(OrganizationEntity)
-        const organizationMembershipRepo = trans.getRepository(OrganizationMembershipEntity)
-        const businessHoursRepo = trans.getRepository(OrganizationBusinessHoursEntity)
+        const transOrganizationRepo = trans.getRepository(OrganizationEntity)
+        const transOrganizationMembershipRepo = trans.getRepository(OrganizationMembershipEntity)
+        const transBusinessHoursRepo = trans.getRepository(OrganizationBusinessHoursEntity)
+        const transPaymentDetailsRepo = trans.getRepository(PaymentDetailsEntity)
 
-        const newOrganization = organizationRepo.create({ ...dto, businessHours: [] })
-        const organization = await organizationRepo.save(newOrganization)
+        const newOrganization = transOrganizationRepo.create({ ...dto, businessHours: [] })
+        const organization = await transOrganizationRepo.save(newOrganization)
 
         const businessHours = dto.businessHours
-          ? businessHoursRepo.create(
+          ? transBusinessHoursRepo.create(
               dto.businessHours.map(hours => ({ organizationId: organization.id, ...hours }))
             )
           : []
-        await businessHoursRepo.save(businessHours)
+        await transBusinessHoursRepo.save(businessHours)
 
-        const newMember = organizationMembershipRepo.create({
+        if (dto.paymentDetails) {
+          const paymentDetails = transPaymentDetailsRepo.create({
+            ...dto.paymentDetails,
+            organizationId: organization.id
+          })
+          await transPaymentDetailsRepo.save(paymentDetails)
+        }
+
+        const newMember = transOrganizationMembershipRepo.create({
           isOwner: true,
           organization,
           userId
         })
-        await organizationMembershipRepo.save(newMember)
+        await transOrganizationMembershipRepo.save(newMember)
       })
 
       const userRepo = getRepository(UserEntity)
@@ -68,37 +78,62 @@ const updateOrganization = withAuth(({ userId }) =>
       }
 
       const organization = await organizationRepo.findOne(organizationId, {
-        relations: ['businessHours']
+        relations: ['businessHours', 'paymentDetails']
       })
 
       if (!organization) {
-        return send(res, STATUS_ERROR.BAD_REQUEST)
+        return send(res, STATUS_ERROR.NOT_FOUND)
       }
 
       try {
         await getManager().transaction(async trans => {
           const transBusinessHoursRepo = trans.getRepository(OrganizationBusinessHoursEntity)
           const transOrganizationRepo = trans.getRepository(OrganizationEntity)
+          const transPaymentDetailsRepo = trans.getRepository(PaymentDetailsEntity)
 
-          await transBusinessHoursRepo.remove(organization.businessHours)
-
-          const businessHours = dto.businessHours
-            ? transBusinessHoursRepo.create(
-                dto.businessHours.map(hours => ({ ...hours, organizationId: organization.id }))
-              )
-            : []
-
-          const updatedOrganization = transOrganizationRepo.merge(organization, {
+          const options = {
             ...dto,
-            businessHours
-          })
+            id: organizationId
+          }
+
+          if (dto.businessHours) {
+            await transBusinessHoursRepo.remove(organization.businessHours)
+
+            options.businessHours = transBusinessHoursRepo.create(
+              dto.businessHours.map(hours => ({ ...hours, organizationId: organization.id }))
+            )
+          }
+
+          if (dto.paymentDetails) {
+            if (organization.paymentDetails) {
+              await transPaymentDetailsRepo.remove(organization.paymentDetails)
+            }
+
+            options.paymentDetails = transPaymentDetailsRepo.create({
+              ...dto.paymentDetails,
+              organizationId
+            })
+          }
+
+          const updatedOrganization = await transOrganizationRepo.preload(options)
+
+          if (!updatedOrganization) {
+            throw new Error('Organization not found')
+          }
 
           await transOrganizationRepo.save(updatedOrganization)
-          await transBusinessHoursRepo.save(businessHours)
+
+          if (options.businessHours) {
+            await transBusinessHoursRepo.save(options.businessHours)
+          }
+
+          if (options.paymentDetails) {
+            await transPaymentDetailsRepo.save(options.paymentDetails)
+          }
         })
 
         const savedOrganization = await organizationRepo.findOne(organizationId, {
-          relations: ['businessHours']
+          relations: ['businessHours', 'paymentDetails']
         })
 
         return send(
@@ -163,7 +198,7 @@ const getOrganization = withParams(['organizationId'], ({ organizationId }) => a
   const organizationRepo = getRepository(OrganizationEntity)
 
   const organization = await organizationRepo.findOne(organizationId, {
-    relations: ['businessHours']
+    relations: ['businessHours', 'paymentDetails']
   })
 
   if (!organization) {

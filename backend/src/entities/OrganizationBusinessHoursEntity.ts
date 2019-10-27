@@ -13,9 +13,7 @@ export class OrganizationBusinessHoursEntity {
   @PrimaryColumn()
   weekday: number
 
-  @ManyToOne(type => OrganizationEntity, organization => organization.businessHours, {
-    cascade: true
-  })
+  @ManyToOne(type => OrganizationEntity, organization => organization.businessHours)
   organization: OrganizationEntity
 
   @Column('numeric', { array: true, precision: 5, scale: 2, nullable: true })

@@ -1,13 +1,5 @@
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Unique
-} from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 
 export enum BookingStatus {
   Accepted = 'ACCEPTED',
@@ -16,7 +8,6 @@ export enum BookingStatus {
 }
 
 @Entity({ name: 'booking' })
-@Unique('UQ_TIMESLOT', ['startDate', 'endDate', 'escapeRoomId'])
 export class BookingEntity {
   @PrimaryGeneratedColumn('uuid')
   @Index()

@@ -14,7 +14,8 @@ export class UserEntity {
   @Column()
   fullName: string
 
-  @Column() // TODO: not select it by default
+  // @Column({ select: false })
+  @Column() // TODO: enable when select is fixed
   password: string // TODO: rework to use secure remote password protocol
 
   // TODO: setup cascade deletes

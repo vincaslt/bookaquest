@@ -44,6 +44,7 @@ const Footer = styled(Layout.Footer)`
 `
 
 // TODO: footer link
+// TODO: load stripe keys from api (DB)
 function App() {
   const { ready } = useI18n(undefined, { useSuspense: false })
 

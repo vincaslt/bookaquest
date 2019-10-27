@@ -1,5 +1,5 @@
 import { green, grey } from '@ant-design/colors'
-import { Button, Col, Icon, Result, Row, Spin, Steps, Typography } from 'antd'
+import { Col, Icon, Result, Row, Spin, Steps, Typography } from 'antd'
 import { isAfter } from 'date-fns'
 import * as React from 'react'
 import { Trans } from 'react-i18next'
@@ -121,7 +121,6 @@ function BookingItinerary() {
             status={isOutdated ? undefined : status}
             title={isOutdated ? t`Booking is no longer active` : titleText}
             subTitle={isOutdated ? undefined : subtitleText}
-            extra={<Button type="primary">Close</Button>}
           >
             {!isOutdated && (
               <>
@@ -182,16 +181,20 @@ function BookingItinerary() {
                         {t`Book`}
                       </span>
                     }
-                    description="Booking request has been sent"
+                    description={t`Booking details have been filled`}
                   />
                   <Steps.Step
                     title={
                       <span className="flex items-center">
                         {isAccepted && successIcon}
-                        {t`Confirmation`}
+                        {escapeRoom.paymentEnabled ? t`Payment` : t`Confirmation`}
                       </span>
                     }
-                    description={t`You will receive it in your email soon`}
+                    description={
+                      escapeRoom.paymentEnabled
+                        ? t`Payment has been made`
+                        : t`You will receive it in your email soon`
+                    }
                   />
                   <Steps.Step
                     title="Play!"

@@ -3,9 +3,11 @@ import {
   FormItem,
   Input,
   InputNumber,
+  Radio,
   Rate,
   ResetButton,
-  SubmitButton
+  SubmitButton,
+  Switch
 } from '@jbuschke/formik-antd'
 import { Col, Icon, notification, Row } from 'antd'
 import { Formik, FormikActions } from 'formik'
@@ -14,7 +16,7 @@ import styled from 'styled-components'
 import * as Yup from 'yup'
 import EscapeRoomCard from '~/../commons/components/EscapeRoomCard'
 import { BusinessHours } from '~/../commons/interfaces/businessHours'
-import { CreateEscapeRoom, EscapeRoom } from '~/../commons/interfaces/escapeRoom'
+import { CreateEscapeRoom, EscapeRoom, PricingType } from '~/../commons/interfaces/escapeRoom'
 import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../../api/application'
@@ -46,13 +48,18 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
     participants: [],
     timezone: organization.timezone!,
     businessHours: organization.businessHours!,
-    difficulty: 1
+    difficulty: 1,
+    paymentEnabled: false,
+    pricingType: PricingType.FLAT
   }
 
   const validationSchema = Yup.object().shape<CreateEscapeRoom>({
     name: Yup.string().required(),
     description: Yup.string().required(),
     location: Yup.string().required(),
+    pricingType: Yup.string()
+      .oneOf(Object.values(PricingType))
+      .required() as Yup.Schema<PricingType>,
     price: Yup.number()
       .required()
       .positive(),
@@ -71,6 +78,7 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
       .min(1)
       .max(5),
     timezone: Yup.string().required(),
+    paymentEnabled: Yup.boolean().required(),
     businessHours: Yup.array()
       .of(
         Yup.object<BusinessHours>({
@@ -105,7 +113,7 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
   }
 
   // TODO: show error / disallow, when organization has no working hours (or show a working hours picker)
-
+  // TODO: validate accept payments in backend - to have payment codes first
   return (
     <Formik
       validationSchema={validationSchema}
@@ -132,10 +140,6 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
                 <Rate name="difficulty" character={<Icon type="lock" theme="filled" />} />
               </FormItem>
 
-              <FormItem name="price" hasFeedback label={t`Price`}>
-                <InputNumber name="price" min={0} />
-              </FormItem>
-
               <FormItem name="interval" hasFeedback label={t`Interval`}>
                 <InputNumber name="interval" min={10} />
               </FormItem>
@@ -153,6 +157,25 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
 
               <FormItem name="images" hasFeedback label={t`Images`}>
                 <Input name="images[0]" />
+              </FormItem>
+
+              <FormItem name="price" hasFeedback label={t`Price`}>
+                <InputNumber name="price" min={0} />
+              </FormItem>
+
+              <FormItem name="pricingType" hasFeedback label={t`Pricing type`}>
+                <Radio.Group
+                  disabled={values.price === 0}
+                  name="pricingType"
+                  defaultValue={PricingType.FLAT}
+                >
+                  <Radio.Button value={PricingType.FLAT}>{t`Flat`}</Radio.Button>
+                  <Radio.Button value={PricingType.PER_PERSON}>{t`Per-person`}</Radio.Button>
+                </Radio.Group>
+              </FormItem>
+
+              <FormItem name="paymentsEnabled" hasFeedback label={t`Accept payments`}>
+                <Switch name="paymentEnabled" disabled={!organization.paymentDetails} />
               </FormItem>
 
               <FormItem name="action">

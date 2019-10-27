@@ -36,19 +36,19 @@ function OrganizationDetails({ loading, organization, onUpdateOrganization }: Pr
         organization && (
           <>
             <DetailContainer>
-              <span className="mr-4">{t`ID:`}</span>
+              <span className="font-medium mr-4">{t`ID:`}</span>
               <Text copyable>{organization.id}</Text>
             </DetailContainer>
             <DetailContainer>
-              <span className="mr-4">{t`Name:`}</span>
+              <span className="font-medium mr-4">{t`Name:`}</span>
               <Text editable={{ onChange: handleChange('name') }}>{organization.name}</Text>
             </DetailContainer>
             <DetailContainer>
-              <span className="mr-4">{t`Website:`}</span>
+              <span className="font-medium mr-4">{t`Website:`}</span>
               <Text editable={{ onChange: handleChange('website') }}>{organization.website}</Text>
             </DetailContainer>
             <DetailContainer>
-              <span className="mr-4">{t`Location:`}</span>
+              <span className="font-medium mr-4">{t`Location:`}</span>
               <Text editable={{ onChange: handleChange('location') }}>{organization.location}</Text>
             </DetailContainer>
           </>

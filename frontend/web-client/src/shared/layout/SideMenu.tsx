@@ -38,7 +38,9 @@ function MenuLink({ to, icon, text, ...rest }: MenuLinkProps) {
 
 function SideMenu() {
   const { t } = useI18n()
-  const { logout } = useUser()
+  const { logout, userInfo } = useUser()
+
+  const membership = userInfo && userInfo.memberships[0]
 
   return (
     <StyledSider width={256}>
@@ -51,18 +53,28 @@ function SideMenu() {
               text={t`Dashboard`}
               icon="dashboard"
             />
-            <MenuLink
-              key={PrivateRoutes.Bookings}
-              to={PrivateRoutes.Bookings}
-              text={t`Bookings`}
-              icon="schedule"
-            />
+            {membership && (
+              <MenuLink
+                key={PrivateRoutes.Bookings}
+                to={PrivateRoutes.Bookings}
+                text={t`Bookings`}
+                icon="schedule"
+              />
+            )}
             <MenuLink
               key={PrivateRoutes.Organization}
               to={PrivateRoutes.Organization}
               text={t`Organization`}
               icon="apartment"
             />
+            {membership && (
+              <MenuLink
+                key={PrivateRoutes.Payments}
+                to={PrivateRoutes.Payments}
+                text={t`Payments`}
+                icon="transaction"
+              />
+            )}
             <MenuLink key="logout" onClick={logout} text={`Logout`} icon="logout" />
           </Menu>
         )}

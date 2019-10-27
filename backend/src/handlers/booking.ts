@@ -2,7 +2,8 @@ import { toBookingDTO, toBookingWithEscapeRoomDTO } from '@app/dto/BookingDTO'
 import { CreateBookingDTO } from '@app/dto/CreateBookingDTO'
 import { BookingEntity, BookingStatus } from '@app/entities/BookingEntity'
 import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
-import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
+import { EscapeRoomEntity, PricingType } from '@app/entities/EscapeRoomEntity'
+import { PaymentDetailsEntity } from '@app/entities/PaymentDetailsEntity'
 import { isBetween } from '@app/helpers/number'
 import { isOrganizationMember } from '@app/helpers/organizationHelpers'
 import { STATUS_ERROR, STATUS_SUCCESS } from '@app/lib/constants'
@@ -12,17 +13,20 @@ import withParams from '@app/lib/decorators/withParams'
 import withQuery from '@app/lib/decorators/withQuery'
 import {
   addDays,
+  addSeconds,
   areIntervalsOverlapping,
   differenceInCalendarDays,
   differenceInMinutes,
   getISODay,
   isAfter,
   setMinutes,
-  startOfDay
+  startOfDay,
+  subSeconds
 } from 'date-fns'
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
 import { times } from 'ramda'
+import * as Stripe from 'stripe'
 import { Between, getRepository, LessThan, MoreThan } from 'typeorm'
 
 const getBooking = withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
@@ -43,8 +47,9 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
   withBody(CreateBookingDTO, dto => async (req, res) => {
     const escapeRoomRepo = getRepository(EscapeRoomEntity)
     const bookingRepo = getRepository(BookingEntity)
+    const paymentDetailsRepo = getRepository(PaymentDetailsEntity)
 
-    const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId)
+    const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId, { relations: ['organization'] })
 
     if (!escapeRoom) {
       return send(res, STATUS_ERROR.NOT_FOUND)
@@ -58,14 +63,18 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
 
+    const dateInterval = Between(addSeconds(dto.startDate, 1), subSeconds(dto.endDate, 1))
+
     const overlap = await bookingRepo.findOne({
       where: [
         {
-          startDate: Between(dto.startDate, dto.endDate),
+          escapeRoomId,
+          startDate: dateInterval,
           status: BookingStatus.Accepted
         },
         {
-          endDate: Between(dto.startDate, dto.endDate),
+          escapeRoomId,
+          endDate: dateInterval,
           status: BookingStatus.Accepted
         }
       ]
@@ -74,10 +83,34 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
     if (overlap) {
       return send(res, STATUS_ERROR.BAD_REQUEST)
     }
+    let status = BookingStatus.Pending
 
-    const booking = await bookingRepo.save(
-      bookingRepo.create({ ...dto, status: BookingStatus.Pending, escapeRoomId })
-    )
+    if (escapeRoom.paymentEnabled) {
+      const paymentDetails = await paymentDetailsRepo.findOne({
+        where: { organizationId: escapeRoom.organization.id }
+      })
+
+      // TODO: log error "payments disabled"
+      if (!paymentDetails || !dto.paymentToken) {
+        return send(res, STATUS_ERROR.BAD_REQUEST)
+      }
+
+      const stripe = new Stripe(paymentDetails.paymentSecretKey)
+
+      await stripe.charges.create({
+        amount:
+          (escapeRoom.pricingType === PricingType.FLAT
+            ? escapeRoom.price
+            : dto.participants * escapeRoom.price) * 100,
+        currency: 'eur',
+        description: 'An example charge',
+        source: dto.paymentToken
+      })
+
+      status = BookingStatus.Accepted
+    }
+
+    const booking = await bookingRepo.save(bookingRepo.create({ ...dto, status, escapeRoomId }))
 
     return send(res, STATUS_SUCCESS.OK, toBookingDTO(booking))
   })
@@ -134,8 +167,8 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
         return { start, end }
       }, ((endHour - startHour) * 60) / escapeRoom.interval)
 
-      const availableTimeslots = timeslots.filter(({ start, end }) => {
-        return (
+      const availableTimeslots = timeslots.filter(
+        ({ start, end }) =>
           isAfter(start, dateNow) &&
           activeBookings.every(
             booking =>
@@ -144,8 +177,7 @@ const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
                 { start: booking.startDate, end: booking.endDate }
               )
           )
-        )
-      })
+      )
 
       return { date, availableTimeslots }
     }, differenceInCalendarDays(toDay, fromDay)).filter(Boolean)

@@ -1,5 +1,14 @@
 import { BusinessHoursDTO } from './businessHours'
 
+export interface CreatePaymentDetailsDTO {
+  paymentClientKey: string
+  paymentSecretKey: string
+}
+
+export interface PaymentDetailsDTO {
+  paymentClientKey: string
+}
+
 export interface OrganizationDTO {
   id: string
   name: string
@@ -8,6 +17,7 @@ export interface OrganizationDTO {
   createdAt: string
   businessHours?: BusinessHoursDTO[]
   timezone?: string
+  paymentDetails?: PaymentDetailsDTO
 }
 
 export interface CreateOrganizationDTO {
@@ -16,6 +26,7 @@ export interface CreateOrganizationDTO {
   location: string
   businessHours?: BusinessHoursDTO[]
   timezone?: string
+  paymentDetails?: CreatePaymentDetailsDTO
 }
 
 export interface UpdateOrganizationDTO {
@@ -24,4 +35,5 @@ export interface UpdateOrganizationDTO {
   location?: string
   businessHours?: BusinessHoursDTO[]
   timezone?: string
+  paymentDetails?: CreatePaymentDetailsDTO
 }

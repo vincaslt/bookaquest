@@ -1,4 +1,5 @@
 import { BusinessHoursDTO } from '@app/dto/BusinessHoursDTO'
+import { CreatePaymentDetailsDTO } from '@app/dto/CreatePaymentDetailsDTO'
 import { Type } from 'class-transformer'
 import { IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator'
 
@@ -23,4 +24,9 @@ export class UpdateOrganizationDTO {
   @IsOptional()
   @IsString()
   location?: string
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreatePaymentDetailsDTO)
+  paymentDetails?: CreatePaymentDetailsDTO
 }
