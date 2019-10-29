@@ -61,20 +61,20 @@ function SideMenu() {
                 icon="schedule"
               />
             )}
+            {membership && (
+              <MenuLink
+                key={PrivateRoutes.EscapeRooms}
+                to={PrivateRoutes.EscapeRooms}
+                text={t`Escape rooms`}
+                icon="appstore"
+              />
+            )}
             <MenuLink
               key={PrivateRoutes.Organization}
               to={PrivateRoutes.Organization}
               text={t`Organization`}
               icon="apartment"
             />
-            {membership && (
-              <MenuLink
-                key={PrivateRoutes.Payments}
-                to={PrivateRoutes.Payments}
-                text={t`Payments`}
-                icon="transaction"
-              />
-            )}
             <MenuLink key="logout" onClick={logout} text={`Logout`} icon="logout" />
           </Menu>
         )}

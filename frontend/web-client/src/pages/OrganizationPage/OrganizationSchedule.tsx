@@ -100,9 +100,7 @@ function OrganizationSchedule({ organization, setOrganization, loading }: Props)
                 setFieldValue('businessHours', value)
               }}
             />
-            <FormItem name="action">
-              <SubmitButton>{t`Submit`}</SubmitButton>
-            </FormItem>
+            <SubmitButton>{t`Submit`}</SubmitButton>
           </Form>
         )}
       </Formik>

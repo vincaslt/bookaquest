@@ -5,7 +5,7 @@ import * as React from 'react'
 import * as Yup from 'yup'
 import { CreatePaymentDetails, Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
-import * as api from '../../api/application'
+import * as api from '../../../api/application'
 
 // TODO: They are always updated together and can't be edited, inform user about this
 const initialValues: CreatePaymentDetails = {

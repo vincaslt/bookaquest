@@ -32,25 +32,27 @@ function BookingsPage(props: RouteComponentProps) {
 
   return (
     <PageContent>
-      {!isLoading && membership && (
+      {membership && (
         <FullCalendar
           defaultView="timeGridWeek"
           plugins={[timeGridWeek]}
           eventClick={info => selectBooking(info.event.extendedProps.booking)}
           events={{
-            events: bookings.map(booking => ({
-              title: booking.name,
-              start: booking.startDate,
-              end: booking.endDate,
-              borderColor: 'rgba(0,0,0,0.8)',
-              textColor: 'rgba(0,0,0,0.8)',
-              backgroundColor: {
-                [BookingStatus.Accepted]: '#b7eb8f',
-                [BookingStatus.Pending]: '#ffe58f',
-                [BookingStatus.Rejected]: '#ffa39e'
-              }[booking.status],
-              booking
-            }))
+            events: isLoading
+              ? []
+              : bookings.map(booking => ({
+                  title: booking.name,
+                  start: booking.startDate,
+                  end: booking.endDate,
+                  borderColor: 'rgba(0,0,0,0.8)',
+                  textColor: 'rgba(0,0,0,0.8)',
+                  backgroundColor: {
+                    [BookingStatus.Accepted]: '#b7eb8f',
+                    [BookingStatus.Pending]: '#ffe58f',
+                    [BookingStatus.Rejected]: '#ffa39e'
+                  }[booking.status],
+                  booking
+                }))
           }}
         />
       )}

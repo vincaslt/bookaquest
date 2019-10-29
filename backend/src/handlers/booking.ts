@@ -103,7 +103,7 @@ const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
             ? escapeRoom.price
             : dto.participants * escapeRoom.price) * 100,
         currency: 'eur',
-        description: 'An example charge',
+        description: 'An example charge', // TODO: give proper name
         source: dto.paymentToken
       })
 

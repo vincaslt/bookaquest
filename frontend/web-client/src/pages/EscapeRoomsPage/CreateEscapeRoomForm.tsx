@@ -19,8 +19,8 @@ import { BusinessHours } from '~/../commons/interfaces/businessHours'
 import { CreateEscapeRoom, EscapeRoom, PricingType } from '~/../commons/interfaces/escapeRoom'
 import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
-import * as api from '../../../api/application'
-import RangeNumberInput from '../../../shared/components/RangeNumberInput'
+import * as api from '../../api/application'
+import RangeNumberInput from '../../shared/components/RangeNumberInput'
 
 const StyledResetButton = styled(ResetButton)`
   margin-right: 16px;
@@ -46,7 +46,7 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
     images: [],
     interval: 60,
     participants: [],
-    timezone: organization.timezone!,
+    timezone: organization.timezone!, // TODO: timezone and business hours may NOT exist, add input fields for those
     businessHours: organization.businessHours!,
     difficulty: 1,
     paymentEnabled: false,

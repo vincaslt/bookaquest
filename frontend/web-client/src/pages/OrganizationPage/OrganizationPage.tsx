@@ -11,10 +11,10 @@ import PageContent from '../../shared/layout/PageContent'
 import Section from '../../shared/layout/Section'
 import CreateOrganizationForm from './CreateOrganization/CreateOrganizationForm'
 import CreateOrganizationSplash from './CreateOrganization/CreateOrganizationSplash'
-import EscapeRooms from './EscapeRooms/EscapeRooms'
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationMembers from './OrganizationMembers'
 import OrganizationSchedule from './OrganizationSchedule'
+import Payments from './Payments/Payments'
 
 const CreateOrganizationSection = styled(PageContent)`
   margin-top: 10px;
@@ -47,7 +47,7 @@ function OrganizationPage(props: RouteComponentProps) {
       {membership ? (
         <>
           <Row gutter={24}>
-            <Col span={7}>
+            <Col span={8}>
               <Section>
                 <OrganizationDetails
                   loading={loading}
@@ -63,13 +63,16 @@ function OrganizationPage(props: RouteComponentProps) {
                   setOrganization={setOrganization}
                 />
               </Section>
-
+            </Col>
+            <Col span={8}>
               <Section>
                 <OrganizationMembers organizationId={membership.organizationId} />
               </Section>
             </Col>
-            <Col span={17}>
-              <EscapeRooms organizationId={membership.organizationId} organization={organization} />
+            <Col span={8}>
+              <Section>
+                <Payments organization={organization} setOrganization={setOrganization} />
+              </Section>
             </Col>
           </Row>
         </>

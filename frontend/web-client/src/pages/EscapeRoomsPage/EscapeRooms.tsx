@@ -7,8 +7,8 @@ import useLoading from '~/../commons/hooks/useLoading'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
-import * as api from '../../../api/application'
-import Section from '../../../shared/layout/Section'
+import * as api from '../../api/application'
+import Section from '../../shared/layout/Section'
 import CreateEscapeRoomForm from './CreateEscapeRoomForm'
 import NoEscapeRooms from './NoEscapeRooms'
 
@@ -27,18 +27,21 @@ const NewEscapeRoomCard = styled.button`
 
 interface Props {
   organization?: Organization
-  organizationId: string
 }
 
-function EscapeRooms({ organizationId, organization }: Props) {
+function EscapeRooms({ organization }: Props) {
   const { t } = useI18n()
   const [isLoading, withLoading] = useLoading(true)
   const [isCreating, setIsCreating] = React.useState(false)
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([])
 
+  const organizationId = organization && organization.id
+
   React.useEffect(() => {
-    withLoading(api.getEscapeRooms(organizationId).then(setEscapeRooms))
-  }, [])
+    if (organizationId) {
+      withLoading(api.getEscapeRooms(organizationId).then(setEscapeRooms))
+    }
+  }, [organizationId])
 
   const handleCreateClick = () => setIsCreating(true)
   const handleCancel = () => setIsCreating(false)
