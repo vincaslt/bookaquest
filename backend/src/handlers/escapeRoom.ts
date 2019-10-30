@@ -123,6 +123,16 @@ const updateEscapeRoom = withAuth(({ userId }) =>
   )
 )
 
+const getEscapeRoom = withParams(['escapeRoomId'], ({ escapeRoomId }) => async (req, res) => {
+  const escapeRoomRepo = getRepository(EscapeRoomEntity)
+
+  const organizationEscapeRoom = await escapeRoomRepo.findOne(escapeRoomId, {
+    relations: ['businessHours']
+  })
+
+  return organizationEscapeRoom && toEscapeRoomDTO(organizationEscapeRoom)
+})
+
 // TODO: query param to get only the ones with working hours
 // TODO: separate private endpoint to get bookings
 // TODO: separate public endpoint to get availability
@@ -140,5 +150,6 @@ const listEscapeRooms = withParams(['organizationId'], ({ organizationId }) => a
 export default [
   get('/organization/:organizationId/escape-room', listEscapeRooms), // TODO mark as public? No auth required
   post('/organization/:organizationId/escape-room', createEscapeRoom),
+  get('/escape-room/:escapeRoomId', getEscapeRoom), // TODO mark as public?
   put('/escape-room/:escapeRoomId', updateEscapeRoom)
 ]

@@ -15,7 +15,7 @@ import * as microDev from 'micro-dev'
 import { createConnection } from 'typeorm'
 
 const handler = withCors(
-  withRouter(userHandlers, authHandlers, escapeRoomHandlers, organizationHandlers, bookingHandlers)
+  withRouter(userHandlers, authHandlers, bookingHandlers, escapeRoomHandlers, organizationHandlers)
 )
 
 const port = process.env.PORT || 3001

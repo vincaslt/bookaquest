@@ -46,14 +46,14 @@ function BookingSummary({ selectedRoom }: Props) {
               {t`Difficulty`}
               <div className="ml-2 flex items-center">
                 {times(
-                  () => (
-                    <Icon type="lock" theme="filled" />
+                  i => (
+                    <Icon key={i} type="lock" theme="filled" />
                   ),
                   selectedRoom.difficulty
                 )}
                 {times(
-                  () => (
-                    <Icon type="lock" />
+                  i => (
+                    <Icon key={i} type="lock" />
                   ),
                   5 - selectedRoom.difficulty
                 )}

@@ -29,7 +29,7 @@ interface Props extends ReactStripeElements.InjectedStripeProps {
 function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) {
   const { t } = useI18n()
   const [, setLocation] = useLocation()
-  const [paymentLoading, , withFnLoading] = useLoading()
+  const [loading, withLoading, withFnLoading] = useLoading()
 
   const handleSubmit = async (paymentInfo?: { name: string }) => {
     const options: CreateBooking = {
@@ -66,7 +66,7 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) 
           {escapeRoom.paymentEnabled ? (
             <>
               <Title level={4}>{t`Payment details`}</Title>
-              <CardForm onSubmit={withFnLoading(handleSubmit)} loading={paymentLoading} />
+              <CardForm onSubmit={withFnLoading(handleSubmit)} loading={loading} />
             </>
           ) : (
             <div className="flex flex-col">
@@ -100,9 +100,14 @@ function ConfirmationStep({ bookingInfo, escapeRoom, timeslot, stripe }: Props) 
               suffix="$"
             />
           </div>
-
           {!escapeRoom.paymentEnabled && (
-            <Button block className="mt-2 mr-4" type="primary" onClick={() => handleSubmit()}>
+            <Button
+              block
+              className="mt-2 mr-4"
+              type="primary"
+              onClick={() => withLoading(handleSubmit())}
+              loading={loading}
+            >
               {t`Request reservation`}
             </Button>
           )}

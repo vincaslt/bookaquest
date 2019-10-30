@@ -1,17 +1,16 @@
-import { Col, Empty, Icon, Row, Steps } from 'antd'
+import { Col, Icon, Row, Steps } from 'antd'
 import * as React from 'react'
 import { Elements, StripeProvider } from 'react-stripe-elements'
 import styled from 'styled-components'
-import { useRoute } from 'wouter'
+import { useLocation, useRoute } from 'wouter'
 import { Booking } from '~/../commons/interfaces/booking'
 import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { Organization } from '~/../commons/interfaces/organization'
 import { Timeslot } from '~/../commons/interfaces/timeslot'
-import { getOrganization } from '../../api/application'
+import * as api from '../../api/application'
 import BookingInfoStep, { BookingInfo } from './BookingInfoStep/BookingInfoStep'
 import BookingSummary from './BookingSummary/BookingSummary'
 import ConfirmationStep from './ConfirmationStep/ConfirmationStep'
-import EscapeRoomStep from './EscapeRoomStep/EscapeRoomStep'
 import TimeslotStep from './TimeslotStep/TimeslotStep'
 
 const Section = styled.div`
@@ -21,17 +20,19 @@ const Section = styled.div`
 `
 
 enum BookingStep {
-  EscapeRoom = 'escape-room',
   Timeslot = 'timeslot',
   BookingInfo = 'booking-info',
   Confirmation = 'confirmation'
 }
 
-// TODO check organization ID for undefined
+// TODO loading state (loading escape room)
 // TODO show availabilities, and escape room selection
 function Booking() {
-  const [, params] = useRoute('/:organizationId')
-  const [step, setStep] = React.useState<BookingStep>(BookingStep.EscapeRoom)
+  const [, params] = useRoute<{ organizationId: string; escapeRoomId: string; step: string }>(
+    '/:organizationId/:escapeRoomId/:step?'
+  )
+  const [, setLocation] = useLocation()
+  const step = ((params && params.step) || BookingStep.Timeslot) as BookingStep
   const [organization, setOrganization] = React.useState<Organization>()
 
   const [selectedRoom, setSelectedRoom] = React.useState<EscapeRoom>()
@@ -39,67 +40,71 @@ function Booking() {
   const [timeslot, setTimeslot] = React.useState<Timeslot>()
 
   const organizationId = params && params.organizationId
+  const escapeRoomId = params && params.escapeRoomId
+
+  React.useEffect(() => {
+    // Clears any manual step pre-selection on visit
+    if (organizationId && escapeRoomId) {
+      setLocation(`/${organizationId}/${escapeRoomId}`)
+    }
+  }, [])
 
   React.useEffect(() => {
     if (organizationId) {
-      const fetchOrganizationData = async () => {
-        const _organization = await getOrganization(organizationId)
-        setOrganization(_organization)
-      }
-
-      fetchOrganizationData()
+      api.getOrganization(organizationId).then(setOrganization)
     }
   }, [organizationId])
 
-  if (!organizationId) {
+  React.useEffect(() => {
+    if (escapeRoomId) {
+      api.getEscapeRoom(escapeRoomId).then(setSelectedRoom)
+    }
+  }, [escapeRoomId])
+
+  if (!organizationId || !escapeRoomId) {
     return null // TODO: redirect to error?
   }
 
-  const handleSelectEscapeRoom = (room: EscapeRoom) => {
-    setSelectedRoom(room)
-    setStep(BookingStep.BookingInfo)
-  }
+  const goToStep = (nextStep: BookingStep) =>
+    setLocation(`/${organizationId}/${escapeRoomId}/${nextStep}`)
 
   const handleSubmitBookingInfo = (info: BookingInfo) => {
     setBookingInfo(info)
-    setStep(BookingStep.Timeslot)
+    goToStep(BookingStep.Confirmation)
   }
 
   const handleSelectTimeslot = (timeslotInfo: Timeslot) => {
     setTimeslot(timeslotInfo)
-    setStep(BookingStep.Confirmation)
+    goToStep(BookingStep.BookingInfo)
   }
 
   const currentStep = {
-    [BookingStep.EscapeRoom]: 0,
+    [BookingStep.Timeslot]: 0,
     [BookingStep.BookingInfo]: 1,
-    [BookingStep.Timeslot]: 2,
-    [BookingStep.Confirmation]: 3
+    [BookingStep.Confirmation]: 2
   }[step]
 
+  // TODO: show Payment as step if booking room has payments
   return (
     <Row>
       <Col xxl={{ span: 18, push: 3 }} xl={{ span: 22, push: 1 }} span={24}>
         <Row>
           <Section>
             <Steps current={currentStep}>
-              <Steps.Step title="Escape Room" icon={<Icon type="home" />} />
-              <Steps.Step title="Booking Details" icon={<Icon type="contacts" />} />
               <Steps.Step title="Date & Time" icon={<Icon type="calendar" />} />
+              <Steps.Step title="Booking Details" icon={<Icon type="contacts" />} />
+              <Steps.Step title="Confirmation" icon={<Icon type="carry-out" />} />
             </Steps>
           </Section>
         </Row>
         <Row gutter={24}>
           <Col span={12}>
             <Section>
-              {step === BookingStep.EscapeRoom && (
-                <EscapeRoomStep organizationId={organizationId} onSelect={handleSelectEscapeRoom} />
+              {step === BookingStep.Timeslot && selectedRoom && (
+                <TimeslotStep onSelect={handleSelectTimeslot} room={selectedRoom} />
               )}
               {step === BookingStep.BookingInfo && selectedRoom && (
                 <BookingInfoStep onSubmit={handleSubmitBookingInfo} room={selectedRoom} />
-              )}
-              {step === BookingStep.Timeslot && selectedRoom && (
-                <TimeslotStep onSelect={handleSelectTimeslot} room={selectedRoom} />
               )}
               {step === BookingStep.Confirmation &&
                 timeslot &&
@@ -126,11 +131,7 @@ function Booking() {
           </Col>
           <Col span={12}>
             <Section>
-              {step === BookingStep.EscapeRoom ? (
-                <Empty description="Pick an escape room" />
-              ) : (
-                <BookingSummary selectedRoom={selectedRoom} />
-              )}
+              <BookingSummary selectedRoom={selectedRoom} />
             </Section>
           </Col>
         </Row>

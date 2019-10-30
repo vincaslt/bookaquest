@@ -7,6 +7,7 @@ import { Route, Switch } from 'wouter'
 import { useI18n } from '~/../commons/utils/i18n'
 import Booking from './features/Booking/Booking'
 import BookingItinerary from './features/BookingItinerary/BookingItinerary'
+import EscapeRoomSelect from './features/EscapeRoomSelect/EscapeRoomSelect'
 
 const AppSpinnerContainer = styled('div')`
   display: flex;
@@ -60,7 +61,8 @@ function App() {
       <GlobalStyle />
       <Switch>
         <Route path="/booking/:organizationId" component={BookingItinerary} />
-        <Route path="/:organizationId" component={Booking} />
+        <Route path="/:organizationId/:escapeRoomId/:step?" component={Booking} />
+        <Route path="/:organizationId" component={EscapeRoomSelect} />
       </Switch>
       <Footer>
         Powered by <a href="#">BookaQuest</a>

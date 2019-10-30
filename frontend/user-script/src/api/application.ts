@@ -28,6 +28,12 @@ export const getEscapeRooms = (organizationId: string) =>
     .get<EscapeRoomDTO[]>(`/organization/${organizationId}/escape-room`)
     .then(res => res.data.map(fromEscapeRoomDTO))
 
+export const getEscapeRoom = (escapeRoomId: string) =>
+  api
+    .get<EscapeRoomDTO>(`/escape-room/${escapeRoomId}`)
+    .then(res => res.data)
+    .then(fromEscapeRoomDTO)
+
 export const getBooking = (bookingId: string) =>
   api
     .get<BookingWithEscapeRoomDTO>(`/booking/${bookingId}`)

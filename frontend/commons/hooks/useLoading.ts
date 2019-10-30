@@ -7,11 +7,13 @@ type WithFnLoading = <A extends any[], T>(fn: ActionFn<A, T>) => (...args: A) =>
 function useLoading(initial = false): [boolean, WithPromiseLoading, WithFnLoading] {
   const [isLoading, setIsLoading] = React.useState(initial)
 
-  const withPromiseLoading: WithPromiseLoading = promise =>
-    promise.finally((...rest: any[]) => {
+  const withPromiseLoading: WithPromiseLoading = promise => {
+    setIsLoading(true)
+    return promise.finally((...rest: any[]) => {
       setIsLoading(false)
       return rest
     })
+  }
 
   const withFnLoading: WithFnLoading = fn => {
     return (...args) => withPromiseLoading(fn(...args))
