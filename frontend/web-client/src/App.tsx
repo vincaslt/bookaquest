@@ -7,6 +7,7 @@ import { useI18n } from '~/../commons/utils/i18n'
 import PrivateRoutes from './PrivateRoutes'
 import PublicRoutes from './PublicRoutes'
 import useUser from './shared/hooks/useUser'
+import PrivateHeader from './shared/layout/Header/PrivateHeader'
 import SideMenu from './shared/layout/SideMenu'
 import { withUserProvider } from './shared/providers/UserProvider'
 
@@ -27,17 +28,11 @@ const PageWithSidebarContainer = styled(Layout)`
   min-height: 100vh;
 `
 
-const StyledHeader = styled(Layout.Header)`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  background-color: white;
-  padding: 16px 24px;
-`
-
 function App() {
   const { isLoading, userInfo } = useUser()
   const { ready } = useI18n(undefined, { useSuspense: false })
+
+  const membership = userInfo && userInfo.memberships[0]
 
   if (isLoading || !ready) {
     return (
@@ -50,16 +45,22 @@ function App() {
   return (
     <Layout>
       {userInfo ? (
-        <>
-          <SideMenu />
-          <PageWithSidebarContainer>
-            <StyledHeader>{userInfo && userInfo.email}</StyledHeader>
+        membership ? (
+          <>
+            <SideMenu />
+            <PageWithSidebarContainer>
+              <PrivateHeader />
+              <PrivateRoutes />
+            </PageWithSidebarContainer>
+          </>
+        ) : (
+          <PageContainer>
+            <PrivateHeader />
             <PrivateRoutes />
-          </PageWithSidebarContainer>
-        </>
+          </PageContainer>
+        )
       ) : (
         <PageContainer>
-          <StyledHeader />
           <PublicRoutes />
         </PageContainer>
       )}

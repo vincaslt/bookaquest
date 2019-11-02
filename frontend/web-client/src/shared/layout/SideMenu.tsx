@@ -4,7 +4,6 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { useI18n } from '~/../commons/utils/i18n'
 import { PrivateRoutes } from '../../constants/routes'
-import useUser from '../hooks/useUser'
 
 const StyledSider = styled(Layout.Sider)`
   overflow: auto;
@@ -38,9 +37,6 @@ function MenuLink({ to, icon, text, ...rest }: MenuLinkProps) {
 
 function SideMenu() {
   const { t } = useI18n()
-  const { logout, userInfo } = useUser()
-
-  const membership = userInfo && userInfo.memberships[0]
 
   return (
     <StyledSider width={256}>
@@ -53,29 +49,27 @@ function SideMenu() {
               text={t`Dashboard`}
               icon="dashboard"
             />
-            {membership && (
-              <MenuLink
-                key={PrivateRoutes.Bookings}
-                to={PrivateRoutes.Bookings}
-                text={t`Bookings`}
-                icon="schedule"
-              />
-            )}
-            {membership && (
-              <MenuLink
-                key={PrivateRoutes.EscapeRooms}
-                to={PrivateRoutes.EscapeRooms}
-                text={t`Escape rooms`}
-                icon="appstore"
-              />
-            )}
+
+            <MenuLink
+              key={PrivateRoutes.Bookings}
+              to={PrivateRoutes.Bookings}
+              text={t`Bookings`}
+              icon="schedule"
+            />
+
+            <MenuLink
+              key={PrivateRoutes.EscapeRooms}
+              to={PrivateRoutes.EscapeRooms}
+              text={t`Escape rooms`}
+              icon="appstore"
+            />
+
             <MenuLink
               key={PrivateRoutes.Organization}
               to={PrivateRoutes.Organization}
               text={t`Organization`}
               icon="apartment"
             />
-            <MenuLink key="logout" onClick={logout} text={`Logout`} icon="logout" />
           </Menu>
         )}
       </Location>

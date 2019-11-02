@@ -1,11 +1,15 @@
 import { Layout } from 'antd'
+import { BasicProps } from 'antd/lib/layout/layout'
+import * as React from 'react'
 import styled from 'styled-components'
 
-interface Props {
+interface Props extends BasicProps {
   noBackground?: boolean
 }
 
-const PageContent = styled(Layout.Content)`
+const Wrapper = ({ noBackground, ...rest }: Props) => <Layout.Content {...rest} />
+
+const PageContent = styled(Wrapper)`
   margin: 24px;
   flex: 1;
   ${({ noBackground }: Props) => (noBackground ? '' : 'padding: 24px')};

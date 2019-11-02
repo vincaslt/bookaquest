@@ -5,19 +5,25 @@ import BookingsPage from './pages/BookingsPage/BookingsPage'
 import DashboardPage from './pages/DashboardPage/DashboardPage'
 import EscapeRoomsPage from './pages/EscapeRoomsPage/EscapeRoomsPage'
 import OrganizationPage from './pages/OrganizationPage/OrganizationPage'
+import PageNotFound from './pages/PageNotFound'
 import useUser from './shared/hooks/useUser'
 
-function PrivateRoutes() {
+const withOrganization = (routeComponent: React.ReactElement<{ path: string }>) => {
   const { userInfo } = useUser()
 
   const membership = userInfo && userInfo.memberships[0]
 
+  return membership ? routeComponent : <OrganizationPage path={routeComponent.props.path} />
+}
+
+function PrivateRoutes() {
   return (
     <Router>
-      <DashboardPage path={Routes.Dashboard} />
       <OrganizationPage path={Routes.Organization} />
-      {membership && <BookingsPage path={Routes.Bookings} />}
-      {membership && <EscapeRoomsPage path={Routes.EscapeRooms} />}
+      {withOrganization(<DashboardPage path={Routes.Dashboard} />)}
+      {withOrganization(<BookingsPage path={Routes.Bookings} />)}
+      {withOrganization(<EscapeRoomsPage path={Routes.EscapeRooms} />)}
+      <PageNotFound default />
     </Router>
   )
 }
