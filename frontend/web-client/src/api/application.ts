@@ -43,6 +43,12 @@ export const getEscapeRooms = (organizationId: string) =>
     .get<EscapeRoomDTO[]>(`/organization/${organizationId}/escape-room`)
     .then(res => res.data.map(fromEscapeRoomDTO))
 
+export const getEscapeRoom = (escapeRoomId: string) =>
+  api
+    .get<EscapeRoomDTO>(`/escape-room/${escapeRoomId}`)
+    .then(res => res.data)
+    .then(fromEscapeRoomDTO)
+
 export const createEscapeRoom = withAuth(
   headers => (organizationId: string, dto: CreateEscapeRoom) =>
     api
@@ -68,6 +74,12 @@ export const updateOrganization = withAuth(
 export const getOrganizationBookings = withAuth(headers => (organizationId: string) =>
   api
     .get<BookingDTO[]>(`/organization/${organizationId}/booking`, { headers })
+    .then(res => res.data.map(fromBookingDTO))
+)
+
+export const getEscapeRoomBookings = withAuth(headers => (escapeRoomId: string) =>
+  api
+    .get<BookingDTO[]>(`/escape-room/${escapeRoomId}/booking`, { headers })
     .then(res => res.data.map(fromBookingDTO))
 )
 

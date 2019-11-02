@@ -4,7 +4,8 @@ export enum PrivateRoutes {
   Dashboard = '/',
   Bookings = '/bookings',
   Organization = '/organization',
-  EscapeRooms = '/escape-rooms'
+  EscapeRooms = '/escape-rooms',
+  EscapeRoom = '/escape-rooms/:escapeRoomId'
 }
 
 export enum PublicRoutes {

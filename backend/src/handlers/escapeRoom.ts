@@ -1,6 +1,8 @@
+import { toBookingDTO } from '@app/dto/BookingDTO'
 import { CreateEscapeRoomDTO } from '@app/dto/CreateEscapeRoomDTO'
 import { toEscapeRoomDTO } from '@app/dto/EscapeRoomDTO'
 import { UpdateEscapeRoomDTO } from '@app/dto/UpdateEscapeRoomDTO'
+import { BookingEntity } from '@app/entities/BookingEntity'
 import { EscapeRoomBusinessHoursEntity } from '@app/entities/EscapeRoomBusinessHoursEntity'
 import { EscapeRoomEntity } from '@app/entities/EscapeRoomEntity'
 import { OrganizationEntity } from '@app/entities/OrganizationEntity'
@@ -13,7 +15,7 @@ import withParams from '@app/lib/decorators/withParams'
 import { send } from 'micro'
 import { get, post, put } from 'microrouter'
 import { prop, uniqBy } from 'ramda'
-import { getManager, getRepository } from 'typeorm'
+import { getManager, getRepository, MoreThan } from 'typeorm'
 
 // TODO: Escape room interval missing
 // TODO: check organization escape room limits, how many it has already
@@ -147,9 +149,33 @@ const listEscapeRooms = withParams(['organizationId'], ({ organizationId }) => a
   return organizationEscapeRooms.map(toEscapeRoomDTO)
 })
 
+const listBookings = withAuth(({ userId }) =>
+  withParams(['escapeRoomId'], ({ escapeRoomId }) => async (req, res) => {
+    const escapeRoomRepo = getRepository(EscapeRoomEntity)
+    const bookingRepo = getRepository(BookingEntity)
+
+    const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId)
+
+    if (!escapeRoom) {
+      return send(res, STATUS_ERROR.NOT_FOUND)
+    }
+
+    if (!isOrganizationMember(escapeRoom.organizationId, userId)) {
+      return send(res, STATUS_ERROR.FORBIDDEN)
+    }
+
+    const bookings = await bookingRepo.find({
+      where: { escapeRoomId, endDate: MoreThan(new Date()) }
+    })
+
+    return send(res, STATUS_SUCCESS.OK, bookings.map(toBookingDTO))
+  })
+)
+
 export default [
   get('/organization/:organizationId/escape-room', listEscapeRooms), // TODO mark as public? No auth required
   post('/organization/:organizationId/escape-room', createEscapeRoom),
+  get('/escape-room/:escapeRoomId/booking', listBookings),
   get('/escape-room/:escapeRoomId', getEscapeRoom), // TODO mark as public?
   put('/escape-room/:escapeRoomId', updateEscapeRoom)
 ]

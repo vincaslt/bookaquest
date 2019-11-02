@@ -3,6 +3,7 @@ import * as React from 'react'
 import { PrivateRoutes as Routes } from './constants/routes'
 import BookingsPage from './pages/BookingsPage/BookingsPage'
 import DashboardPage from './pages/DashboardPage/DashboardPage'
+import EscapeRoomPage from './pages/EscapeRoomPage/EscapeRoomPage'
 import EscapeRoomsPage from './pages/EscapeRoomsPage/EscapeRoomsPage'
 import OrganizationPage from './pages/OrganizationPage/OrganizationPage'
 import PageNotFound from './pages/PageNotFound'
@@ -22,6 +23,7 @@ function PrivateRoutes() {
       <OrganizationPage path={Routes.Organization} />
       {withOrganization(<DashboardPage path={Routes.Dashboard} />)}
       {withOrganization(<BookingsPage path={Routes.Bookings} />)}
+      {withOrganization(<EscapeRoomPage path={Routes.EscapeRoom} />)}
       {withOrganization(<EscapeRoomsPage path={Routes.EscapeRooms} />)}
       <PageNotFound default />
     </Router>

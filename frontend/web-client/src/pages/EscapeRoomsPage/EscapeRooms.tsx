@@ -1,3 +1,4 @@
+import { navigate } from '@reach/router'
 import { List } from 'antd'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
@@ -8,6 +9,7 @@ import { EscapeRoom } from '~/../commons/interfaces/escapeRoom'
 import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../api/application'
+import { getUrl, PrivateRoutes } from '../../constants/routes'
 import Section from '../../shared/layout/Section'
 import CreateEscapeRoomForm from './CreateEscapeRoomForm'
 import NoEscapeRooms from './NoEscapeRooms'
@@ -62,6 +64,9 @@ function EscapeRooms({ organization }: Props) {
     )
   }
 
+  const handleSelectRoom = (escapeRoom: EscapeRoom) =>
+    navigate(getUrl(PrivateRoutes.EscapeRoom, { escapeRoomId: escapeRoom.id }))
+
   return escapeRooms.length > 0 || isLoading ? (
     <>
       <List
@@ -87,7 +92,7 @@ function EscapeRooms({ organization }: Props) {
                 </AspectRatio>
               )
             ) : (
-              <EscapeRoomCard escapeRoom={item} />
+              <EscapeRoomCard onSelect={handleSelectRoom} escapeRoom={item} />
             )}
           </List.Item>
         )}
