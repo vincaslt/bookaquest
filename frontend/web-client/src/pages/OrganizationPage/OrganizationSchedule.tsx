@@ -1,5 +1,5 @@
 import { AutoComplete, Form, FormItem, SubmitButton } from '@jbuschke/formik-antd'
-import { Button, Descriptions, notification, Spin } from 'antd'
+import { Button, notification, Spin } from 'antd'
 import { Formik, FormikActions } from 'formik'
 import * as React from 'react'
 import { useToggle } from 'react-use'
@@ -10,6 +10,8 @@ import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../api/application'
 import BusinessHoursInput from '../../shared/components/BusinessHoursInput'
+import Link from '../../shared/components/Link'
+import SectionTitle from '../../shared/components/SectionTitle'
 
 interface CreateSchedule {
   businessHours: BusinessHours[]
@@ -57,7 +59,7 @@ function OrganizationSchedule({ organization, setOrganization, loading }: Props)
     return (
       <>
         <div className="flex justify-between">
-          <Descriptions title={t`Business Hours`} />
+          <SectionTitle>{t`Business hours`}</SectionTitle>
           {organization && <Button type="link" onClick={toggleEditing}>{t`Edit`}</Button>}
         </div>
         {organization && (
@@ -85,8 +87,10 @@ function OrganizationSchedule({ organization, setOrganization, loading }: Props)
   return (
     <>
       <div className="flex justify-between">
-        <Descriptions title={t`Business Hours`} />
-        <Button type="link" onClick={toggleEditing}>{t`Cancel`}</Button>
+        <SectionTitle>{t`Business hours`}</SectionTitle>
+        <div>
+          <Link onClick={toggleEditing}>{t`Cancel`}</Link>
+        </div>
       </div>
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {({ values, setFieldValue }) => (

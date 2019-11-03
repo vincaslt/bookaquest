@@ -34,7 +34,7 @@ function EscapeRoomSelect() {
         md: 2,
         lg: 2,
         xl: 3,
-        xxl: 2
+        xxl: 4
       }}
       loading={loading}
       dataSource={escapeRooms}

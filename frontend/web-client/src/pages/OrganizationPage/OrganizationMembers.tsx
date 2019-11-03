@@ -1,9 +1,10 @@
-import { Descriptions, List } from 'antd'
+import { List } from 'antd'
 import * as React from 'react'
 import useLoading from '~/../commons/hooks/useLoading'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../api/application'
 import { OrganizationMember } from '../../interfaces/organizationMember'
+import SectionTitle from '../../shared/components/SectionTitle'
 
 interface Props {
   organizationId: string
@@ -20,7 +21,7 @@ function OrganizationMembers({ organizationId }: Props) {
 
   return (
     <>
-      <Descriptions title={t`Members`} />
+      <SectionTitle>{t`Members`}</SectionTitle>
       <List loading={loading}>
         {members.map(member => (
           <List.Item key={member.userId} actions={[<a key="remove-user">{t`remove`}</a>]}>

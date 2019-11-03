@@ -79,18 +79,16 @@ function EscapeRooms({ organization }: Props) {
           xl: 3,
           xxl: 4
         }}
-        loading={isLoading}
+        loading={isLoading || !organization}
         dataSource={[...escapeRooms, 'new']}
         renderItem={item => (
           <List.Item>
             {typeof item === 'string' ? (
-              organization && (
-                <AspectRatio ratio="532/320">
-                  <NewEscapeRoomCard onClick={handleCreateClick}>
-                    {t`New Escape Room`}
-                  </NewEscapeRoomCard>
-                </AspectRatio>
-              )
+              <AspectRatio ratio="532/320">
+                <NewEscapeRoomCard onClick={handleCreateClick}>
+                  {t`New Escape Room`}
+                </NewEscapeRoomCard>
+              </AspectRatio>
             ) : (
               <EscapeRoomCard onSelect={handleSelectRoom} escapeRoom={item} />
             )}

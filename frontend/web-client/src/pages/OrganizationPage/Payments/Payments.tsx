@@ -1,7 +1,8 @@
-import { Button, Descriptions, Spin } from 'antd'
 import * as React from 'react'
 import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
+import DetailsList from '../../../shared/components/DetailsList'
+import Link from '../../../shared/components/Link'
 import PaymentDetailsForm from './PaymentDetailsForm'
 
 interface Props {
@@ -14,7 +15,8 @@ function Payments({ organization, setOrganization }: Props) {
 
   const [editing, setEditing] = React.useState(false)
 
-  const isEditing = editing || !organization || !organization.paymentDetails
+  const details = organization && organization.paymentDetails
+  const isEditing = editing || !details
 
   const handleToggleEditing = () => setEditing(!isEditing)
   const handleUpdateDone = (org: Organization) => {
@@ -24,29 +26,20 @@ function Payments({ organization, setOrganization }: Props) {
 
   return (
     <>
-      <div className="flex justify-between">
-        <Descriptions title={t`Stripe payment details`} />
-        <Button type="link" onClick={handleToggleEditing}>
-          {isEditing ? t`Cancel` : t`Edit`}
-        </Button>
-      </div>
-      {!organization ? (
-        <div className="flex justify-center">
-          <Spin />
-        </div>
-      ) : isEditing ? (
+      <DetailsList
+        loading={!organization}
+        title={t`Stripe payment details`}
+        extra={<Link onClick={handleToggleEditing}>{isEditing ? t`Cancel` : t`Edit`}</Link>}
+        data={
+          !isEditing &&
+          details && [
+            { label: t`Client key:`, content: details.paymentClientKey },
+            { label: t`Secret key:`, content: '*********' }
+          ]
+        }
+      />
+      {isEditing && organization && (
         <PaymentDetailsForm organizationId={organization.id} onUpdateDone={handleUpdateDone} />
-      ) : (
-        <div>
-          <div>
-            <span className="font-medium mr-2">{t`Client key:`}</span>
-            {organization.paymentDetails!.paymentClientKey}
-          </div>
-          <div>
-            <span className="font-medium mr-2">{t`Secret key:`}</span>
-            {organization.paymentDetails!.paymentClientKey}
-          </div>
-        </div>
       )}
     </>
   )

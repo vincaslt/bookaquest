@@ -1,14 +1,10 @@
-import { Descriptions, Spin, Typography } from 'antd'
+import { Typography } from 'antd'
 import * as React from 'react'
-import styled from 'styled-components'
 import { Organization } from '~/../commons/interfaces/organization'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../api/application'
-
-const DetailContainer = styled.div`
-  display: flex;
-  min-height: 35px;
-`
+import DetailsList from '../../shared/components/DetailsList'
+import EditableText from '../../shared/components/EditableText'
 
 const { Text } = Typography
 
@@ -26,35 +22,37 @@ function OrganizationDetails({ loading, organization, onUpdateOrganization }: Pr
     api.updateOrganization(organization.id, { [key]: value }).then(onUpdateOrganization)
 
   return (
-    <>
-      <Descriptions title={t`Organization details`} />
-      {loading ? (
-        <div className="flex justify-center">
-          <Spin />
-        </div>
-      ) : (
-        organization && (
-          <>
-            <DetailContainer>
-              <span className="font-medium mr-4">{t`ID:`}</span>
-              <Text copyable>{organization.id}</Text>
-            </DetailContainer>
-            <DetailContainer>
-              <span className="font-medium mr-4">{t`Name:`}</span>
-              <Text editable={{ onChange: handleChange('name') }}>{organization.name}</Text>
-            </DetailContainer>
-            <DetailContainer>
-              <span className="font-medium mr-4">{t`Website:`}</span>
-              <Text editable={{ onChange: handleChange('website') }}>{organization.website}</Text>
-            </DetailContainer>
-            <DetailContainer>
-              <span className="font-medium mr-4">{t`Location:`}</span>
-              <Text editable={{ onChange: handleChange('location') }}>{organization.location}</Text>
-            </DetailContainer>
-          </>
-        )
-      )}
-    </>
+    <DetailsList
+      title={t`Organization details`}
+      loading={loading}
+      data={
+        organization && [
+          { label: t`ID:`, content: <Text copyable>{organization.id}</Text> },
+          {
+            label: t`Name:`,
+            content: (
+              <EditableText className="inline-flex items-center" onChange={handleChange('name')}>
+                {organization.name}
+              </EditableText>
+            )
+          },
+          {
+            label: t`Website:`,
+            content: (
+              <EditableText onChange={handleChange('website')}>{organization.website}</EditableText>
+            )
+          },
+          {
+            label: t`Location:`,
+            content: (
+              <EditableText onChange={handleChange('location')}>
+                {organization.location}
+              </EditableText>
+            )
+          }
+        ]
+      }
+    />
   )
 }
 
