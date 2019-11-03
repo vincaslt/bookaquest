@@ -4,12 +4,8 @@ import styled from 'styled-components'
 import { useI18n } from '~/../commons/utils/i18n'
 import useUser from '../../hooks/useUser'
 
-const StyledHeader = styled(Layout.Header)`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  background-color: white;
-  padding: 16px 24px;
+const HeaderWithShadow = styled(Layout.Header)`
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 `
 
 function PrivateHeader() {
@@ -26,7 +22,7 @@ function PrivateHeader() {
   )
 
   return (
-    <StyledHeader>
+    <HeaderWithShadow className="px-4 py-8 bg-white flex justify-end items-center z-10">
       {userInfo && (
         <Dropdown overlay={menu}>
           <a className="px-2 ant-dropdown-link flex items-center hover:bg-gray-100">
@@ -34,7 +30,7 @@ function PrivateHeader() {
           </a>
         </Dropdown>
       )}
-    </StyledHeader>
+    </HeaderWithShadow>
   )
 }
 

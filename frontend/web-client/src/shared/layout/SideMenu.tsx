@@ -5,11 +5,8 @@ import styled from 'styled-components'
 import { useI18n } from '~/../commons/utils/i18n'
 import { PrivateRoutes } from '../../constants/routes'
 
-const StyledSider = styled(Layout.Sider)`
-  overflow: auto;
-  height: 100vh;
-  position: fixed;
-  left: 0;
+const SiderWithShadow = styled(Layout.Sider)`
+  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
 `
 
 interface MenuLinkProps {
@@ -39,7 +36,7 @@ function SideMenu() {
   const { t } = useI18n()
 
   return (
-    <StyledSider width={256}>
+    <SiderWithShadow width={256} className="z-20 overflow-auto h-screen fixed left-0">
       <Location>
         {({ location }) => (
           <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]}>
@@ -73,7 +70,7 @@ function SideMenu() {
           </Menu>
         )}
       </Location>
-    </StyledSider>
+    </SiderWithShadow>
   )
 }
 

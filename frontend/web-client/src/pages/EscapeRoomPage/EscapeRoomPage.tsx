@@ -1,6 +1,5 @@
 import { RouteComponentProps } from '@reach/router'
-import { Col, List, Radio, Row, Switch } from 'antd'
-import Title from 'antd/lib/typography/Title'
+import { Button, Col, List, PageHeader, Radio, Row, Switch } from 'antd'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
 import WorkHours from '~/../commons/components/WorkHours'
@@ -40,30 +39,38 @@ function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
   // TODO: correct inputs for difficulty and interval
   // TODO: not show payment details (only info message) if no paymentDetails from org
   return (
-    <PageContent noBackground loading={!escapeRoom}>
+    <PageContent
+      header={
+        escapeRoom && (
+          <PageHeader
+            title={escapeRoom.name}
+            extra={
+              <Link
+                href={`http://localhost:3000/${escapeRoom.organizationId}/${escapeRoomId}`}
+                newTab
+              >
+                <Button type="link">{t`Go to booking page`}</Button>
+              </Link>
+            }
+          />
+        )
+      }
+      noBackground
+      loading={!escapeRoom}
+    >
       {escapeRoom && (
         <Row gutter={16}>
           <Col span={16}>
             <Section>
-              <Title level={3}>{escapeRoom.name}</Title>
               <Row gutter={16}>
                 <Col span={12}>
                   <DetailsList
-                    className="mt-4"
                     title={t`Details`}
                     data={[
                       {
-                        label: t`Booking page:`,
-                        content: (
-                          <Link
-                            href={`http://localhost:3000/${escapeRoom.organizationId}/${escapeRoomId}`}
-                            newTab
-                          >
-                            {escapeRoomId}
-                          </Link>
-                        )
+                        label: t`Name:`,
+                        content: <EditableText>{escapeRoom.name}</EditableText>
                       },
-                      { label: t`Name:`, content: <EditableText>{escapeRoom.name}</EditableText> },
                       {
                         label: t`Difficulty:`,
                         content: <EditableText>{escapeRoom.difficulty}</EditableText>

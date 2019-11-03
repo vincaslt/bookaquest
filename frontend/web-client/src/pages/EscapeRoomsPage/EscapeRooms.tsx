@@ -1,5 +1,5 @@
 import { navigate } from '@reach/router'
-import { List } from 'antd'
+import { Col, List, Row } from 'antd'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
 import styled from 'styled-components'
@@ -68,34 +68,36 @@ function EscapeRooms({ organization }: Props) {
     navigate(getUrl(PrivateRoutes.EscapeRoom, { escapeRoomId: escapeRoom.id }))
 
   return escapeRooms.length > 0 || isLoading ? (
-    <>
-      <List
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 1,
-          md: 2,
-          lg: 2,
-          xl: 3,
-          xxl: 4
-        }}
-        loading={isLoading || !organization}
-        dataSource={[...escapeRooms, 'new']}
-        renderItem={item => (
-          <List.Item>
-            {typeof item === 'string' ? (
-              <AspectRatio ratio="532/320">
-                <NewEscapeRoomCard onClick={handleCreateClick}>
-                  {t`New Escape Room`}
-                </NewEscapeRoomCard>
-              </AspectRatio>
-            ) : (
-              <EscapeRoomCard onSelect={handleSelectRoom} escapeRoom={item} />
-            )}
-          </List.Item>
-        )}
-      />
-    </>
+    <Row gutter={24}>
+      <Col>
+        <List
+          grid={{
+            gutter: 16,
+            xs: 1,
+            sm: 1,
+            md: 2,
+            lg: 2,
+            xl: 3,
+            xxl: 4
+          }}
+          loading={isLoading || !organization}
+          dataSource={[...escapeRooms, 'new']}
+          renderItem={item => (
+            <List.Item>
+              {typeof item === 'string' ? (
+                <AspectRatio ratio="532/320">
+                  <NewEscapeRoomCard onClick={handleCreateClick}>
+                    {t`New Escape Room`}
+                  </NewEscapeRoomCard>
+                </AspectRatio>
+              ) : (
+                <EscapeRoomCard onSelect={handleSelectRoom} escapeRoom={item} />
+              )}
+            </List.Item>
+          )}
+        />
+      </Col>
+    </Row>
   ) : (
     <Section>
       <NoEscapeRooms onClickCTA={handleCreateClick} />

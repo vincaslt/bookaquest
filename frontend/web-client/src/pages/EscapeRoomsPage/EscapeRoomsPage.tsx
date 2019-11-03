@@ -1,5 +1,4 @@
 import { RouteComponentProps } from '@reach/router'
-import { Col, Row } from 'antd'
 import * as React from 'react'
 import { Organization } from '~/../commons/interfaces/organization'
 import * as api from '../../api/application'
@@ -22,11 +21,7 @@ function EscapeRoomsPage(props: RouteComponentProps) {
 
   return (
     <PageContent noBackground>
-      <Row gutter={24}>
-        <Col>
-          <EscapeRooms organization={organization} />
-        </Col>
-      </Row>
+      <EscapeRooms organization={organization} />
     </PageContent>
   )
 }
