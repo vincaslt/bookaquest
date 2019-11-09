@@ -9,7 +9,11 @@ import { EscapeRoomDTO } from '~/../commons/interfaces/dto/escapeRoom'
 import { OrganizationDTO } from '~/../commons/interfaces/dto/organization'
 import { OrganizationMemberDTO } from '~/../commons/interfaces/dto/organizationMember'
 import { UserInfoDTO, UserMembershipDTO } from '~/../commons/interfaces/dto/user'
-import { CreateEscapeRoom, fromEscapeRoomDTO } from '~/../commons/interfaces/escapeRoom'
+import {
+  CreateEscapeRoom,
+  fromEscapeRoomDTO,
+  UpdateEscapeRoom
+} from '~/../commons/interfaces/escapeRoom'
 import { fromOrganizationDTO } from '~/../commons/interfaces/organization'
 import { SignIn } from '../interfaces/auth'
 import { CreateOrganization, UpdateOrganization } from '../interfaces/organization'
@@ -55,6 +59,13 @@ export const createEscapeRoom = withAuth(
       .post<EscapeRoomDTO>(`/organization/${organizationId}/escape-room`, dto, { headers })
       .then(res => res.data)
       .then(fromEscapeRoomDTO)
+)
+
+export const updateEscapeRoom = withAuth(headers => (escapeRoomId: string, dto: UpdateEscapeRoom) =>
+  api
+    .put<EscapeRoomDTO>(`/escape-room/${escapeRoomId}`, dto, { headers })
+    .then(res => res.data)
+    .then(fromEscapeRoomDTO)
 )
 
 export const createOrganization = withAuth(headers => (dto: CreateOrganization) =>

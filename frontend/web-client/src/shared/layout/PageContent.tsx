@@ -1,7 +1,12 @@
 import { Layout } from 'antd'
 import { BasicProps } from 'antd/lib/layout/layout'
 import * as React from 'react'
+import styled from 'styled-components'
 import PageContentLoading from '../components/PageContentLoading'
+
+const Container = styled.div`
+  padding-top: 64px;
+`
 
 interface Props extends BasicProps {
   header?: React.ReactNode
@@ -11,7 +16,7 @@ interface Props extends BasicProps {
 
 function PageContent({ header, loading, noBackground, children, className = '', ...rest }: Props) {
   return (
-    <>
+    <Container>
       {header && <div className="bg-white">{header}</div>}
       {loading ? (
         <PageContentLoading {...rest} />
@@ -23,7 +28,7 @@ function PageContent({ header, loading, noBackground, children, className = '', 
           {children}
         </Layout.Content>
       )}
-    </>
+    </Container>
   )
 }
 

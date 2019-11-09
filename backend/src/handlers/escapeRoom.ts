@@ -91,7 +91,10 @@ const updateEscapeRoom = withAuth(({ userId }) =>
           const transEscapeRoomRepo = trans.getRepository(EscapeRoomEntity)
           const transBusinessHoursRepo = trans.getRepository(EscapeRoomBusinessHoursEntity)
 
-          const options = { ...dto }
+          const options = {
+            ...dto,
+            id: escapeRoomId
+          }
 
           if (dto.businessHours) {
             await transBusinessHoursRepo.remove(escapeRoom.businessHours)

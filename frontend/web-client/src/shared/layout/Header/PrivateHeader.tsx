@@ -4,11 +4,17 @@ import styled from 'styled-components'
 import { useI18n } from '~/../commons/utils/i18n'
 import useUser from '../../hooks/useUser'
 
+interface Props {
+  sidebarVisible?: boolean
+}
+
 const HeaderWithShadow = styled(Layout.Header)`
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  position: fixed;
+  width: ${({ sidebarVisible }: Props) => (sidebarVisible ? 'calc(100% - 256px)' : '100%')};
 `
 
-function PrivateHeader() {
+function PrivateHeader({ sidebarVisible = false }: Props) {
   const { logout, userInfo } = useUser()
   const { t } = useI18n()
 
@@ -22,7 +28,10 @@ function PrivateHeader() {
   )
 
   return (
-    <HeaderWithShadow className="px-4 py-8 bg-white flex justify-end items-center z-10">
+    <HeaderWithShadow
+      sidebarVisible={sidebarVisible}
+      className="px-4 py-8 bg-white flex justify-end items-center z-10"
+    >
       {userInfo && (
         <Dropdown overlay={menu}>
           <a className="px-2 ant-dropdown-link flex items-center hover:bg-gray-100">

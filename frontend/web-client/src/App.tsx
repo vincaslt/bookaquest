@@ -49,7 +49,7 @@ function App() {
           <>
             <SideMenu />
             <PageWithSidebarContainer>
-              <PrivateHeader />
+              <PrivateHeader sidebarVisible />
               <PrivateRoutes />
             </PageWithSidebarContainer>
           </>

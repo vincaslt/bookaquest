@@ -1,3 +1,4 @@
+import { PricingType } from '../escapeRoom'
 import { BusinessHoursDTO } from './businessHours'
 
 export interface CreateEscapeRoomDTO {
@@ -32,4 +33,15 @@ export interface EscapeRoomDTO {
   paymentEnabled: boolean
   participants: [number, number]
   pricingType: string
+}
+
+export interface UpdateEscapeRoomDTO {
+  name?: string
+  description?: string
+  businessHours?: BusinessHoursDTO[]
+  timezone?: string
+  interval?: number
+  pricingType?: PricingType
+  participants?: [number, number]
+  price?: number
 }

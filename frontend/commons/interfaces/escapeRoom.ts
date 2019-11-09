@@ -1,5 +1,5 @@
 import { BusinessHours } from './businessHours'
-import { CreateEscapeRoomDTO, EscapeRoomDTO } from './dto/escapeRoom'
+import { CreateEscapeRoomDTO, EscapeRoomDTO, UpdateEscapeRoomDTO } from './dto/escapeRoom'
 
 export enum PricingType {
   PER_PERSON = 'per_person',
@@ -8,6 +8,11 @@ export enum PricingType {
 
 export type CreateEscapeRoom = Omit<CreateEscapeRoomDTO, 'businessHours' | 'pricingType'> & {
   businessHours: BusinessHours[]
+  pricingType?: PricingType
+}
+
+export type UpdateEscapeRoom = Omit<UpdateEscapeRoomDTO, 'businessHours' | 'pricingType'> & {
+  businessHours?: BusinessHours[]
   pricingType?: PricingType
 }
 

@@ -1,20 +1,10 @@
-import { Icon, Input, Tooltip, Typography } from 'antd'
+import { Input, Tooltip } from 'antd'
 import { InputProps } from 'antd/lib/input'
-import { TextProps } from 'antd/lib/typography/Text'
+import Text, { TextProps } from 'antd/lib/typography/Text'
 import * as React from 'react'
 import { useToggle } from 'react-use'
-import styled from 'styled-components'
 import { useI18n } from '~/../commons/utils/i18n'
-
-const { Text } = Typography
-
-const EditButton = styled.div`
-  border: 0px;
-  background: transparent;
-  padding: 0px;
-  line-height: inherit;
-  display: inline-flex;
-`
+import EditButton from './EditButton'
 
 interface Props extends Omit<TextProps, 'editable' | 'children'> {
   children?: string | number
@@ -54,14 +44,7 @@ function EditableText({ onChange, multiline, children, className, inputProps, ..
     <Text {...rest} className={`inline-flex items-center ${className}`}>
       {children}
       <Tooltip title={t`Edit`}>
-        <EditButton
-          role="button"
-          className="ant-typography-edit"
-          aria-label="Edit"
-          onClick={toggleEdit}
-        >
-          <Icon type="edit" />
-        </EditButton>
+        <EditButton onClick={toggleEdit} />
       </Tooltip>
     </Text>
   )
