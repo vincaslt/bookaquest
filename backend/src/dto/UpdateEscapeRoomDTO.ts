@@ -5,11 +5,15 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsEnum,
+  IsInt,
   IsNumber,
   IsOptional,
   IsPositive,
   IsString,
+  Max,
+  Min,
   ValidateNested
 } from 'class-validator'
 
@@ -36,10 +40,6 @@ export class UpdateEscapeRoomDTO {
   interval?: number
 
   @IsOptional()
-  @IsEnum(PricingType)
-  pricingType?: PricingType
-
-  @IsOptional()
   @IsNumber(undefined, { each: true })
   @IsArray()
   @ArrayMaxSize(2)
@@ -47,7 +47,26 @@ export class UpdateEscapeRoomDTO {
   participants?: [number, number]
 
   @IsOptional()
+  @IsEnum(PricingType)
+  pricingType?: PricingType
+
+  @IsOptional()
   @IsNumber()
   @IsPositive()
   price?: number
+
+  @IsOptional()
+  @IsBoolean()
+  paymentEnabled?: boolean
+
+  @IsOptional()
+  @IsNumber()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  difficulty: number
+
+  @IsOptional()
+  @IsString()
+  location: string
 }

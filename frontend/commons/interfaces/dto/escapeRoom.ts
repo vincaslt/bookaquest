@@ -42,6 +42,9 @@ export interface UpdateEscapeRoomDTO {
   timezone?: string
   interval?: number
   pricingType?: PricingType
-  participants?: [number, number]
+  participants?: number[]
   price?: number
+  difficulty?: number
+  location?: string
+  paymentEnabled?: boolean
 }

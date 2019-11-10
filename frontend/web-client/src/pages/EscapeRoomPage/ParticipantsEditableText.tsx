@@ -14,10 +14,12 @@ function ParticipantsEditableText({ onChange, className = '', participants, ...r
   const { t } = useI18n()
   const [editing, setEditing] = React.useState(false)
   const [value, setValue] = React.useState(participants)
-  const [min, max] = value
+  const [min, max] = participants
 
   const handleBlur = () => {
-    onChange(value)
+    if (value[0] !== min || value[1] !== max) {
+      onChange(value)
+    }
     setEditing(false)
   }
 

@@ -137,7 +137,11 @@ function CreateEscapeRoomForm({ organization, onCreateDone, onCancel }: Props) {
               </FormItem>
 
               <FormItem name="difficulty" hasFeedback label={t`Difficulty`}>
-                <Rate name="difficulty" character={<Icon type="lock" theme="filled" />} />
+                <Rate
+                  allowClear={false}
+                  name="difficulty"
+                  character={<Icon type="lock" theme="filled" />}
+                />
               </FormItem>
 
               <FormItem name="interval" hasFeedback label={t`Interval`}>

@@ -1,10 +1,12 @@
 import { RouteComponentProps } from '@reach/router'
-import { Button, Col, Icon, List, PageHeader, Radio, Rate, Row, Switch } from 'antd'
+import { Button, Col, Icon, List, notification, PageHeader, Radio, Rate, Row, Switch } from 'antd'
 import * as React from 'react'
 import AspectRatio from 'react-aspect-ratio'
+import * as Yup from 'yup'
 import WorkHours from '~/../commons/components/WorkHours'
 import { Booking } from '~/../commons/interfaces/booking'
-import { EscapeRoom, PricingType } from '~/../commons/interfaces/escapeRoom'
+import { EscapeRoom, PricingType, UpdateEscapeRoom } from '~/../commons/interfaces/escapeRoom'
+import { asOption } from '~/../commons/utils/formHelpers'
 import { useI18n } from '~/../commons/utils/i18n'
 import * as api from '../../api/application'
 import DetailsItem from '../../shared/components/DetailsList/DetailsItem'
@@ -15,6 +17,27 @@ import SectionTitle from '../../shared/components/SectionTitle'
 import PageContent from '../../shared/layout/PageContent'
 import Section from '../../shared/layout/Section'
 import ParticipantsEditableText from './ParticipantsEditableText'
+
+const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
+  name: Yup.string(),
+  description: Yup.string(),
+  location: Yup.string(),
+  difficulty: Yup.number()
+    .min(1)
+    .max(5),
+  interval: Yup.number().min(10),
+  participants: Yup.array()
+    .notRequired()
+    .of(Yup.number())
+    .test(
+      'rangeTest',
+      'Invalid range',
+      (range: [number, number]) => !range || range[0] <= range[1]
+    ),
+  price: Yup.number().positive(),
+  pricingType: Yup.string().oneOf(Object.values(PricingType)) as Yup.Schema<PricingType>,
+  paymentEnabled: Yup.boolean()
+})
 
 interface UrlParams {
   escapeRoomId: string
@@ -37,11 +60,37 @@ function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
     }
   }, [escapeRoomId])
 
-  const updateParticipants = ([min, max]: [number?, number?]) =>
-    escapeRoomId &&
-    typeof min !== 'undefined' &&
-    typeof max !== 'undefined' &&
-    api.updateEscapeRoom(escapeRoomId, { participants: [min, max] })
+  const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
+    if (escapeRoomId) {
+      try {
+        const dto = await validationSchema.validate(values)
+        const updatedRoom = await api.updateEscapeRoom(escapeRoomId, dto)
+        await notification.success({
+          message: t`Escape room info has been updated`
+        })
+        setEscapeRoom(updatedRoom)
+      } catch (err) {
+        notification.error({
+          message: err.message ?? t`Update failed, please try again`
+        })
+      }
+    }
+  }
+
+  const updateName = (name: string) => updateEscapeRoom({ name })
+  const updateInterval = (interval: number) => updateEscapeRoom({ interval })
+  const updatePrice = (price: number) => updateEscapeRoom({ price })
+  const updateLocation = (location: string) => updateEscapeRoom({ location })
+  const updateDescription = (description: string) => updateEscapeRoom({ description })
+  const updatePricingType = (pricingType: PricingType) => updateEscapeRoom({ pricingType })
+  const updatePaymentEnabled = (paymentEnabled: boolean) => updateEscapeRoom({ paymentEnabled })
+  const updateParticipants = (participants: [number?, number?]) =>
+    updateEscapeRoom({ participants } as UpdateEscapeRoom)
+  const updateDifficulty = (difficulty: number) => {
+    if (difficulty !== escapeRoom?.difficulty) {
+      updateEscapeRoom({ difficulty })
+    }
+  }
 
   // TODO: proper URL for booking page
   // TODO: correct inputs for difficulty and interval
@@ -74,13 +123,21 @@ function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
                 <Col span={12}>
                   <DetailsList title={t`Details`}>
                     <DetailsItem label={t`Name:`}>
-                      <EditableText>{escapeRoom.name}</EditableText>
+                      <EditableText onChange={updateName}>{escapeRoom.name}</EditableText>
                     </DetailsItem>
                     <DetailsItem label={t`Difficulty:`}>
-                      <Rate value={escapeRoom.difficulty} character={<Icon type="lock" />} />
+                      <Rate
+                        allowClear={false}
+                        onChange={updateDifficulty}
+                        value={escapeRoom.difficulty}
+                        character={<Icon type="lock" theme="filled" />}
+                      />
                     </DetailsItem>
                     <DetailsItem label={t`Interval:`}>
-                      <EditableText inputProps={{ type: 'number' }}>
+                      <EditableText
+                        onChange={val => updateInterval(+val)}
+                        inputProps={{ type: 'number' }}
+                      >
                         {escapeRoom.interval}
                       </EditableText>
                     </DetailsItem>
@@ -91,15 +148,20 @@ function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
                       />
                     </DetailsItem>
                     <DetailsItem label={t`Location:`}>
-                      <EditableText>{escapeRoom.location}</EditableText>
+                      <EditableText onChange={updateLocation}>{escapeRoom.location}</EditableText>
                     </DetailsItem>
-                    <DetailsItem label={t`Description:`}>
-                      <EditableText multiline>{escapeRoom.description}</EditableText>
+                    <DetailsItem className="items-start pt-2" label={t`Description:`}>
+                      <EditableText onChange={updateDescription} multiline>
+                        {escapeRoom.description}
+                      </EditableText>
                     </DetailsItem>
                   </DetailsList>
                   <DetailsList className="mt-8" title={t`Pricing`}>
                     <DetailsItem label={t`Price:`}>
-                      <EditableText inputProps={{ type: 'number' }}>
+                      <EditableText
+                        onChange={val => updatePrice(+val)}
+                        inputProps={{ type: 'number' }}
+                      >
                         {escapeRoom.price}
                       </EditableText>
                     </DetailsItem>
@@ -107,14 +169,15 @@ function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
                       <Radio.Group
                         disabled={!escapeRoom.price}
                         name="pricingType"
-                        defaultValue={PricingType.FLAT}
+                        value={escapeRoom.pricingType}
+                        onChange={asOption(updatePricingType)}
                       >
                         <Radio.Button value={PricingType.FLAT}>{t`Flat`}</Radio.Button>
                         <Radio.Button value={PricingType.PER_PERSON}>{t`Per-person`}</Radio.Button>
                       </Radio.Group>
                     </DetailsItem>
                     <DetailsItem label={t`Payment enabled:`}>
-                      <Switch checked={escapeRoom.paymentEnabled} />
+                      <Switch onChange={updatePaymentEnabled} checked={escapeRoom.paymentEnabled} />
                     </DetailsItem>
                   </DetailsList>
                 </Col>

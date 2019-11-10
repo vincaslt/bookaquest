@@ -37,7 +37,7 @@ function Payments({ organization, setOrganization }: Props) {
       title={t`Stripe payment details`}
       extra={<Link onClick={handleToggleEditing}>{isEditing ? t`Cancel` : t`Edit`}</Link>}
     >
-      <DetailsItem label={t`Client key:`}>{details!.paymentClientKey}</DetailsItem>
+      <DetailsItem label={t`Client key:`}>{details?.paymentClientKey}</DetailsItem>
       <DetailsItem label={t`Secret key:`}>'*********'</DetailsItem>
     </DetailsList>
   )

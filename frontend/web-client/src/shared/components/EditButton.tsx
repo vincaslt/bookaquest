@@ -5,7 +5,7 @@ import styled from 'styled-components'
 const Container = styled.div`
   border: 0px;
   background: transparent;
-  padding: 0px;
+  padding-bottom: 4px;
   line-height: inherit;
   display: inline-flex;
 `

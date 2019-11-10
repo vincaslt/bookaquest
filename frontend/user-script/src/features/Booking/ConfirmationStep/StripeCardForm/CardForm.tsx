@@ -2,6 +2,7 @@ import { Alert, Button, Input } from 'antd'
 import FormItem from 'antd/lib/form/FormItem'
 import * as React from 'react'
 import { CardCVCElement, CardExpiryElement, CardNumberElement } from 'react-stripe-elements'
+import { asString } from '~/../commons/utils/formHelpers'
 import { useI18n } from '~/../commons/utils/i18n'
 import './CardForm.css'
 
@@ -27,7 +28,7 @@ function CardForm({ onSubmit, loading }: Props) {
         description={t`Your booking will be completed after payment`}
       />
       <FormItem style={{ marginBottom: 15 }} label={t`Name on card`}>
-        <Input placeholder={t`Name Surname`} value={name} onChange={e => setName(e.target.value)} />
+        <Input placeholder={t`Name Surname`} value={name} onChange={asString(setName)} />
       </FormItem>
       <FormItem style={{ marginBottom: 0 }} label={t`Card number`}>
         <CardNumberElement
