@@ -1,0 +1,39 @@
+{
+  "npmScope": "bookaquest",
+  "implicitDependencies": {
+    "workspace.json": "*",
+    "package.json": "*",
+    "tsconfig.json": "*",
+    "tslint.json": "*",
+    "nx.json": "*"
+  },
+  "projects": {
+    "bookings-manager": {
+      "tags": []
+    },
+    "bookings-manager-e2e": {
+      "tags": []
+    },
+    "bookings-app": {
+      "tags": []
+    },
+    "bookings-app-e2e": {
+      "tags": []
+    },
+    "components": {
+      "tags": []
+    },
+    "utilities": {
+      "tags": []
+    },
+    "interfaces": {
+      "tags": []
+    },
+    "user-script": {
+      "tags": []
+    },
+    "api": {
+      "tags": []
+    }
+  }
+}
