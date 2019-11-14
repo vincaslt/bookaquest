@@ -18,6 +18,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "noUnusedLocals": true,
+    "strictPropertyInitialization": false,
     "baseUrl": ".",
     "paths": {
       "@bookaquest/components": ["libs/components/src/index.ts"],

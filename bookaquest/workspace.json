@@ -364,7 +364,7 @@
           "builder": "@nrwl/node:build",
           "options": {
             "outputPath": "dist/apps/api",
-            "main": "apps/api/src/main.ts",
+            "main": "apps/api/src/app/index.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
             "assets": [
               "apps/api/src/assets"
