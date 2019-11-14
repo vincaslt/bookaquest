@@ -34,24 +34,24 @@ export function OrganizationDetails({
   return (
     <DetailsList title={t`Organization details`} loading={loading}>
       <DetailsItem label={t`ID:`}>
-        <Text copyable>{organization && organization.id}</Text>
+        <Text copyable>{organization?.id}</Text>
       </DetailsItem>
       <DetailsItem label={t`Name:`}>
         <EditableText
           className="inline-flex items-center"
           onChange={handleChange('name')}
         >
-          {organization && organization.name}
+          {organization?.name}
         </EditableText>
       </DetailsItem>
       <DetailsItem label={t`Website:`}>
         <EditableText onChange={handleChange('website')}>
-          {organization && organization.website}
+          {organization?.website}
         </EditableText>
       </DetailsItem>
       <DetailsItem label={t`Location:`}>
         <EditableText onChange={handleChange('location')}>
-          {organization && organization.location}
+          {organization?.location}
         </EditableText>
       </DetailsItem>
     </DetailsList>

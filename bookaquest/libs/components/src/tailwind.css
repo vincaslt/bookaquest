@@ -86,7 +86,7 @@ abbr[title] {
   border-bottom: none; /* 1 */
   text-decoration: underline; /* 2 */
   -webkit-text-decoration: underline dotted;
-  text-decoration: underline dotted; /* 2 */
+          text-decoration: underline dotted; /* 2 */
 }
 
 /**
@@ -175,8 +175,7 @@ textarea {
  */
 
 button,
-input {
-  /* 1 */
+input { /* 1 */
   overflow: visible;
 }
 
@@ -186,8 +185,7 @@ input {
  */
 
 button,
-select {
-  /* 1 */
+select { /* 1 */
   text-transform: none;
 }
 
@@ -196,9 +194,9 @@ select {
  */
 
 button,
-[type='button'],
-[type='reset'],
-[type='submit'] {
+[type="button"],
+[type="reset"],
+[type="submit"] {
   -webkit-appearance: button;
 }
 
@@ -207,9 +205,9 @@ button,
  */
 
 button::-moz-focus-inner,
-[type='button']::-moz-focus-inner,
-[type='reset']::-moz-focus-inner,
-[type='submit']::-moz-focus-inner {
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
   border-style: none;
   padding: 0;
 }
@@ -219,9 +217,9 @@ button::-moz-focus-inner,
  */
 
 button:-moz-focusring,
-[type='button']:-moz-focusring,
-[type='reset']:-moz-focusring,
-[type='submit']:-moz-focusring {
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
   outline: 1px dotted ButtonText;
 }
 
@@ -270,8 +268,8 @@ textarea {
  * 2. Remove the padding in IE 10.
  */
 
-[type='checkbox'],
-[type='radio'] {
+[type="checkbox"],
+[type="radio"] {
   box-sizing: border-box; /* 1 */
   padding: 0; /* 2 */
 }
@@ -280,8 +278,8 @@ textarea {
  * Correct the cursor style of increment and decrement buttons in Chrome.
  */
 
-[type='number']::-webkit-inner-spin-button,
-[type='number']::-webkit-outer-spin-button {
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
   height: auto;
 }
 
@@ -290,7 +288,7 @@ textarea {
  * 2. Correct the outline style in Safari.
  */
 
-[type='search'] {
+[type="search"] {
   -webkit-appearance: textfield; /* 1 */
   outline-offset: -2px; /* 2 */
 }
@@ -299,7 +297,7 @@ textarea {
  * Remove the inner padding in Chrome and Safari on macOS.
  */
 
-[type='search']::-webkit-search-decoration {
+[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
@@ -432,9 +430,7 @@ ul {
  */
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; /* 1 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 1 */
   line-height: 1.5; /* 2 */
 }
 
@@ -488,13 +484,11 @@ textarea {
   resize: vertical;
 }
 
-input:-ms-input-placeholder,
-textarea:-ms-input-placeholder {
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   color: #a0aec0;
 }
 
-input::-ms-input-placeholder,
-textarea::-ms-input-placeholder {
+input::-ms-input-placeholder, textarea::-ms-input-placeholder {
   color: #a0aec0;
 }
 
@@ -504,7 +498,7 @@ textarea::placeholder {
 }
 
 button,
-[role='button'] {
+[role="button"] {
   cursor: pointer;
 }
 
@@ -561,8 +555,7 @@ pre,
 code,
 kbd,
 samp {
-  font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /**
@@ -674,8 +667,8 @@ video {
 
 .appearance-none {
   -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+     -moz-appearance: none;
+          appearance: none;
 }
 
 .bg-fixed {
@@ -5423,24 +5416,21 @@ video {
 }
 
 .clearfix:after {
-  content: '';
+  content: "";
   display: table;
   clear: both;
 }
 
 .font-sans {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .font-serif {
-  font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
 .font-mono {
-  font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .font-hairline {
@@ -6897,72 +6887,72 @@ video {
 
 .object-contain {
   -o-object-fit: contain;
-  object-fit: contain;
+     object-fit: contain;
 }
 
 .object-cover {
   -o-object-fit: cover;
-  object-fit: cover;
+     object-fit: cover;
 }
 
 .object-fill {
   -o-object-fit: fill;
-  object-fit: fill;
+     object-fit: fill;
 }
 
 .object-none {
   -o-object-fit: none;
-  object-fit: none;
+     object-fit: none;
 }
 
 .object-scale-down {
   -o-object-fit: scale-down;
-  object-fit: scale-down;
+     object-fit: scale-down;
 }
 
 .object-bottom {
   -o-object-position: bottom;
-  object-position: bottom;
+     object-position: bottom;
 }
 
 .object-center {
   -o-object-position: center;
-  object-position: center;
+     object-position: center;
 }
 
 .object-left {
   -o-object-position: left;
-  object-position: left;
+     object-position: left;
 }
 
 .object-left-bottom {
   -o-object-position: left bottom;
-  object-position: left bottom;
+     object-position: left bottom;
 }
 
 .object-left-top {
   -o-object-position: left top;
-  object-position: left top;
+     object-position: left top;
 }
 
 .object-right {
   -o-object-position: right;
-  object-position: right;
+     object-position: right;
 }
 
 .object-right-bottom {
   -o-object-position: right bottom;
-  object-position: right bottom;
+     object-position: right bottom;
 }
 
 .object-right-top {
   -o-object-position: right top;
-  object-position: right top;
+     object-position: right top;
 }
 
 .object-top {
   -o-object-position: top;
-  object-position: top;
+     object-position: top;
 }
 
 .opacity-0 {
@@ -11831,18 +11821,15 @@ video {
 }
 
 .shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .shadow-2xl {
@@ -11866,18 +11853,15 @@ video {
 }
 
 .hover\:shadow-md:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .hover\:shadow-lg:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .hover\:shadow-xl:hover {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .hover\:shadow-2xl:hover {
@@ -11901,18 +11885,15 @@ video {
 }
 
 .focus\:shadow-md:focus {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .focus\:shadow-lg:focus {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .focus\:shadow-xl:focus {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .focus\:shadow-2xl:focus {
@@ -14127,26 +14108,26 @@ video {
 
 .select-none {
   -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 .select-text {
   -webkit-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
+      -ms-user-select: text;
+          user-select: text;
 }
 
 .select-all {
   -webkit-user-select: all;
-  -ms-user-select: all;
-  user-select: all;
+      -ms-user-select: all;
+          user-select: all;
 }
 
 .select-auto {
   -webkit-user-select: auto;
-  -ms-user-select: auto;
-  user-select: auto;
+      -ms-user-select: auto;
+          user-select: auto;
 }
 
 .align-baseline {
@@ -14489,8 +14470,8 @@ video {
 
   .sm\:appearance-none {
     -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+       -moz-appearance: none;
+            appearance: none;
   }
 
   .sm\:bg-fixed {
@@ -19238,24 +19219,21 @@ video {
   }
 
   .sm\:clearfix:after {
-    content: '';
+    content: "";
     display: table;
     clear: both;
   }
 
   .sm\:font-sans {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-      'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
 
   .sm\:font-serif {
-    font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
   }
 
   .sm\:font-mono {
-    font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-      monospace;
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 
   .sm\:font-hairline {
@@ -20712,72 +20690,72 @@ video {
 
   .sm\:object-contain {
     -o-object-fit: contain;
-    object-fit: contain;
+       object-fit: contain;
   }
 
   .sm\:object-cover {
     -o-object-fit: cover;
-    object-fit: cover;
+       object-fit: cover;
   }
 
   .sm\:object-fill {
     -o-object-fit: fill;
-    object-fit: fill;
+       object-fit: fill;
   }
 
   .sm\:object-none {
     -o-object-fit: none;
-    object-fit: none;
+       object-fit: none;
   }
 
   .sm\:object-scale-down {
     -o-object-fit: scale-down;
-    object-fit: scale-down;
+       object-fit: scale-down;
   }
 
   .sm\:object-bottom {
     -o-object-position: bottom;
-    object-position: bottom;
+       object-position: bottom;
   }
 
   .sm\:object-center {
     -o-object-position: center;
-    object-position: center;
+       object-position: center;
   }
 
   .sm\:object-left {
     -o-object-position: left;
-    object-position: left;
+       object-position: left;
   }
 
   .sm\:object-left-bottom {
     -o-object-position: left bottom;
-    object-position: left bottom;
+       object-position: left bottom;
   }
 
   .sm\:object-left-top {
     -o-object-position: left top;
-    object-position: left top;
+       object-position: left top;
   }
 
   .sm\:object-right {
     -o-object-position: right;
-    object-position: right;
+       object-position: right;
   }
 
   .sm\:object-right-bottom {
     -o-object-position: right bottom;
-    object-position: right bottom;
+       object-position: right bottom;
   }
 
   .sm\:object-right-top {
     -o-object-position: right top;
-    object-position: right top;
+       object-position: right top;
   }
 
   .sm\:object-top {
     -o-object-position: top;
-    object-position: top;
+       object-position: top;
   }
 
   .sm\:opacity-0 {
@@ -25646,18 +25624,15 @@ video {
   }
 
   .sm\:shadow-md {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .sm\:shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .sm\:shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .sm\:shadow-2xl {
@@ -25681,18 +25656,15 @@ video {
   }
 
   .sm\:hover\:shadow-md:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .sm\:hover\:shadow-lg:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .sm\:hover\:shadow-xl:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .sm\:hover\:shadow-2xl:hover {
@@ -25716,18 +25688,15 @@ video {
   }
 
   .sm\:focus\:shadow-md:focus {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .sm\:focus\:shadow-lg:focus {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .sm\:focus\:shadow-xl:focus {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .sm\:focus\:shadow-2xl:focus {
@@ -27942,26 +27911,26 @@ video {
 
   .sm\:select-none {
     -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+        -ms-user-select: none;
+            user-select: none;
   }
 
   .sm\:select-text {
     -webkit-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+        -ms-user-select: text;
+            user-select: text;
   }
 
   .sm\:select-all {
     -webkit-user-select: all;
-    -ms-user-select: all;
-    user-select: all;
+        -ms-user-select: all;
+            user-select: all;
   }
 
   .sm\:select-auto {
     -webkit-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
+        -ms-user-select: auto;
+            user-select: auto;
   }
 
   .sm\:align-baseline {
@@ -28305,8 +28274,8 @@ video {
 
   .md\:appearance-none {
     -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+       -moz-appearance: none;
+            appearance: none;
   }
 
   .md\:bg-fixed {
@@ -33054,24 +33023,21 @@ video {
   }
 
   .md\:clearfix:after {
-    content: '';
+    content: "";
     display: table;
     clear: both;
   }
 
   .md\:font-sans {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-      'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
 
   .md\:font-serif {
-    font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
   }
 
   .md\:font-mono {
-    font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-      monospace;
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 
   .md\:font-hairline {
@@ -34528,72 +34494,72 @@ video {
 
   .md\:object-contain {
     -o-object-fit: contain;
-    object-fit: contain;
+       object-fit: contain;
   }
 
   .md\:object-cover {
     -o-object-fit: cover;
-    object-fit: cover;
+       object-fit: cover;
   }
 
   .md\:object-fill {
     -o-object-fit: fill;
-    object-fit: fill;
+       object-fit: fill;
   }
 
   .md\:object-none {
     -o-object-fit: none;
-    object-fit: none;
+       object-fit: none;
   }
 
   .md\:object-scale-down {
     -o-object-fit: scale-down;
-    object-fit: scale-down;
+       object-fit: scale-down;
   }
 
   .md\:object-bottom {
     -o-object-position: bottom;
-    object-position: bottom;
+       object-position: bottom;
   }
 
   .md\:object-center {
     -o-object-position: center;
-    object-position: center;
+       object-position: center;
   }
 
   .md\:object-left {
     -o-object-position: left;
-    object-position: left;
+       object-position: left;
   }
 
   .md\:object-left-bottom {
     -o-object-position: left bottom;
-    object-position: left bottom;
+       object-position: left bottom;
   }
 
   .md\:object-left-top {
     -o-object-position: left top;
-    object-position: left top;
+       object-position: left top;
   }
 
   .md\:object-right {
     -o-object-position: right;
-    object-position: right;
+       object-position: right;
   }
 
   .md\:object-right-bottom {
     -o-object-position: right bottom;
-    object-position: right bottom;
+       object-position: right bottom;
   }
 
   .md\:object-right-top {
     -o-object-position: right top;
-    object-position: right top;
+       object-position: right top;
   }
 
   .md\:object-top {
     -o-object-position: top;
-    object-position: top;
+       object-position: top;
   }
 
   .md\:opacity-0 {
@@ -39462,18 +39428,15 @@ video {
   }
 
   .md\:shadow-md {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .md\:shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .md\:shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .md\:shadow-2xl {
@@ -39497,18 +39460,15 @@ video {
   }
 
   .md\:hover\:shadow-md:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .md\:hover\:shadow-lg:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .md\:hover\:shadow-xl:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .md\:hover\:shadow-2xl:hover {
@@ -39532,18 +39492,15 @@ video {
   }
 
   .md\:focus\:shadow-md:focus {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .md\:focus\:shadow-lg:focus {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .md\:focus\:shadow-xl:focus {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .md\:focus\:shadow-2xl:focus {
@@ -41758,26 +41715,26 @@ video {
 
   .md\:select-none {
     -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+        -ms-user-select: none;
+            user-select: none;
   }
 
   .md\:select-text {
     -webkit-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+        -ms-user-select: text;
+            user-select: text;
   }
 
   .md\:select-all {
     -webkit-user-select: all;
-    -ms-user-select: all;
-    user-select: all;
+        -ms-user-select: all;
+            user-select: all;
   }
 
   .md\:select-auto {
     -webkit-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
+        -ms-user-select: auto;
+            user-select: auto;
   }
 
   .md\:align-baseline {
@@ -42121,8 +42078,8 @@ video {
 
   .lg\:appearance-none {
     -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+       -moz-appearance: none;
+            appearance: none;
   }
 
   .lg\:bg-fixed {
@@ -46870,24 +46827,21 @@ video {
   }
 
   .lg\:clearfix:after {
-    content: '';
+    content: "";
     display: table;
     clear: both;
   }
 
   .lg\:font-sans {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-      'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
 
   .lg\:font-serif {
-    font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
   }
 
   .lg\:font-mono {
-    font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-      monospace;
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 
   .lg\:font-hairline {
@@ -48344,72 +48298,72 @@ video {
 
   .lg\:object-contain {
     -o-object-fit: contain;
-    object-fit: contain;
+       object-fit: contain;
   }
 
   .lg\:object-cover {
     -o-object-fit: cover;
-    object-fit: cover;
+       object-fit: cover;
   }
 
   .lg\:object-fill {
     -o-object-fit: fill;
-    object-fit: fill;
+       object-fit: fill;
   }
 
   .lg\:object-none {
     -o-object-fit: none;
-    object-fit: none;
+       object-fit: none;
   }
 
   .lg\:object-scale-down {
     -o-object-fit: scale-down;
-    object-fit: scale-down;
+       object-fit: scale-down;
   }
 
   .lg\:object-bottom {
     -o-object-position: bottom;
-    object-position: bottom;
+       object-position: bottom;
   }
 
   .lg\:object-center {
     -o-object-position: center;
-    object-position: center;
+       object-position: center;
   }
 
   .lg\:object-left {
     -o-object-position: left;
-    object-position: left;
+       object-position: left;
   }
 
   .lg\:object-left-bottom {
     -o-object-position: left bottom;
-    object-position: left bottom;
+       object-position: left bottom;
   }
 
   .lg\:object-left-top {
     -o-object-position: left top;
-    object-position: left top;
+       object-position: left top;
   }
 
   .lg\:object-right {
     -o-object-position: right;
-    object-position: right;
+       object-position: right;
   }
 
   .lg\:object-right-bottom {
     -o-object-position: right bottom;
-    object-position: right bottom;
+       object-position: right bottom;
   }
 
   .lg\:object-right-top {
     -o-object-position: right top;
-    object-position: right top;
+       object-position: right top;
   }
 
   .lg\:object-top {
     -o-object-position: top;
-    object-position: top;
+       object-position: top;
   }
 
   .lg\:opacity-0 {
@@ -53278,18 +53232,15 @@ video {
   }
 
   .lg\:shadow-md {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .lg\:shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .lg\:shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .lg\:shadow-2xl {
@@ -53313,18 +53264,15 @@ video {
   }
 
   .lg\:hover\:shadow-md:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .lg\:hover\:shadow-lg:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .lg\:hover\:shadow-xl:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .lg\:hover\:shadow-2xl:hover {
@@ -53348,18 +53296,15 @@ video {
   }
 
   .lg\:focus\:shadow-md:focus {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .lg\:focus\:shadow-lg:focus {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .lg\:focus\:shadow-xl:focus {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .lg\:focus\:shadow-2xl:focus {
@@ -55574,26 +55519,26 @@ video {
 
   .lg\:select-none {
     -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+        -ms-user-select: none;
+            user-select: none;
   }
 
   .lg\:select-text {
     -webkit-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+        -ms-user-select: text;
+            user-select: text;
   }
 
   .lg\:select-all {
     -webkit-user-select: all;
-    -ms-user-select: all;
-    user-select: all;
+        -ms-user-select: all;
+            user-select: all;
   }
 
   .lg\:select-auto {
     -webkit-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
+        -ms-user-select: auto;
+            user-select: auto;
   }
 
   .lg\:align-baseline {
@@ -55937,8 +55882,8 @@ video {
 
   .xl\:appearance-none {
     -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+       -moz-appearance: none;
+            appearance: none;
   }
 
   .xl\:bg-fixed {
@@ -60686,24 +60631,21 @@ video {
   }
 
   .xl\:clearfix:after {
-    content: '';
+    content: "";
     display: table;
     clear: both;
   }
 
   .xl\:font-sans {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-      'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
 
   .xl\:font-serif {
-    font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
   }
 
   .xl\:font-mono {
-    font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-      monospace;
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 
   .xl\:font-hairline {
@@ -62160,72 +62102,72 @@ video {
 
   .xl\:object-contain {
     -o-object-fit: contain;
-    object-fit: contain;
+       object-fit: contain;
   }
 
   .xl\:object-cover {
     -o-object-fit: cover;
-    object-fit: cover;
+       object-fit: cover;
   }
 
   .xl\:object-fill {
     -o-object-fit: fill;
-    object-fit: fill;
+       object-fit: fill;
   }
 
   .xl\:object-none {
     -o-object-fit: none;
-    object-fit: none;
+       object-fit: none;
   }
 
   .xl\:object-scale-down {
     -o-object-fit: scale-down;
-    object-fit: scale-down;
+       object-fit: scale-down;
   }
 
   .xl\:object-bottom {
     -o-object-position: bottom;
-    object-position: bottom;
+       object-position: bottom;
   }
 
   .xl\:object-center {
     -o-object-position: center;
-    object-position: center;
+       object-position: center;
   }
 
   .xl\:object-left {
     -o-object-position: left;
-    object-position: left;
+       object-position: left;
   }
 
   .xl\:object-left-bottom {
     -o-object-position: left bottom;
-    object-position: left bottom;
+       object-position: left bottom;
   }
 
   .xl\:object-left-top {
     -o-object-position: left top;
-    object-position: left top;
+       object-position: left top;
   }
 
   .xl\:object-right {
     -o-object-position: right;
-    object-position: right;
+       object-position: right;
   }
 
   .xl\:object-right-bottom {
     -o-object-position: right bottom;
-    object-position: right bottom;
+       object-position: right bottom;
   }
 
   .xl\:object-right-top {
     -o-object-position: right top;
-    object-position: right top;
+       object-position: right top;
   }
 
   .xl\:object-top {
     -o-object-position: top;
-    object-position: top;
+       object-position: top;
   }
 
   .xl\:opacity-0 {
@@ -67094,18 +67036,15 @@ video {
   }
 
   .xl\:shadow-md {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .xl\:shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .xl\:shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .xl\:shadow-2xl {
@@ -67129,18 +67068,15 @@ video {
   }
 
   .xl\:hover\:shadow-md:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .xl\:hover\:shadow-lg:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .xl\:hover\:shadow-xl:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .xl\:hover\:shadow-2xl:hover {
@@ -67164,18 +67100,15 @@ video {
   }
 
   .xl\:focus\:shadow-md:focus {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .xl\:focus\:shadow-lg:focus {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .xl\:focus\:shadow-xl:focus {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .xl\:focus\:shadow-2xl:focus {
@@ -69390,26 +69323,26 @@ video {
 
   .xl\:select-none {
     -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+        -ms-user-select: none;
+            user-select: none;
   }
 
   .xl\:select-text {
     -webkit-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+        -ms-user-select: text;
+            user-select: text;
   }
 
   .xl\:select-all {
     -webkit-user-select: all;
-    -ms-user-select: all;
-    user-select: all;
+        -ms-user-select: all;
+            user-select: all;
   }
 
   .xl\:select-auto {
     -webkit-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
+        -ms-user-select: auto;
+            user-select: auto;
   }
 
   .xl\:align-baseline {

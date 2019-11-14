@@ -1,4 +1,4 @@
-import '@bookaquest/user-script';
+// import '@bookaquest/user-script';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

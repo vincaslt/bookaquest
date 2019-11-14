@@ -1,5 +1,6 @@
-import { presetPalettes } from '@ant-design/colors';
-import { keys } from 'ramda';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { presetPalettes } = require('@ant-design/colors');
+const { keys } = require('ramda');
 
 const colors = keys(presetPalettes).reduce((colorsMap, color) => {
   const shadesArray = presetPalettes[color];
@@ -14,9 +15,13 @@ const colors = keys(presetPalettes).reduce((colorsMap, color) => {
   };
 }, {});
 
-export const plugins = [];
-export const theme = {
-  extend: {
-    colors
+module.exports = {
+  plugins: [],
+  theme: {
+    extend: {
+      colors
+    }
   }
+
+  // variants: ['first', 'last', 'odd', 'even'],
 };
