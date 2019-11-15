@@ -1,6 +1,8 @@
 import { RouteComponentProps } from '@reach/router';
 import { Col, Row } from 'antd';
 import * as React from 'react';
+import { Organization } from '@bookaquest/interfaces';
+import { useLoading } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
@@ -10,8 +12,6 @@ import { OrganizationDetails } from './OrganizationDetails';
 import { OrganizationMembers } from './OrganizationMembers';
 import { OrganizationSchedule } from './OrganizationSchedule';
 import { Payments } from './Payments/Payments';
-import { Organization } from '@bookaquest/interfaces';
-import { useLoading } from '@bookaquest/utilities';
 
 // TODO: let user pick organizations / multiple organizations support
 export function OrganizationPage(props: RouteComponentProps) {

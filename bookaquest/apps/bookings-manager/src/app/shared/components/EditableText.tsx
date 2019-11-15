@@ -3,8 +3,8 @@ import { InputProps } from 'antd/lib/input';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text, { TextProps } from 'antd/lib/typography/Text';
 import * as React from 'react';
-import { EditButton } from './EditButton';
 import { useI18n, asString } from '@bookaquest/utilities';
+import { EditButton } from './EditButton';
 
 interface Props extends Omit<TextProps, 'editable' | 'children'> {
   children?: string | number;

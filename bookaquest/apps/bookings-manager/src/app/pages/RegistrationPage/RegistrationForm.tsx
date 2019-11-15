@@ -3,9 +3,9 @@ import { notification } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import * as React from 'react';
 import * as Yup from 'yup';
+import { useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { CreateUser } from '../../interfaces/user';
-import { useI18n } from '@bookaquest/utilities';
 
 const initialValues: CreateUser = {
   email: '',

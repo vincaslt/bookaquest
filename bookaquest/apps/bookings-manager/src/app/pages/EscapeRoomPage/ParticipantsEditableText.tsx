@@ -1,9 +1,9 @@
 import { Tooltip } from 'antd';
 import Text, { TextProps } from 'antd/lib/typography/Text';
 import * as React from 'react';
+import { useI18n } from '@bookaquest/utilities';
 import { EditButton } from '../../shared/components/EditButton';
 import { RangeNumberInput } from '../../shared/components/RangeNumberInput';
-import { useI18n } from '@bookaquest/utilities';
 
 interface Props extends Omit<TextProps, 'editable' | 'children'> {
   participants: [number?, number?];

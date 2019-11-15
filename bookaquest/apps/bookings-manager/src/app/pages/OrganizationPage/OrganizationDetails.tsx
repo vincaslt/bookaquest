@@ -1,11 +1,11 @@
 import { Typography } from 'antd';
 import * as React from 'react';
+import { Organization } from '@bookaquest/interfaces';
+import { useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { DetailsItem } from '../../shared/components/DetailsList/DetailsItem';
 import { DetailsList } from '../../shared/components/DetailsList/DetailsList';
 import { EditableText } from '../../shared/components/EditableText';
-import { Organization } from '@bookaquest/interfaces';
-import { useI18n } from '@bookaquest/utilities';
 
 const { Text } = Typography;
 

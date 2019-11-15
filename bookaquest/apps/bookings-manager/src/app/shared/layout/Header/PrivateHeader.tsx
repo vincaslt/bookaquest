@@ -1,8 +1,8 @@
 import { Dropdown, Icon, Layout, Menu } from 'antd';
 import * as React from 'react';
 import styled from 'styled-components';
-import { useUser } from '../../hooks/useUser';
 import { useI18n } from '@bookaquest/utilities';
+import { useUser } from '../../hooks/useUser';
 
 interface Props {
   sidebarVisible?: boolean;

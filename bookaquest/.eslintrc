@@ -6,9 +6,23 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["prettier", "@typescript-eslint", "@nrwl/nx"],
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    },
+    "import/internal-regex": "^@bookaquest/"
+  },
+  "plugins": ["import", "prettier", "@typescript-eslint", "@nrwl/nx"],
   "extends": [
     "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
@@ -16,6 +30,22 @@
   ],
   "rules": {
     "prettier/prettier": "warn",
+    "import/named": "off",
+    "import/default": "off",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "unknown",
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ]
+      }
+    ],
     "@typescript-eslint/explicit-member-accessibility": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-parameter-properties": "off",

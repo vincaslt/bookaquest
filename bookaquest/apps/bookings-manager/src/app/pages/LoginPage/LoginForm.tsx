@@ -3,8 +3,8 @@ import { notification } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import * as React from 'react';
 import * as Yup from 'yup';
-import { SignIn } from '../../interfaces/auth';
 import { useI18n } from '@bookaquest/utilities';
+import { SignIn } from '../../interfaces/auth';
 import { useUser } from '../../shared/hooks/useUser';
 
 const initialValues: SignIn = {

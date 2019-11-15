@@ -1,5 +1,5 @@
-import { BasicUserInfo, fromBasicUserInfoDTO } from './user';
 import { OrganizationMemberDTO } from '@bookaquest/interfaces';
+import { BasicUserInfo, fromBasicUserInfoDTO } from './user';
 
 export type OrganizationMember = Omit<OrganizationMemberDTO, 'user'> & {
   user: BasicUserInfo;

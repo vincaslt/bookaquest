@@ -9,12 +9,12 @@ import {
 } from 'date-fns';
 import splitEvery from 'ramda/es/splitEvery';
 import times from 'ramda/es/times';
+import { useI18n } from '@bookaquest/utilities';
 import * as React from 'react';
+import { BusinessHours, Timeslot, Availability } from '@bookaquest/interfaces';
 import { Day } from './Day';
 import { Header } from './Header';
 import { Timeslots } from './Timeslots';
-import { BusinessHours, Timeslot, Availability } from '@bookaquest/interfaces';
-import { useI18n } from '@bookaquest/utilities';
 
 interface Props {
   businessHours: BusinessHours[];

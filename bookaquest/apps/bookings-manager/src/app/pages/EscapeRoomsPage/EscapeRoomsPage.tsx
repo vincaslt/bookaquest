@@ -1,10 +1,10 @@
 import { RouteComponentProps } from '@reach/router';
 import * as React from 'react';
+import { Organization } from '@bookaquest/interfaces';
 import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
 import { EscapeRooms } from './EscapeRooms';
-import { Organization } from '@bookaquest/interfaces';
 
 export function EscapeRoomsPage(props: RouteComponentProps) {
   const { userInfo } = useUser();

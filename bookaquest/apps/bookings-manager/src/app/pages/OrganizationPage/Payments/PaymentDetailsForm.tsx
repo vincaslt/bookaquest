@@ -3,9 +3,9 @@ import { Col, Row } from 'antd';
 import { Formik } from 'formik';
 import * as React from 'react';
 import * as Yup from 'yup';
-import * as api from '../../../api/application';
 import { CreatePaymentDetails, Organization } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
+import * as api from '../../../api/application';
 
 // TODO: They are always updated together and can't be edited, inform user about this
 const initialValues: CreatePaymentDetails = {

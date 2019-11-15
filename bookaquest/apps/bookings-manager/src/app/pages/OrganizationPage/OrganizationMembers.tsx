@@ -1,9 +1,9 @@
 import { List } from 'antd';
 import * as React from 'react';
+import { useLoading, useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { OrganizationMember } from '../../interfaces/organizationMember';
 import { SectionTitle } from '../../shared/components/SectionTitle';
-import { useLoading, useI18n } from '@bookaquest/utilities';
 import { Link } from '../../shared/components/Link';
 
 interface Props {

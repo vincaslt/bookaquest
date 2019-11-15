@@ -2,8 +2,8 @@ import { Link, Location } from '@reach/router';
 import { Icon, Layout, Menu } from 'antd';
 import * as React from 'react';
 import styled from 'styled-components';
-import { PrivateRoutes } from '../../constants/routes';
 import { useI18n } from '@bookaquest/utilities';
+import { PrivateRoutes } from '../../constants/routes';
 
 const SiderWithShadow = styled(Layout.Sider)`
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);

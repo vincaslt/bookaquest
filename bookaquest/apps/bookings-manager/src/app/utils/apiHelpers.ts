@@ -1,11 +1,11 @@
 import Axios, { AxiosError } from 'axios';
-import { PublicRoutes } from '../constants/routes';
-import { JwtPayload } from '../interfaces/auth';
 import { config } from '@bookaquest/utilities';
 import {
   RequestRefreshTokenDTO,
   RefreshTokenDTO
 } from '@bookaquest/interfaces';
+import { PublicRoutes } from '../constants/routes';
+import { JwtPayload } from '../interfaces/auth';
 
 export const api = Axios.create({
   baseURL: config.backendUrl

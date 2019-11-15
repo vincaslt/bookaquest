@@ -11,9 +11,17 @@ import {
   Row,
   Switch
 } from 'antd';
-import * as React from 'react';
 import AspectRatio from 'react-aspect-ratio';
+import * as React from 'react';
 import * as Yup from 'yup';
+import {
+  UpdateEscapeRoom,
+  PricingType,
+  EscapeRoom,
+  Booking
+} from '@bookaquest/interfaces';
+import { useI18n, asOption } from '@bookaquest/utilities';
+import { WorkHours } from '@bookaquest/components';
 import * as api from '../../api/application';
 import { DetailsItem } from '../../shared/components/DetailsList/DetailsItem';
 import { DetailsList } from '../../shared/components/DetailsList/DetailsList';
@@ -23,14 +31,6 @@ import { SectionTitle } from '../../shared/components/SectionTitle';
 import { PageContent } from '../../shared/layout/PageContent';
 import { Section } from '../../shared/layout/Section';
 import { ParticipantsEditableText } from './ParticipantsEditableText';
-import {
-  UpdateEscapeRoom,
-  PricingType,
-  EscapeRoom,
-  Booking
-} from '@bookaquest/interfaces';
-import { useI18n, asOption } from '@bookaquest/utilities';
-import { WorkHours } from '@bookaquest/components';
 
 const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
   name: Yup.string(),

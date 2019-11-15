@@ -2,12 +2,12 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridWeek from '@fullcalendar/timegrid';
 import { RouteComponentProps } from '@reach/router';
 import * as React from 'react';
+import { useLoading } from '@bookaquest/utilities';
+import { Booking, BookingStatus } from '@bookaquest/interfaces';
 import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
 import { PendingEventModal } from './PendingEventModal';
-import { useLoading } from '@bookaquest/utilities';
-import { Booking, BookingStatus } from '@bookaquest/interfaces';
 
 // TODO: show bookings as resources (per escape room)
 export function BookingsPage(props: RouteComponentProps) {

@@ -14,8 +14,6 @@ import { Formik, FormikHelpers } from 'formik';
 import * as React from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import * as api from '../../api/application';
-import { RangeNumberInput } from '../../shared/components/RangeNumberInput';
 import {
   Organization,
   EscapeRoom,
@@ -25,6 +23,8 @@ import {
 } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 import { EscapeRoomCard } from '@bookaquest/components';
+import { RangeNumberInput } from '../../shared/components/RangeNumberInput';
+import * as api from '../../api/application';
 
 const StyledResetButton = styled(ResetButton)`
   margin-right: 16px;

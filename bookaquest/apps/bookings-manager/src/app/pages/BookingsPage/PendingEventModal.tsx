@@ -1,8 +1,8 @@
 import { Button, Modal } from 'antd';
 import * as React from 'react';
-import * as api from '../../api/application';
 import { Booking, BookingStatus } from '@bookaquest/interfaces';
 import { useI18n, useLoading } from '@bookaquest/utilities';
+import * as api from '../../api/application';
 
 interface Props {
   booking: Booking;

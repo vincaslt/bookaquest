@@ -1,8 +1,8 @@
 import { Link, RouteComponentProps } from '@reach/router';
 import { Button, Result } from 'antd';
 import * as React from 'react';
-import { PrivateRoutes } from '../constants/routes';
 import { useI18n } from '@bookaquest/utilities';
+import { PrivateRoutes } from '../constants/routes';
 
 export function PageNotFound(props: RouteComponentProps) {
   const { t } = useI18n();

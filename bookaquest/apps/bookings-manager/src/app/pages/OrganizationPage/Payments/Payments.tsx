@@ -1,11 +1,11 @@
 import * as React from 'react';
+import { Organization } from '@bookaquest/interfaces';
+import { useI18n } from '@bookaquest/utilities';
 import { DetailsItem } from '../../../shared/components/DetailsList/DetailsItem';
 import { DetailsList } from '../../../shared/components/DetailsList/DetailsList';
 import { Link } from '../../../shared/components/Link';
 import { SectionTitle } from '../../../shared/components/SectionTitle';
 import { PaymentDetailsForm } from './PaymentDetailsForm';
-import { Organization } from '@bookaquest/interfaces';
-import { useI18n } from '@bookaquest/utilities';
 
 interface Props {
   organization?: Organization;

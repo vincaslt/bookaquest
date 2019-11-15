@@ -1,15 +1,3 @@
-import { SignIn } from '../interfaces/auth';
-import {
-  CreateOrganization,
-  UpdateOrganization
-} from '../interfaces/organization';
-import { fromOrganizationMemberDTO } from '../interfaces/organizationMember';
-import {
-  CreateUser,
-  fromUserInfoDTO,
-  fromUserMembershipDTO
-} from '../interfaces/user';
-import { api, withAuth } from '../utils/apiHelpers';
 import {
   AuthTokensDTO,
   UserInfoDTO,
@@ -24,6 +12,18 @@ import {
   fromBookingDTO,
   OrganizationMemberDTO
 } from '@bookaquest/interfaces';
+import { SignIn } from '../interfaces/auth';
+import {
+  CreateOrganization,
+  UpdateOrganization
+} from '../interfaces/organization';
+import { fromOrganizationMemberDTO } from '../interfaces/organizationMember';
+import {
+  CreateUser,
+  fromUserInfoDTO,
+  fromUserMembershipDTO
+} from '../interfaces/user';
+import { api, withAuth } from '../utils/apiHelpers';
 
 // TODO: should be CreateUser and convert to DTO before sending
 export const register = (user: CreateUser) =>

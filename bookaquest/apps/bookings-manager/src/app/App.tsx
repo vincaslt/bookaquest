@@ -1,13 +1,13 @@
 import { Layout, Spin } from 'antd';
 import * as React from 'react';
 import styled from 'styled-components';
+import { useI18n } from '@bookaquest/utilities';
 import { PrivateRoutes } from './PrivateRoutes';
 import { PublicRoutes } from './PublicRoutes';
 import { useUser } from './shared/hooks/useUser';
 import { PrivateHeader } from './shared/layout/Header/PrivateHeader';
 import { SideMenu } from './shared/layout/SideMenu';
 import { withUserProvider } from './shared/providers/UserProvider';
-import { useI18n } from '@bookaquest/utilities';
 
 const AppSpinnerContainer = styled('div')`
   display: flex;
