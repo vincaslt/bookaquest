@@ -26,7 +26,10 @@ export class UserEntity {
   password: string; // TODO: rework to use secure remote password protocol
 
   // TODO: setup cascade deletes
-  @OneToMany(() => OrganizationMembershipEntity, membership => membership.user)
+  @OneToMany(
+    () => OrganizationMembershipEntity,
+    membership => membership.user
+  )
   memberships: OrganizationMembershipEntity[];
 
   @CreateDateColumn()

@@ -28,7 +28,7 @@ export function Payments({ organization, setOrganization }: Props) {
 
   return isEditing && organization ? (
     <>
-      <SectionTitle>{t`Strip payment details`}</SectionTitle>
+      <SectionTitle>{t`Stripe payment details`}</SectionTitle>
       <PaymentDetailsForm
         organizationId={organization.id}
         onUpdateDone={handleUpdateDone}

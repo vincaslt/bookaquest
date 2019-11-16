@@ -25,6 +25,7 @@ import { useI18n } from '@bookaquest/utilities';
 import { EscapeRoomCard } from '@bookaquest/components';
 import { RangeNumberInput } from '../../shared/components/RangeNumberInput';
 import * as api from '../../api/application';
+import { environment } from 'apps/bookings-manager/src/environments/environment';
 
 const StyledResetButton = styled(ResetButton)`
   margin-right: 16px;
@@ -198,16 +199,18 @@ export function CreateEscapeRoomForm({
                 </Radio.Group>
               </FormItem>
 
-              <FormItem
-                name="paymentsEnabled"
-                hasFeedback
-                label={t`Accept payments`}
-              >
-                <Switch
-                  name="paymentEnabled"
-                  disabled={!organization.paymentDetails}
-                />
-              </FormItem>
+              {environment.paymentEnabled && (
+                <FormItem
+                  name="paymentsEnabled"
+                  hasFeedback
+                  label={t`Accept payments`}
+                >
+                  <Switch
+                    name="paymentEnabled"
+                    disabled={!organization.paymentDetails}
+                  />
+                </FormItem>
+              )}
 
               <FormItem name="action">
                 <StyledResetButton onClick={onCancel} disabled={false}>

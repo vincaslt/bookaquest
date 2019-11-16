@@ -1,7 +1,7 @@
+import { getManager, getRepository, MoreThan } from 'typeorm';
 import { send } from 'micro';
 import { get, post, put } from 'microrouter';
 import { prop, uniqBy } from 'ramda';
-import { getManager, getRepository, MoreThan } from 'typeorm';
 import { withAuth } from '../lib/decorators/withAuth';
 import { withParams } from '../lib/decorators/withParams';
 import { withBody } from '../lib/decorators/withBody';

@@ -12,6 +12,7 @@ import { OrganizationDetails } from './OrganizationDetails';
 import { OrganizationMembers } from './OrganizationMembers';
 import { OrganizationSchedule } from './OrganizationSchedule';
 import { Payments } from './Payments/Payments';
+import { environment } from 'apps/bookings-manager/src/environments/environment';
 
 // TODO: let user pick organizations / multiple organizations support
 export function OrganizationPage(props: RouteComponentProps) {
@@ -58,14 +59,16 @@ export function OrganizationPage(props: RouteComponentProps) {
                 />
               </Section>
             </Col>
-            <Col span={8}>
-              <Section>
-                <Payments
-                  organization={organization}
-                  setOrganization={setOrganization}
-                />
-              </Section>
-            </Col>
+            {environment.paymentEnabled && (
+              <Col span={8}>
+                <Section>
+                  <Payments
+                    organization={organization}
+                    setOrganization={setOrganization}
+                  />
+                </Section>
+              </Col>
+            )}
           </Row>
         </>
       ) : (

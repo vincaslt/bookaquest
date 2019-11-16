@@ -1,7 +1,7 @@
+import { getRepository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { send } from 'micro';
 import { post } from 'microrouter';
-import { getRepository } from 'typeorm';
 import { withBody } from '../lib/decorators/withBody';
 import { SignInDTO } from '../dto/SignInDTO';
 import { UserEntity } from '../entities/UserEntity';

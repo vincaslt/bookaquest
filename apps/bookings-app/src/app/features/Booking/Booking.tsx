@@ -1,13 +1,13 @@
 import { Col, Icon, Row, Steps } from 'antd';
+import { useLocation, useRoute } from 'wouter';
 import * as React from 'react';
 import { Elements, StripeProvider } from 'react-stripe-elements';
 import styled from 'styled-components';
-import { useLocation, useRoute } from 'wouter';
+import { Organization, EscapeRoom, Timeslot } from '@bookaquest/interfaces';
 import * as api from '../../api/application';
 import { BookingSummary } from './BookingSummary/BookingSummary';
 import { ConfirmationStep } from './ConfirmationStep/ConfirmationStep';
 import { TimeslotStep } from './TimeslotStep/TimeslotStep';
-import { Organization, EscapeRoom, Timeslot } from '@bookaquest/interfaces';
 import {
   BookingInfo,
   BookingInfoStep
@@ -86,6 +86,7 @@ export function Booking() {
     [BookingStep.Confirmation]: 2
   }[step];
 
+  // TODO: Add participants count to timeslot step to immediatelly calculate prices (on the calendar)
   // TODO: show Payment as step if booking room has payments
   return (
     <Row>

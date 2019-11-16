@@ -10,11 +10,11 @@ import {
   startOfDay,
   subSeconds
 } from 'date-fns';
+import { Between, getRepository, LessThan, MoreThan } from 'typeorm';
 import { send } from 'micro';
 import { get, post, put } from 'microrouter';
 import { times } from 'ramda';
 import * as Stripe from 'stripe';
-import { Between, getRepository, LessThan, MoreThan } from 'typeorm';
 import { withParams } from '../lib/decorators/withParams';
 import { BookingEntity, BookingStatus } from '../entities/BookingEntity';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
