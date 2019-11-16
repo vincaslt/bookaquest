@@ -1,0 +1,31 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2017", "dom", "esnext"],
+    "strict": true,
+    "noImplicitAny": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "strictPropertyInitialization": false,
+    "baseUrl": ".",
+    "paths": {
+      "@bookaquest/components": ["libs/components/src/index.ts"],
+      "@bookaquest/utilities": ["libs/utilities/src/index.ts"],
+      "@bookaquest/interfaces": ["libs/interfaces/src/index.ts"],
+      "@bookaquest/user-script": ["libs/user-script/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}
