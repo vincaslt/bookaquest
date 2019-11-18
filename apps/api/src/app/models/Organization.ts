@@ -1,7 +1,6 @@
 import { prop, Ref, arrayProp, getModelForClass } from '@typegoose/typegoose';
 import { BusinessHours } from './BusinessHours';
 import { EscapeRoom } from './EscapeRoom';
-import { OrganizationMembership } from './OrganizationMembership';
 
 export class PaymentDetails {
   @prop({ required: true, select: false })
