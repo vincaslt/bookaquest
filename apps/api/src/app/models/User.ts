@@ -1,5 +1,4 @@
-import { prop, getModelForClass, arrayProp, Ref } from '@typegoose/typegoose';
-import { OrganizationMembership } from './OrganizationMembership';
+import { prop, getModelForClass } from '@typegoose/typegoose';
 
 export class UserInitFields {
   email: string;
@@ -16,9 +15,6 @@ export class User {
 
   @prop({ required: true, select: false })
   password: string;
-
-  @arrayProp({ ref: 'OrganizationMembership' })
-  memberships: Ref<OrganizationMembership>[]; // TODO: convert into insatnceMethod
 }
 
 export const UserModel = getModelForClass(User, {

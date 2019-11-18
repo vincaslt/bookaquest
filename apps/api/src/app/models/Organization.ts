@@ -39,9 +39,6 @@ export class Organization {
   @arrayProp({ items: BusinessHours, _id: false })
   businessHours?: BusinessHours[];
 
-  @arrayProp({ ref: 'OrganizationMembership' })
-  members: Ref<OrganizationMembership>[]; // TODO: convert into instance method
-
   @arrayProp({ ref: 'EscapeRoom', index: true })
   escapeRooms: Ref<EscapeRoom>[];
 }

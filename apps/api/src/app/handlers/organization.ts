@@ -20,28 +20,30 @@ import { BookingModel } from '../models/Booking';
 
 const createOrganization = withAuth(({ userId }) =>
   withBody(CreateOrganizationDTO, dto => async (req, res) => {
+    const belongsToOrganization = await OrganizationMembershipModel.exists({
+      user: userId
+    });
+
+    if (belongsToOrganization) {
+      // Temporarily disallow multiple memberships
+      return send(res, STATUS_ERROR.FORBIDDEN);
+    }
+
     const organizationFields: OrganizationInitFields = dto;
     const organization = await OrganizationModel.create(organizationFields);
-
-    // TODO: check if it's the first organization, otherwise don't create
 
     const membershipFields: OrganizationMembershipInitFields = {
       isOwner: true,
       organization: organization.id,
       user: userId
     };
-    const membership = await OrganizationMembershipModel.create(
-      membershipFields
-    );
-
-    organization.members.push(membership.id);
-    await organization.save();
+    await OrganizationMembershipModel.create(membershipFields);
 
     const memberships = await OrganizationMembershipModel.find({
       user: userId
     });
 
-    return send(res, STATUS_SUCCESS.OK, memberships); // TODO: return organization immediatelly
+    return send(res, STATUS_SUCCESS.OK, memberships);
   })
 );
 
