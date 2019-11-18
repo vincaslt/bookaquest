@@ -1,246 +1,125 @@
-import { getManager, getRepository, In, MoreThan } from 'typeorm';
 import { send } from 'micro';
 import { get, post, put } from 'microrouter';
+import { omit } from 'ramda';
 import { withAuth } from '../lib/decorators/withAuth';
 import { withBody } from '../lib/decorators/withBody';
 import { CreateOrganizationDTO } from '../dto/CreateOrganizationDTO';
-import { OrganizationEntity } from '../entities/OrganizationEntity';
-import { OrganizationMembershipEntity } from '../entities/OrganizationMembershipEntity';
-import { OrganizationBusinessHoursEntity } from '../entities/OrganizationBusinessHoursEntity';
-import { PaymentDetailsEntity } from '../entities/PaymentDetailsEntity';
-import { UserEntity } from '../entities/UserEntity';
 import { STATUS_SUCCESS, STATUS_ERROR } from '../lib/constants';
-import { toUserMembershipDTO } from '../dto/UserInfoDTO';
 import { withParams } from '../lib/decorators/withParams';
 import { UpdateOrganizationDTO } from '../dto/UpdateOrganizationDTO';
 import { isOrganizationMember } from '../helpers/organizationHelpers';
-import { toOrganizationDTO } from '../dto/OrganizationDTO';
-import { BookingEntity } from '../entities/BookingEntity';
-import { toBookingDTO } from '../dto/BookingDTO';
-import { toMemberDTO } from '../dto/OrganizationMemberDTO';
+import {
+  OrganizationModel,
+  OrganizationInitFields
+} from '../models/Organization';
+import {
+  OrganizationMembershipModel,
+  OrganizationMembershipInitFields
+} from '../models/OrganizationMembership';
+import { BookingModel } from '../models/Booking';
 
-// TODO: check user organization limits? Pay per organization
 const createOrganization = withAuth(({ userId }) =>
   withBody(CreateOrganizationDTO, dto => async (req, res) => {
-    try {
-      await getManager().transaction(async trans => {
-        const transOrganizationRepo = trans.getRepository(OrganizationEntity);
-        const transOrganizationMembershipRepo = trans.getRepository(
-          OrganizationMembershipEntity
-        );
-        const transBusinessHoursRepo = trans.getRepository(
-          OrganizationBusinessHoursEntity
-        );
-        const transPaymentDetailsRepo = trans.getRepository(
-          PaymentDetailsEntity
-        );
+    const organizationFields: OrganizationInitFields = dto;
+    const organization = await OrganizationModel.create(organizationFields);
 
-        const newOrganization = transOrganizationRepo.create({
-          ...dto,
-          businessHours: []
-        });
-        const organization = await transOrganizationRepo.save(newOrganization);
+    // TODO: check if it's the first organization, otherwise don't create
 
-        const businessHours = dto.businessHours
-          ? transBusinessHoursRepo.create(
-              dto.businessHours.map(hours => ({
-                organizationId: organization.id,
-                ...hours
-              }))
-            )
-          : [];
-        await transBusinessHoursRepo.save(businessHours);
+    const membershipFields: OrganizationMembershipInitFields = {
+      isOwner: true,
+      organization: organization.id,
+      user: userId
+    };
+    const membership = await OrganizationMembershipModel.create(
+      membershipFields
+    );
 
-        if (dto.paymentDetails) {
-          const paymentDetails = transPaymentDetailsRepo.create({
-            ...dto.paymentDetails,
-            organizationId: organization.id
-          });
-          await transPaymentDetailsRepo.save(paymentDetails);
-        }
+    organization.members.push(membership.id);
+    await organization.save();
 
-        const newMember = transOrganizationMembershipRepo.create({
-          isOwner: true,
-          organization,
-          userId
-        });
-        await transOrganizationMembershipRepo.save(newMember);
-      });
+    const memberships = await OrganizationMembershipModel.find({
+      user: userId
+    });
 
-      const userRepo = getRepository(UserEntity);
-      const user = await userRepo.findOne(userId, {
-        relations: ['memberships', 'memberships.organization']
-      });
-
-      return send(
-        res,
-        STATUS_SUCCESS.OK,
-        user ? user.memberships.map(toUserMembershipDTO) : []
-      );
-    } catch (e) {
-      return send(res, STATUS_ERROR.INTERNAL);
-    }
+    return send(res, STATUS_SUCCESS.OK, memberships); // TODO: return organization immediatelly
   })
 );
 
 const updateOrganization = withAuth(({ userId }) =>
   withParams(['organizationId'], ({ organizationId }) =>
     withBody(UpdateOrganizationDTO, dto => async (req, res) => {
-      const organizationRepo = getRepository(OrganizationEntity);
+      const isMember = await isOrganizationMember(organizationId, userId);
 
-      // TODO: check privileges when implemented
-      if (!isOrganizationMember(organizationId, userId)) {
+      if (!isMember) {
         return send(res, STATUS_ERROR.FORBIDDEN);
       }
 
-      const organization = await organizationRepo.findOne(organizationId, {
-        relations: ['businessHours', 'paymentDetails']
-      });
+      const organization = await OrganizationModel.findByIdAndUpdate(
+        organizationId,
+        dto,
+        { runValidators: true }
+      ).select('-members -escapeRooms');
 
       if (!organization) {
         return send(res, STATUS_ERROR.NOT_FOUND);
       }
 
-      try {
-        await getManager().transaction(async trans => {
-          const transBusinessHoursRepo = trans.getRepository(
-            OrganizationBusinessHoursEntity
-          );
-          const transOrganizationRepo = trans.getRepository(OrganizationEntity);
-          const transPaymentDetailsRepo = trans.getRepository(
-            PaymentDetailsEntity
-          );
-
-          const options = {
-            ...dto,
-            id: organizationId
-          };
-
-          if (dto.businessHours) {
-            await transBusinessHoursRepo.remove(organization.businessHours);
-
-            options.businessHours = transBusinessHoursRepo.create(
-              dto.businessHours.map(hours => ({
-                ...hours,
-                organizationId: organization.id
-              }))
-            );
-          }
-
-          if (dto.paymentDetails) {
-            if (organization.paymentDetails) {
-              await transPaymentDetailsRepo.remove(organization.paymentDetails);
-            }
-
-            options.paymentDetails = transPaymentDetailsRepo.create({
-              ...dto.paymentDetails,
-              organizationId
-            });
-          }
-
-          const updatedOrganization = await transOrganizationRepo.preload(
-            options
-          );
-
-          if (!updatedOrganization) {
-            throw new Error('Organization not found');
-          }
-
-          await transOrganizationRepo.save(updatedOrganization);
-
-          if (options.businessHours) {
-            await transBusinessHoursRepo.save(options.businessHours);
-          }
-
-          if (options.paymentDetails) {
-            await transPaymentDetailsRepo.save(options.paymentDetails);
-          }
-        });
-
-        const savedOrganization = await organizationRepo.findOne(
-          organizationId,
-          {
-            relations: ['businessHours', 'paymentDetails']
-          }
-        );
-
-        return send(
-          res,
-          STATUS_SUCCESS.OK,
-          savedOrganization && toOrganizationDTO(savedOrganization)
-        );
-      } catch (e) {
-        return send(res, STATUS_ERROR.INTERNAL);
-      }
+      return send(res, STATUS_SUCCESS.OK, organization);
     })
   )
 );
 
 const listBookings = withAuth(({ userId }) =>
   withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
-    const organizationRepo = getRepository(OrganizationEntity);
-    const bookingRepo = getRepository(BookingEntity);
+    const isMember = await isOrganizationMember(organizationId, userId);
 
-    if (!isOrganizationMember(organizationId, userId)) {
+    if (!isMember) {
       return send(res, STATUS_ERROR.FORBIDDEN);
     }
 
-    const organization = await organizationRepo.findOne(organizationId, {
-      relations: ['escapeRooms']
-    });
+    const organization = await OrganizationModel.findById(organizationId);
 
     if (!organization) {
       return send(res, STATUS_ERROR.NOT_FOUND);
     }
 
-    const escapeRoomIds = organization.escapeRooms.map(({ id }) => id);
+    const bookings = await BookingModel.find({
+      escapeRoom: { $in: organization.escapeRooms },
+      endDate: { $gt: new Date() }
+    }).select('-escapeRoom');
 
-    const bookings = escapeRoomIds.length
-      ? await bookingRepo.find({
-          where: {
-            escapeRoomId: In(escapeRoomIds),
-            endDate: MoreThan(new Date())
-          }
-        })
-      : [];
-
-    return send(res, STATUS_SUCCESS.OK, bookings.map(toBookingDTO));
+    return send(res, STATUS_SUCCESS.OK, bookings);
   })
 );
 
 const listMembers = withAuth(({ userId }) =>
   withParams(['organizationId'], ({ organizationId }) => async (req, res) => {
-    const organizationMembershipRepo = getRepository(
-      OrganizationMembershipEntity
-    );
+    const isMember = await isOrganizationMember(organizationId, userId);
 
-    if (!isOrganizationMember(organizationId, userId)) {
+    if (!isMember) {
       return send(res, STATUS_ERROR.FORBIDDEN);
     }
 
-    const memberships = await organizationMembershipRepo.find({
-      where: { organizationId },
-      relations: ['user']
-    });
+    const memberships = await OrganizationMembershipModel.find({
+      organization: organizationId
+    }).populate('user');
 
-    return send(res, STATUS_SUCCESS.OK, memberships.map(toMemberDTO));
+    return send(res, STATUS_SUCCESS.OK, memberships.map(omit(['memberships'])));
   })
 );
 
 const getOrganization = withParams(
   ['organizationId'],
   ({ organizationId }) => async (req, res) => {
-    const organizationRepo = getRepository(OrganizationEntity);
-
-    const organization = await organizationRepo.findOne(organizationId, {
-      relations: ['businessHours', 'paymentDetails']
-    });
+    const organization = await OrganizationModel.findById(
+      organizationId
+    ).select('-members -escapeRooms');
 
     if (!organization) {
       return send(res, STATUS_ERROR.NOT_FOUND);
     }
 
-    return send(res, STATUS_SUCCESS.OK, toOrganizationDTO(organization));
+    return send(res, STATUS_SUCCESS.OK, organization);
   }
 );
 

@@ -1,8 +1,11 @@
 import { randomFillSync } from 'crypto';
+import { addDays, addMinutes } from 'date-fns';
 import { sign, verify } from 'jsonwebtoken';
-import { getRepository, MoreThan } from 'typeorm';
-import { RefreshTokenEntity } from '../entities/RefreshTokenEntity';
 import { JwtPayload } from '../lib/interfaces';
+import {
+  RefreshTokenModel,
+  RefreshTokenInitFields
+} from '../models/RefreshToken';
 
 function generateRandomString(length: number) {
   const validChars =
@@ -14,20 +17,16 @@ function generateRandomString(length: number) {
 }
 
 export async function issueRefreshToken(userId: string) {
-  const tokenRepo = getRepository(RefreshTokenEntity);
+  const expirationDate = addDays(new Date(), 14);
+  const token = generateRandomString(256);
 
-  const expirationDate = new Date();
-  expirationDate.setDate(expirationDate.getDate() + 14); // TODO: Probably not a correct way to add days
+  const refreshToken: RefreshTokenInitFields = {
+    user: userId,
+    expirationDate,
+    token
+  };
 
-  const refreshToken = await tokenRepo.create({
-    token: generateRandomString(256),
-    userId,
-    expirationDate
-  });
-
-  const { token } = await tokenRepo.save(refreshToken);
-
-  return token;
+  return await RefreshTokenModel.create(refreshToken);
 }
 
 export async function issueAccessToken(userId: string) {
@@ -35,8 +34,7 @@ export async function issueAccessToken(userId: string) {
     throw new Error('No jwt secret, please check env variables');
   }
 
-  const expires = new Date();
-  expires.setMinutes(expires.getMinutes() + 5); // TODO: Probably not a correct way to add minutes
+  const expires = addMinutes(new Date(), 5);
 
   const payload: JwtPayload = {
     userId,
@@ -54,15 +52,10 @@ export function verifyToken(token: string) {
 }
 
 export async function refreshAccessToken(userId: string, refreshToken: string) {
-  const tokenRepo = getRepository(RefreshTokenEntity);
-
-  const token = await tokenRepo.findOne({
-    where: {
-      userId,
-      token: refreshToken,
-      expirationDate: MoreThan(new Date())
-    }
+  const tokenExists = await RefreshTokenModel.exists({
+    user: userId,
+    token: refreshToken,
+    expirationDate: { $gt: new Date() }
   });
-
-  return token && issueAccessToken(token.userId);
+  return tokenExists && issueAccessToken(userId);
 }

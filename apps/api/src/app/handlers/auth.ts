@@ -1,51 +1,62 @@
-import { getRepository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { send } from 'micro';
 import { post } from 'microrouter';
+import { omit } from 'ramda';
 import { withBody } from '../lib/decorators/withBody';
 import { SignInDTO } from '../dto/SignInDTO';
-import { UserEntity } from '../entities/UserEntity';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
 import {
   issueAccessToken,
   issueRefreshToken,
   refreshAccessToken
 } from '../helpers/auth';
-import { toUserInfoDTO } from '../dto/UserInfoDTO';
 import { withAuth } from '../lib/decorators/withAuth';
-import { RefreshTokenEntity } from '../entities/RefreshTokenEntity';
 import { RefreshTokenDTO } from '../dto/RefreshTokenDTO';
+import { UserModel } from '../models/User';
+import { RefreshTokenModel } from '../models/RefreshToken';
 
 const login = withBody(SignInDTO, dto => async (req, res) => {
-  const userRepo = getRepository(UserEntity);
-  const user = await userRepo.findOne({
-    where: { email: dto.email },
-    relations: ['memberships', 'memberships.organization']
-    // select: ['password'] // TODO: enable when fixed
-  });
+  const user = await UserModel.findOne({ email: dto.email })
+    .select('+password')
+    .populate('memberships');
 
-  if (!user) {
+  const passwordCorrect =
+    user && (await bcrypt.compare(dto.password, user.password));
+
+  if (!user || !passwordCorrect) {
     return send(res, STATUS_ERROR.UNAUTHORIZED);
   }
 
-  const isPasswordCorrect = await bcrypt.compare(dto.password, user.password);
+  try {
+    const refreshToken = await issueRefreshToken(user.id);
+    const accessToken = await issueAccessToken(user.id);
 
-  if (!isPasswordCorrect) {
-    return send(res, STATUS_ERROR.UNAUTHORIZED);
+    await RefreshTokenModel.deleteMany({
+      user: user.id,
+      expirationDate: { $lte: new Date() }
+    });
+
+    return send(res, STATUS_SUCCESS.OK, {
+      tokens: {
+        accessToken,
+        refreshToken
+      },
+      user: omit(['password'])(user)
+    });
+  } catch (e) {
+    return send(res, STATUS_ERROR.INTERNAL);
   }
-
-  return send(res, STATUS_SUCCESS.OK, {
-    tokens: {
-      accessToken: await issueAccessToken(user.id),
-      refreshToken: await issueRefreshToken(user.id)
-    },
-    user: toUserInfoDTO(user)
-  });
 });
 
 const logout = withAuth(({ userId }) => async (req, res) => {
-  const tokenRepo = getRepository(RefreshTokenEntity);
-  await tokenRepo.delete({ userId });
+  if (await UserModel.exists(userId)) {
+    return send(res, STATUS_ERROR.BAD_REQUEST);
+  }
+
+  await RefreshTokenModel.deleteMany({
+    user: userId
+  });
+
   return send(res, STATUS_SUCCESS.OK);
 });
 

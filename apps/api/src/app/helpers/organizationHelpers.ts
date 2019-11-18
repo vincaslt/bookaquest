@@ -1,17 +1,8 @@
-import { getRepository } from 'typeorm';
-import { OrganizationMembershipEntity } from '../entities/OrganizationMembershipEntity';
+import { OrganizationMembershipModel } from '../models/OrganizationMembership';
 
-export async function isOrganizationMember(
-  organizationId: string,
-  userId: string
-) {
-  const organizationMembershipRepo = getRepository(
-    OrganizationMembershipEntity
-  );
-
-  const membership = await organizationMembershipRepo.findOne({
-    where: { userId, organizationId }
+export async function isOrganizationMember(organization: string, user: string) {
+  return OrganizationMembershipModel.exists({
+    organization,
+    user
   });
-
-  return !!membership;
 }

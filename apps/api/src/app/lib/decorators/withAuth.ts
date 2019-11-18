@@ -1,15 +1,15 @@
 import { RequestHandler, send } from 'micro';
+import { AugmentedRequestHandler } from 'microrouter';
 import { JwtPayload } from '../interfaces';
 import { STATUS_ERROR } from '../constants';
 import { verifyToken } from '../../helpers/auth';
-import { AugmentedRequestHandler } from 'microrouter';
 
 export function withAuth(
   handler: (payload: JwtPayload) => AugmentedRequestHandler
 ): RequestHandler {
   return async (req, res) => {
     const authHeader = (req.headers.Authorization ||
-      req.headers.authorization) as (string | undefined);
+      req.headers.authorization) as string | undefined;
 
     if (authHeader) {
       const payload = verifyToken(authHeader.split('Bearer ')[1]) as JwtPayload;

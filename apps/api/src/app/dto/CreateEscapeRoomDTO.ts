@@ -16,8 +16,8 @@ import {
   Min,
   ValidateNested
 } from 'class-validator';
+import { PricingType } from '../models/EscapeRoom';
 import { BusinessHoursDTO } from './BusinessHoursDTO';
-import { PricingType } from '../entities/EscapeRoomEntity';
 
 export class CreateEscapeRoomDTO {
   @IsNotEmpty()
@@ -75,5 +75,5 @@ export class CreateEscapeRoomDTO {
 
   @IsNotEmpty()
   @IsEnum(PricingType)
-  pricingType?: PricingType;
+  pricingType: PricingType;
 }
