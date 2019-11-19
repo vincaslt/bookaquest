@@ -12,7 +12,7 @@ export class OrganizationMembership {
   @prop({ ref: 'User', required: true })
   user: Ref<User>;
 
-  @prop({ ref: 'Organization', required: true, select: false, index: true })
+  @prop({ ref: 'Organization', required: true, index: true })
   organization: Ref<Organization>;
 
   @prop({ required: true })
@@ -22,6 +22,6 @@ export class OrganizationMembership {
 export const OrganizationMembershipModel = getModelForClass(
   OrganizationMembership,
   {
-    schemaOptions: { timestamps: true }
+    schemaOptions: { timestamps: true, excludeIndexes: true }
   }
 );
