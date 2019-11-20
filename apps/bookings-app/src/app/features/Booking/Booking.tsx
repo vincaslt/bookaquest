@@ -1,7 +1,6 @@
 import { Col, Icon, Row, Steps } from 'antd';
-import { useLocation, useRoute } from 'wouter';
+import { useLocation, useRoute, DefaultParams } from 'wouter';
 import * as React from 'react';
-import { Elements, StripeProvider } from 'react-stripe-elements';
 import styled from 'styled-components';
 import { Organization, EscapeRoom, Timeslot } from '@bookaquest/interfaces';
 import * as api from '../../api/application';
@@ -12,6 +11,7 @@ import {
   BookingInfo,
   BookingInfoStep
 } from './BookingInfoStep/BookingInfoStep';
+import { OrganizationStripeProvider } from './ConfirmationStep/OrganizationStripeProvider';
 
 const Section = styled.div`
   background: white;
@@ -20,21 +20,25 @@ const Section = styled.div`
 `;
 
 enum BookingStep {
-  Timeslot = 'timeslot',
-  BookingInfo = 'booking-info',
-  Confirmation = 'confirmation'
+  TIMESLOT = 'timeslot',
+  BOOKING_INFO = 'booking-info',
+  CONFIRMATION = 'confirmation'
+}
+
+interface RouteParams extends DefaultParams {
+  organizationId: string;
+  escapeRoomId: string;
+  step: string;
 }
 
 // TODO loading state (loading escape room)
 // TODO show availabilities, and escape room selection
 export function Booking() {
-  const [, params] = useRoute<{
-    organizationId: string;
-    escapeRoomId: string;
-    step: string;
-  }>('/:organizationId/:escapeRoomId/:step?');
+  const [, params] = useRoute<RouteParams>(
+    '/:organizationId/:escapeRoomId/:step?'
+  );
   const [, setLocation] = useLocation();
-  const step = ((params && params.step) || BookingStep.Timeslot) as BookingStep;
+  const step = ((params && params.step) || BookingStep.TIMESLOT) as BookingStep;
   const [organization, setOrganization] = React.useState<Organization>();
 
   const [selectedRoom, setSelectedRoom] = React.useState<EscapeRoom>();
@@ -72,18 +76,18 @@ export function Booking() {
 
   const handleSubmitBookingInfo = (info: BookingInfo) => {
     setBookingInfo(info);
-    goToStep(BookingStep.Confirmation);
+    goToStep(BookingStep.CONFIRMATION);
   };
 
   const handleSelectTimeslot = (timeslotInfo: Timeslot) => {
     setTimeslot(timeslotInfo);
-    goToStep(BookingStep.BookingInfo);
+    goToStep(BookingStep.BOOKING_INFO);
   };
 
   const currentStep = {
-    [BookingStep.Timeslot]: 0,
-    [BookingStep.BookingInfo]: 1,
-    [BookingStep.Confirmation]: 2
+    [BookingStep.TIMESLOT]: 0,
+    [BookingStep.BOOKING_INFO]: 1,
+    [BookingStep.CONFIRMATION]: 2
   }[step];
 
   // TODO: Add participants count to timeslot step to immediatelly calculate prices (on the calendar)
@@ -109,38 +113,30 @@ export function Booking() {
         <Row gutter={24}>
           <Col span={12}>
             <Section>
-              {step === BookingStep.Timeslot && selectedRoom && (
+              {step === BookingStep.TIMESLOT && selectedRoom && (
                 <TimeslotStep
                   onSelect={handleSelectTimeslot}
                   room={selectedRoom}
                 />
               )}
-              {step === BookingStep.BookingInfo && selectedRoom && (
+              {step === BookingStep.BOOKING_INFO && selectedRoom && (
                 <BookingInfoStep
                   onSubmit={handleSubmitBookingInfo}
                   room={selectedRoom}
                 />
               )}
-              {step === BookingStep.Confirmation &&
+              {step === BookingStep.CONFIRMATION &&
                 timeslot &&
                 bookingInfo &&
                 selectedRoom &&
                 organization && (
-                  <StripeProvider
-                    apiKey={
-                      organization.paymentDetails
-                        ? organization.paymentDetails.paymentClientKey
-                        : ''
-                    }
-                  >
-                    <Elements>
-                      <ConfirmationStep
-                        bookingInfo={bookingInfo}
-                        escapeRoom={selectedRoom}
-                        timeslot={timeslot}
-                      />
-                    </Elements>
-                  </StripeProvider>
+                  <OrganizationStripeProvider organization={organization}>
+                    <ConfirmationStep
+                      bookingInfo={bookingInfo}
+                      escapeRoom={selectedRoom}
+                      timeslot={timeslot}
+                    />
+                  </OrganizationStripeProvider>
                 )}
             </Section>
           </Col>

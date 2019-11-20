@@ -23,7 +23,7 @@ import {
 import { PricingType } from '../models/EscapeRoom';
 import {
   requireBelongsToOrganization,
-  requireEscapeRoomOrganization
+  requireOrganization
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
@@ -48,7 +48,7 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
 
-  const organization = await requireEscapeRoomOrganization(escapeRoomId);
+  const organization = await requireEscapeRoom(escapeRoomId);
   await requireBelongsToOrganization(organization.id, userId);
 
   const bookings = await BookingModel.find({
@@ -105,7 +105,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
       return send(res, STATUS_ERROR.BAD_REQUEST, 'Missing payment token');
     }
 
-    const organization = await requireEscapeRoomOrganization(escapeRoomId);
+    const organization = await requireOrganization(escapeRoom.organization);
 
     if (!organization.paymentDetails) {
       return send(
@@ -201,8 +201,8 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   const { bookingId } = getParams(req, ['bookingId']);
 
   const booking = await requireBooking(bookingId);
-  const organization = await requireEscapeRoomOrganization(booking.escapeRoom);
-  await requireBelongsToOrganization(organization.id, userId);
+  const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
+  await requireBelongsToOrganization(escapeRoom.organization, userId);
 
   if (booking.status !== BookingStatus.Pending) {
     return send(
@@ -225,8 +225,8 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   const { bookingId } = getParams(req, ['bookingId']);
 
   const booking = await requireBooking(bookingId);
-  const organization = await requireEscapeRoomOrganization(booking.escapeRoom);
-  await requireBelongsToOrganization(organization.id, userId);
+  const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
+  await requireBelongsToOrganization(escapeRoom.organization, userId);
 
   if (booking.status !== BookingStatus.Pending) {
     return send(res, STATUS_ERROR.BAD_REQUEST);

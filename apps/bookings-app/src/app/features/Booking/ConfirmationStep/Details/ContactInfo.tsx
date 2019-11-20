@@ -1,7 +1,7 @@
 import Text from 'antd/lib/typography/Text';
 import * as React from 'react';
-import { BookingInfo } from '../../BookingInfoStep/BookingInfoStep';
 import { useI18n } from '@bookaquest/utilities';
+import { BookingInfo } from '../../BookingInfoStep/BookingInfoStep';
 
 interface Props {
   bookingInfo: BookingInfo;

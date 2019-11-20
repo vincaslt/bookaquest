@@ -1,11 +1,6 @@
-import {
-  prop,
-  arrayProp,
-  getModelForClass,
-  DocumentType
-} from '@typegoose/typegoose';
+import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
 import { BusinessHours } from './BusinessHours';
-import { OrganizationModel } from './Organization';
+import { Organization } from './Organization';
 
 export enum PricingType {
   PER_PERSON = 'per_person',
@@ -23,6 +18,7 @@ export interface EscapeRoomInitFields {
   difficulty: number;
   images: string[];
   businessHours: BusinessHours[];
+  organization: string;
   timezone?: string;
   paymentEnabled?: boolean;
 }
@@ -52,6 +48,9 @@ export class EscapeRoom {
   @arrayProp({ required: true, items: BusinessHours, _id: false })
   businessHours: BusinessHours[];
 
+  @prop({ ref: 'Organization', required: true })
+  organization: Ref<Organization>;
+
   @prop()
   timezone?: string;
 
@@ -64,10 +63,6 @@ export class EscapeRoom {
 
   @prop({ default: false })
   paymentEnabled: boolean;
-
-  public getOrganization(this: DocumentType<EscapeRoom>) {
-    return OrganizationModel.findOne({ escapeRooms: this.id });
-  }
 }
 
 export const EscapeRoomModel = getModelForClass(EscapeRoom, {

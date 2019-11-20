@@ -13,7 +13,10 @@ import {
   OrganizationMembershipInitFields
 } from '../models/OrganizationMembership';
 import { BookingModel } from '../models/Booking';
-import { requireBelongsToOrganization } from '../helpers/organization';
+import {
+  requireBelongsToOrganization,
+  requireOrganization
+} from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
 import { getBody } from '../lib/utils/getBody';
@@ -58,7 +61,7 @@ const updateOrganization: AugmentedRequestHandler = async (req, res) => {
   const organization = await OrganizationModel.findByIdAndUpdate(
     organizationId,
     dto,
-    { runValidators: true }
+    { runValidators: true, new: true }
   ).select('-members -escapeRooms');
 
   if (!organization) {
@@ -72,13 +75,8 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { organizationId } = getParams(req, ['organizationId']);
 
+  const organization = await requireOrganization(organizationId);
   await requireBelongsToOrganization(organizationId, userId);
-
-  const organization = await OrganizationModel.findById(organizationId);
-
-  if (!organization) {
-    return send(res, STATUS_ERROR.NOT_FOUND);
-  }
 
   const bookings = await BookingModel.find({
     escapeRoom: { $in: organization.escapeRooms },
@@ -100,7 +98,11 @@ const listMembers: AugmentedRequestHandler = async (req, res) => {
     .select('-organization')
     .populate('user');
 
-  return send(res, STATUS_SUCCESS.OK, memberships.map(omit(['memberships'])));
+  return send(
+    res,
+    STATUS_SUCCESS.OK,
+    memberships.map(m => omit(['memberships'], m.toJSON()))
+  );
 };
 
 const getOrganization: AugmentedRequestHandler = async (req, res) => {

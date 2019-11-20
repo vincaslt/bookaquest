@@ -25,7 +25,7 @@ export function OrganizationMembers({ organizationId }: Props) {
       <List loading={loading}>
         {members.map(member => (
           <List.Item
-            key={member.userId}
+            key={member._id}
             actions={[<Link key="remove-user">{t`remove`}</Link>]}
           >
             <List.Item.Meta

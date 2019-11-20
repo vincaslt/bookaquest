@@ -10,20 +10,21 @@ export interface PaymentDetailsDTO {
 }
 
 export interface OrganizationDTO {
-  id: string;
+  _id: string;
   name: string;
-  website: string;
-  location: string;
-  createdAt: string;
-  businessHours?: BusinessHoursDTO[];
+  website?: string;
+  location?: string;
   timezone?: string;
+  createdAt: string;
+  updatedAt: string;
+  businessHours?: BusinessHoursDTO[];
   paymentDetails?: PaymentDetailsDTO;
 }
 
 export interface CreateOrganizationDTO {
   name: string;
-  website: string;
-  location: string;
+  website?: string;
+  location?: string;
   businessHours?: BusinessHoursDTO[];
   timezone?: string;
   paymentDetails?: CreatePaymentDetailsDTO;

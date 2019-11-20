@@ -1,7 +1,7 @@
 import { Card } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import * as React from 'react';
 import AspectRatio from 'react-aspect-ratio';
+import * as React from 'react';
 import styled from 'styled-components';
 import { CreateEscapeRoom, EscapeRoom } from '@bookaquest/interfaces';
 
@@ -16,7 +16,7 @@ interface Props {
 
 export function EscapeRoomCard({ escapeRoom, onSelect }: Props) {
   const handleSelect = () => {
-    if (onSelect && 'id' in escapeRoom) {
+    if (onSelect && '_id' in escapeRoom) {
       onSelect(escapeRoom);
     }
   };

@@ -2,11 +2,10 @@ import { Ref } from '@typegoose/typegoose';
 import { createError } from 'micro';
 import { OrganizationMembershipModel } from '../models/OrganizationMembership';
 import { STATUS_ERROR } from '../lib/constants';
-import { OrganizationModel } from '../models/Organization';
-import { EscapeRoom } from '../models/EscapeRoom';
+import { OrganizationModel, Organization } from '../models/Organization';
 
 export async function requireBelongsToOrganization(
-  organization: string,
+  organization: string | Ref<Organization>,
   user: string
 ) {
   const membershipExists = OrganizationMembershipModel.exists({
@@ -21,16 +20,12 @@ export async function requireBelongsToOrganization(
   }
 }
 
-export async function requireEscapeRoomOrganization(
-  escapeRoom: string | Ref<EscapeRoom>
+export async function requireOrganization(
+  organizationId: string | Ref<Organization>
 ) {
-  const organization = await OrganizationModel.findOne({
-    escapeRooms: escapeRoom
-  });
-
+  const organization = await OrganizationModel.findById(organizationId);
   if (!organization) {
     throw createError(STATUS_ERROR.NOT_FOUND, 'Organization not found');
   }
-
   return organization;
 }

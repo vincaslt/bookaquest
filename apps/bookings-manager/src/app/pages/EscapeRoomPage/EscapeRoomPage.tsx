@@ -66,6 +66,7 @@ export function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
   const [bookings, setBookings] = React.useState<Booking[]>();
 
   React.useEffect(() => {
+    console.log(props);
     if (escapeRoomId) {
       Promise.all([
         api.getEscapeRoom(escapeRoomId),
@@ -75,7 +76,7 @@ export function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
         setBookings(roomBookings);
       });
     }
-  }, [escapeRoomId]);
+  }, [escapeRoomId, props]);
 
   const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
     if (escapeRoomId) {
@@ -123,7 +124,7 @@ export function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
             title={escapeRoom.name}
             extra={
               <Link
-                href={`http://localhost:3000/${escapeRoom.organizationId}/${escapeRoomId}`}
+                href={`http://localhost:3000/${escapeRoom.organization}/${escapeRoom._id}`}
                 newTab
               >
                 <Button type="link">{t`Go to booking page`}</Button>

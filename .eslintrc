@@ -30,6 +30,7 @@
   ],
   "rules": {
     "prettier/prettier": "warn",
+    "no-shadow": "warn",
     "import/named": "off",
     "import/default": "off",
     "import/order": [

@@ -1,12 +1,10 @@
 import { green, grey } from '@ant-design/colors';
 import { Col, Icon, Result, Row, Spin, Steps, Typography } from 'antd';
 import { isAfter } from 'date-fns';
-import * as React from 'react';
 import { Trans } from 'react-i18next';
-import styled from 'styled-components';
 import { useRoute } from 'wouter';
-import { getBooking, getOrganization } from '../../api/application';
-import { RemainingTime } from './RemainingTime';
+import styled from 'styled-components';
+import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
 import {
   BookingWithEscapeRoom,
@@ -14,6 +12,8 @@ import {
   BookingStatus
 } from '@bookaquest/interfaces';
 import { Time } from '@bookaquest/components';
+import { getBooking, getOrganization } from '../../api/application';
+import { RemainingTime } from './RemainingTime';
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -58,7 +58,7 @@ export function BookingItinerary() {
     const fetchBookingData = async (_bookingId: string) => {
       const _booking = await getBooking(_bookingId);
       const _organization = await getOrganization(
-        _booking.escapeRoom.organizationId
+        _booking.escapeRoom.organization
       );
       setBooking(_booking);
       setOrganization(_organization);
@@ -159,7 +159,7 @@ export function BookingItinerary() {
                     <pre>
                       <Text copyable>
                         <Text strong className="mr-2">{t`ID:`}</Text>
-                        {booking.id}
+                        {booking._id}
                       </Text>
                     </pre>
                   </Paragraph>

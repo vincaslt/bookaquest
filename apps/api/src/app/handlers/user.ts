@@ -7,11 +7,14 @@ import { UserModel, UserInitFields } from '../models/User';
 import { OrganizationMembershipModel } from '../models/OrganizationMembership';
 import { getBody } from '../lib/utils/getBody';
 import { getAuth } from '../lib/utils/getAuth';
-import { requireUserExists } from '../helpers/user';
 
 const createUser: AugmentedRequestHandler = async (req, res) => {
   const dto = await getBody(req, CreateUserDTO);
-  await requireUserExists({ email: dto.email });
+  const exists = await UserModel.exists({ email: dto.email });
+
+  if (exists) {
+    return send(res, STATUS_ERROR.BAD_REQUEST, 'User already exists');
+  }
 
   const password = await bcrypt.hash(dto.password, 10);
   const user: UserInitFields = {

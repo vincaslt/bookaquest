@@ -1,6 +1,6 @@
-import * as React from 'react';
 import Countdown from 'react-countdown-now';
 import Text from 'antd/lib/typography/Text';
+import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
 
 interface Props {

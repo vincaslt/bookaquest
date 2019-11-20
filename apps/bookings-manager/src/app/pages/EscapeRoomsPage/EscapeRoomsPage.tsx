@@ -7,11 +7,11 @@ import { PageContent } from '../../shared/layout/PageContent';
 import { EscapeRooms } from './EscapeRooms';
 
 export function EscapeRoomsPage(props: RouteComponentProps) {
-  const { userInfo } = useUser();
+  const { memberships } = useUser();
   const [organization, setOrganization] = React.useState<Organization>();
 
-  const membership = userInfo && userInfo.memberships[0]; // TODO: use selected, instead of first one
-  const organizationId = membership && membership.organizationId;
+  // TODO: use selected, instead of first one
+  const organizationId = memberships?.[0]?.organization;
 
   React.useEffect(() => {
     if (organizationId) {

@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "nx": "nx",
-    "start-all": "start \"\" nx serve api & start \"\" nx serve --port 3000 bookings-app & start \"\" nx serve --port 1234 bookings-manager",
+    "start-all": "start \"\" nx serve api & start \"\" nx serve bookings-app --port 3000 & start \"\" nx serve bookings-manager --port 1234",
     "db:seed": "ts-node --project apps/api/tsconfig.app.json apps/api/tools/seed.ts",
     "start": "nx serve",
     "build": "nx build",

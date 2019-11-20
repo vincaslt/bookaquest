@@ -41,14 +41,7 @@ export function CreateOrganizationForm({ onCreateOrganization }: Props) {
   ) => {
     api
       .createOrganization(values)
-      .then(memberships => {
-        onCreateOrganization(memberships);
-        notification.open({
-          message: t`Success`,
-          type: 'success',
-          description: t`Organization has been created`
-        });
-      })
+      .then(onCreateOrganization)
       .catch(() => {
         actions.setSubmitting(false);
         notification.open({

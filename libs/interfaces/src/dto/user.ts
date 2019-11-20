@@ -1,18 +1,17 @@
 export interface UserMembershipDTO {
+  _id: string;
   isOwner: boolean;
+  organization: string;
   createdAt: string;
-  organizationId: string;
+  updatedAt: string;
 }
 
-export interface BasicUserInfoDTO {
-  id: string;
+export interface UserInfoDTO {
+  _id: string;
   email: string;
   fullName: string;
   createdAt: string;
-}
-
-export interface UserInfoDTO extends BasicUserInfoDTO {
-  memberships: UserMembershipDTO[];
+  updatedAt: string;
 }
 
 export interface CreateUserDTO {

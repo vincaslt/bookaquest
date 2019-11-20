@@ -1,11 +1,13 @@
 import { randomFillSync } from 'crypto';
 import { addDays, addMinutes } from 'date-fns';
 import { sign, verify } from 'jsonwebtoken';
+import { createError } from 'micro';
 import { JwtPayload } from '../lib/interfaces';
 import {
   RefreshTokenModel,
   RefreshTokenInitFields
 } from '../models/RefreshToken';
+import { STATUS_ERROR } from '../lib/constants';
 
 function generateRandomString(length: number) {
   const validChars =
@@ -18,15 +20,16 @@ function generateRandomString(length: number) {
 
 export async function issueRefreshToken(userId: string) {
   const expirationDate = addDays(new Date(), 14);
-  const token = generateRandomString(256);
 
   const refreshToken: RefreshTokenInitFields = {
     user: userId,
     expirationDate,
-    token
+    token: generateRandomString(256)
   };
 
-  return await RefreshTokenModel.create(refreshToken);
+  const { token } = await RefreshTokenModel.create(refreshToken);
+
+  return token;
 }
 
 export async function issueAccessToken(userId: string) {
@@ -41,7 +44,11 @@ export async function issueAccessToken(userId: string) {
     expires
   };
 
-  return sign(payload, process.env.JWT_SECRET);
+  try {
+    return sign(payload, process.env.JWT_SECRET);
+  } catch (e) {
+    throw createError(STATUS_ERROR.INTERNAL, 'Cannot sign access token');
+  }
 }
 
 export function verifyToken(token: string) {
@@ -57,5 +64,10 @@ export async function refreshAccessToken(userId: string, refreshToken: string) {
     token: refreshToken,
     expirationDate: { $gt: new Date() }
   });
-  return tokenExists && issueAccessToken(userId);
+
+  if (!tokenExists) {
+    throw createError(STATUS_ERROR.UNAUTHORIZED, 'Refresh token not found');
+  }
+
+  return issueAccessToken(userId);
 }

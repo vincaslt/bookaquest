@@ -7,22 +7,22 @@ import { Booking, BookingStatus } from '@bookaquest/interfaces';
 import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
-import { PendingEventModal } from './PendingEventModal';
+import { PendingBookingModal } from './PendingBookingModal';
 
 // TODO: show bookings as resources (per escape room)
 export function BookingsPage(props: RouteComponentProps) {
   const popupContainer = React.useRef<HTMLElement>();
-  const { userInfo } = useUser();
+  const { memberships } = useUser();
   const [isLoading, withLoading] = useLoading(true);
   const [bookings, setBookings] = React.useState<Booking[]>([]);
   const [selectedBooking, selectBooking] = React.useState<Booking>();
 
-  const membership = userInfo && userInfo.memberships[0]; // TODO: use selected, instead of first one
+  const membership = memberships?.[0]; // TODO: use selected, instead of first one
 
   React.useEffect(() => {
     if (membership) {
       withLoading(
-        api.getOrganizationBookings(membership.organizationId).then(setBookings)
+        api.getOrganizationBookings(membership.organization).then(setBookings)
       );
     }
 
@@ -59,7 +59,7 @@ export function BookingsPage(props: RouteComponentProps) {
         />
       )}
       {selectedBooking && (
-        <PendingEventModal
+        <PendingBookingModal
           setBookings={setBookings}
           onClose={handleCloseModal}
           booking={selectedBooking}

@@ -25,7 +25,7 @@ import { useI18n } from '@bookaquest/utilities';
 import { EscapeRoomCard } from '@bookaquest/components';
 import { RangeNumberInput } from '../../shared/components/RangeNumberInput';
 import * as api from '../../api/application';
-import { environment } from 'apps/bookings-manager/src/environments/environment';
+import { environment } from '../../../environments/environment';
 
 const StyledResetButton = styled(ResetButton)`
   margin-right: 16px;
@@ -50,14 +50,14 @@ export function CreateEscapeRoomForm({
   const initialValues: CreateEscapeRoom = {
     name: '',
     description: '',
-    location: organization.location,
+    location: organization.location ?? '',
     price: 0,
     images: [],
     interval: 60,
     participants: [],
     timezone:
-      organization.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone, // TODO: timezone and business hours may NOT exist, add input fields for those
-    businessHours: organization.businessHours || [],
+      organization.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, // TODO: timezone and business hours may NOT exist, add input fields for those
+    businessHours: organization.businessHours ?? [],
     difficulty: 1,
     paymentEnabled: false,
     pricingType: PricingType.FLAT
@@ -110,7 +110,7 @@ export function CreateEscapeRoomForm({
     actions: FormikHelpers<CreateEscapeRoom>
   ) => {
     api
-      .createEscapeRoom(organization.id, values)
+      .createEscapeRoom(organization._id, values)
       .then(escapeRoom => {
         notification.open({
           message: t`Success`,

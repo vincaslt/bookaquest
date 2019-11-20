@@ -9,7 +9,7 @@ import { EscapeRoomModel, EscapeRoomInitFields } from '../models/EscapeRoom';
 import { OrganizationModel } from '../models/Organization';
 import {
   requireBelongsToOrganization,
-  requireEscapeRoomOrganization
+  requireOrganization
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getBody } from '../lib/utils/getBody';
@@ -21,12 +21,7 @@ const createEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   const { organizationId } = getParams(req, ['organizationId']);
   const dto = await getBody(req, CreateEscapeRoomDTO);
 
-  const organization = await OrganizationModel.findById(organizationId);
-
-  if (!organization) {
-    return send(res, STATUS_ERROR.NOT_FOUND);
-  }
-
+  const organization = await requireOrganization(organizationId);
   await requireBelongsToOrganization(organizationId, userId);
 
   const hasDuplicateWeekday =
@@ -39,10 +34,13 @@ const createEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   );
 
   if (hasDuplicateWeekday || badHoursFormat) {
-    return send(res, STATUS_ERROR.BAD_REQUEST);
+    return send(res, STATUS_ERROR.BAD_REQUEST, 'Invalid business hours');
   }
 
-  const escapeRoomFields: EscapeRoomInitFields = dto;
+  const escapeRoomFields: EscapeRoomInitFields = {
+    ...dto,
+    organization: organizationId
+  };
   const escapeRoom = await EscapeRoomModel.create(escapeRoomFields);
   organization.escapeRooms.push(escapeRoom.id);
   await organization.save();
@@ -55,15 +53,20 @@ const updateEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
   const dto = await getBody(req, UpdateEscapeRoomDTO);
 
-  const organization = await requireEscapeRoomOrganization(escapeRoomId);
-  await requireBelongsToOrganization(organization.id, userId);
+  const escapeRoom = await requireEscapeRoom(escapeRoomId);
+  await requireBelongsToOrganization(escapeRoom.organization, userId);
 
-  const updatedEscapeRoom = await EscapeRoomModel.findOneAndUpdate(dto, {
-    runValidators: true
-  });
+  const updatedEscapeRoom = await EscapeRoomModel.findByIdAndUpdate(
+    escapeRoomId,
+    dto,
+    {
+      runValidators: true,
+      new: true
+    }
+  );
 
   if (!updatedEscapeRoom) {
-    return send(res, STATUS_ERROR.INTERNAL);
+    return send(res, STATUS_ERROR.NOT_FOUND, 'Escape room not found');
   }
 
   return send(res, STATUS_SUCCESS.OK, updatedEscapeRoom);
@@ -71,7 +74,8 @@ const updateEscapeRoom: AugmentedRequestHandler = async (req, res) => {
 
 const getEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
-  return await requireEscapeRoom(escapeRoomId);
+  const escapeRoom = await requireEscapeRoom(escapeRoomId);
+  return send(res, STATUS_SUCCESS.OK, escapeRoom);
 };
 
 const listEscapeRooms: AugmentedRequestHandler = async (req, res) => {
@@ -85,7 +89,7 @@ const listEscapeRooms: AugmentedRequestHandler = async (req, res) => {
     return send(res, STATUS_ERROR.NOT_FOUND);
   }
 
-  return organization.escapeRooms;
+  return send(res, STATUS_SUCCESS.OK, organization.escapeRooms);
 };
 
 export const escapeRoomHandlers = [

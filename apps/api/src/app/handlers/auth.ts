@@ -14,7 +14,6 @@ import { UserModel } from '../models/User';
 import { RefreshTokenModel } from '../models/RefreshToken';
 import { getBody } from '../lib/utils/getBody';
 import { getAuth } from '../lib/utils/getAuth';
-import { requireUserExists } from '../helpers/user';
 
 const login: AugmentedRequestHandler = async (req, res) => {
   const { email, password } = await getBody(req, SignInDTO);
@@ -27,33 +26,33 @@ const login: AugmentedRequestHandler = async (req, res) => {
     user && (await bcrypt.compare(password, user.password));
 
   if (!user || !isPasswordCorrect) {
-    return send(res, STATUS_ERROR.UNAUTHORIZED);
+    return send(res, STATUS_ERROR.UNAUTHORIZED, 'Invalid credentials');
   }
 
-  try {
-    const refreshToken = await issueRefreshToken(user.id);
-    const accessToken = await issueAccessToken(user.id);
+  const refreshToken = await issueRefreshToken(user.id);
+  const accessToken = await issueAccessToken(user.id);
 
-    await RefreshTokenModel.deleteMany({
-      user: user.id,
-      expirationDate: { $lte: new Date() }
-    });
+  await RefreshTokenModel.deleteMany({
+    user: user.id,
+    expirationDate: { $lte: new Date() }
+  });
 
-    return send(res, STATUS_SUCCESS.OK, {
-      tokens: {
-        accessToken,
-        refreshToken
-      },
-      user: omit(['password'])(user)
-    });
-  } catch (e) {
-    return send(res, STATUS_ERROR.INTERNAL);
-  }
+  return send(res, STATUS_SUCCESS.OK, {
+    tokens: {
+      accessToken,
+      refreshToken
+    },
+    user: omit(['password'], user.toJSON())
+  });
 };
 
 const logout: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
-  await requireUserExists({ user: userId });
+  const exists = await UserModel.exists({ user: userId });
+
+  if (!exists) {
+    return send(res, STATUS_ERROR.NOT_FOUND, 'User not found');
+  }
 
   await RefreshTokenModel.deleteMany({
     user: userId
@@ -63,13 +62,8 @@ const logout: AugmentedRequestHandler = async (req, res) => {
 };
 
 const refreshToken: AugmentedRequestHandler = async (req, res) => {
-  const { refreshToken, userId } = await getBody(req, RefreshTokenDTO);
-  const token = await refreshAccessToken(userId, refreshToken);
-
-  if (!token) {
-    return send(res, STATUS_ERROR.UNAUTHORIZED);
-  }
-
+  const dto = await getBody(req, RefreshTokenDTO);
+  const token = await refreshAccessToken(dto.userId, dto.refreshToken);
   return send(res, STATUS_SUCCESS.OK, { token });
 };
 
