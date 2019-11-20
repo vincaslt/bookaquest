@@ -1,39 +1,40 @@
-import { BusinessHoursDTO } from './businessHours'
+import { BusinessHoursDTO } from './businessHours';
 
 export interface CreatePaymentDetailsDTO {
-  paymentClientKey: string
-  paymentSecretKey: string
+  paymentClientKey: string;
+  paymentSecretKey: string;
 }
 
 export interface PaymentDetailsDTO {
-  paymentClientKey: string
+  paymentClientKey: string;
 }
 
 export interface OrganizationDTO {
-  id: string
-  name: string
-  website: string
-  location: string
-  createdAt: string
-  businessHours?: BusinessHoursDTO[]
-  timezone?: string
-  paymentDetails?: PaymentDetailsDTO
+  _id: string;
+  name: string;
+  website?: string;
+  location?: string;
+  timezone?: string;
+  createdAt: string;
+  updatedAt: string;
+  businessHours?: BusinessHoursDTO[];
+  paymentDetails?: PaymentDetailsDTO;
 }
 
 export interface CreateOrganizationDTO {
-  name: string
-  website: string
-  location: string
-  businessHours?: BusinessHoursDTO[]
-  timezone?: string
-  paymentDetails?: CreatePaymentDetailsDTO
+  name: string;
+  website?: string;
+  location?: string;
+  businessHours?: BusinessHoursDTO[];
+  timezone?: string;
+  paymentDetails?: CreatePaymentDetailsDTO;
 }
 
 export interface UpdateOrganizationDTO {
-  name?: string
-  website?: string
-  location?: string
-  businessHours?: BusinessHoursDTO[]
-  timezone?: string
-  paymentDetails?: CreatePaymentDetailsDTO
+  name?: string;
+  website?: string;
+  location?: string;
+  businessHours?: BusinessHoursDTO[];
+  timezone?: string;
+  paymentDetails?: CreatePaymentDetailsDTO;
 }

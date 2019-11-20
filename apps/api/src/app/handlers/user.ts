@@ -1,42 +1,47 @@
-import { getRepository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { send } from 'micro';
-import { get, post } from 'microrouter';
-import { withBody } from '../lib/decorators/withBody';
+import { get, post, AugmentedRequestHandler } from 'microrouter';
 import { CreateUserDTO } from '../dto/CreateUserDTO';
-import { UserEntity } from '../entities/UserEntity';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
-import { withAuth } from '../lib/decorators/withAuth';
-import { toUserInfoDTO } from '../dto/UserInfoDTO';
+import { UserModel, UserInitFields } from '../models/User';
+import { OrganizationMembershipModel } from '../models/OrganizationMembership';
+import { getBody } from '../lib/utils/getBody';
+import { getAuth } from '../lib/utils/getAuth';
 
-const createUser = withBody(CreateUserDTO, dto => async (req, res) => {
-  const userRepo = getRepository(UserEntity);
-  const existingUser = await userRepo.findOne({ where: { email: dto.email } });
+const createUser: AugmentedRequestHandler = async (req, res) => {
+  const dto = await getBody(req, CreateUserDTO);
+  const exists = await UserModel.exists({ email: dto.email });
 
-  if (existingUser) {
-    return send(res, STATUS_ERROR.BAD_REQUEST);
+  if (exists) {
+    return send(res, STATUS_ERROR.BAD_REQUEST, 'User already exists');
   }
 
   const password = await bcrypt.hash(dto.password, 10);
-  const newUser = userRepo.create({ ...dto, password });
+  const user: UserInitFields = {
+    ...dto,
+    password
+  };
 
-  await userRepo.save(newUser);
+  await UserModel.create(user);
 
   return send(res, STATUS_SUCCESS.OK);
-});
+};
 
-const getAuthUserInfo = withAuth(({ userId }) => async (req, res) => {
-  const userRepo = getRepository(UserEntity);
-  const user = await userRepo.findOne(userId, {
-    relations: ['memberships']
-  });
+const getAuthUserInfo: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+
+  const user = await UserModel.findById(userId);
 
   if (!user) {
-    return send(res, STATUS_ERROR.UNAUTHORIZED);
+    return send(res, STATUS_ERROR.NOT_FOUND, 'User not found');
   }
 
-  return send(res, STATUS_SUCCESS.OK, toUserInfoDTO(user));
-});
+  const memberships = await OrganizationMembershipModel.find({
+    user: userId
+  }).select('-user');
+
+  return send(res, STATUS_SUCCESS.OK, { user, memberships });
+};
 
 export const userHandlers = [
   post('/user', createUser),

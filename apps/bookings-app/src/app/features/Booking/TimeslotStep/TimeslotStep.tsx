@@ -1,9 +1,9 @@
 import { addDays, isSameDay } from 'date-fns';
 import dropRepeatsWith from 'ramda/es/dropRepeatsWith';
 import * as React from 'react';
+import { EscapeRoom, Timeslot, Availability } from '@bookaquest/interfaces';
 import * as api from '../../../api/application';
 import { TimeslotPicker } from '../../../components/TimeslotPicker/TimeslotPicker';
-import { EscapeRoom, Timeslot, Availability } from '@bookaquest/interfaces';
 
 interface Props {
   room: EscapeRoom;
@@ -18,7 +18,7 @@ export function TimeslotStep({ room, onSelect }: Props) {
   const handleMonthChange = React.useCallback(
     (monthDate: Date) => {
       api
-        .getAvailability(room.id, monthDate, addDays(monthDate, 34))
+        .getAvailability(room._id, monthDate, addDays(monthDate, 34))
         .then(results =>
           setAvailability(prev =>
             dropRepeatsWith((a, b) => isSameDay(a.date, b.date), [
@@ -28,7 +28,7 @@ export function TimeslotStep({ room, onSelect }: Props) {
           )
         );
     },
-    [room.id]
+    [room]
   );
 
   const toggleSelect = (day: Date) =>

@@ -1,15 +1,12 @@
 import { List } from 'antd';
+import { useRoute, useLocation } from 'wouter';
 import * as React from 'react';
-import { useRoute } from 'wouter';
-import { useLocation } from 'wouter';
-import * as api from '../../api/application';
 import { EscapeRoom } from '@bookaquest/interfaces';
 import { EscapeRoomCard } from '@bookaquest/components';
+import * as api from '../../api/application';
 
 export function EscapeRoomSelect() {
-  const [, params] = useRoute<{ organizationId: string }>(
-    '/organization/:organizationId'
-  );
+  const [, params] = useRoute<{ organizationId: string }>('/:organizationId');
   const [, setLocation] = useLocation();
   const [loading, setLoading] = React.useState(true);
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
@@ -29,7 +26,7 @@ export function EscapeRoomSelect() {
   }, [organizationId]);
 
   const handleSelectEscapeRoom = (room: EscapeRoom) =>
-    setLocation(`/${organizationId}/${room.id}`);
+    setLocation(`/${organizationId}/${room._id}`);
 
   return (
     <List

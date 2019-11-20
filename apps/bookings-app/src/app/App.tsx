@@ -1,8 +1,7 @@
 import { Layout, Spin } from 'antd';
-import * as React from 'react';
-import styled from 'styled-components';
-import { createGlobalStyle } from 'styled-components';
 import { Route, Switch } from 'wouter';
+import * as React from 'react';
+import styled, { createGlobalStyle } from 'styled-components';
 import { useI18n } from '@bookaquest/utilities';
 import { BookingItinerary } from './features/BookingItinerary/BookingItinerary';
 import { Booking } from './features/Booking/Booking';
@@ -55,11 +54,12 @@ export function App() {
       </AppSpinnerContainer>
     );
   }
+
   return (
     <ContentContainer>
       <GlobalStyle />
       <Switch>
-        <Route path="/booking/:organizationId" component={BookingItinerary} />
+        <Route path="/booking/:bookingId" component={BookingItinerary} />
         <Route
           path="/:organizationId/:escapeRoomId/:step?"
           component={Booking}

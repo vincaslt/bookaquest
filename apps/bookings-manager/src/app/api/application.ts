@@ -25,7 +25,6 @@ import {
 } from '../interfaces/user';
 import { api, withAuth } from '../utils/apiHelpers';
 
-// TODO: should be CreateUser and convert to DTO before sending
 export const register = (user: CreateUser) =>
   api.post('/user', user).then(res => res.data);
 
@@ -43,9 +42,14 @@ export const signOut = withAuth(headers => () =>
 
 export const getAuthUserInfo = withAuth(headers => () =>
   api
-    .get<UserInfoDTO>('/user/me', { headers })
+    .get<{ user: UserInfoDTO; memberships: UserMembershipDTO[] }>('/user/me', {
+      headers
+    })
     .then(res => res.data)
-    .then(fromUserInfoDTO)
+    .then(({ user, memberships }) => ({
+      user: fromUserInfoDTO(user),
+      memberships: memberships.map(fromUserMembershipDTO)
+    }))
 );
 
 export const getEscapeRooms = (organizationId: string) =>

@@ -26,13 +26,6 @@ export function LoginForm() {
     actions: FormikHelpers<SignIn>
   ) => {
     await login(values)
-      .then(() => {
-        notification.open({
-          message: t`Success`,
-          type: 'success',
-          description: t`Logged in successfully`
-        });
-      })
       .catch(() => {
         notification.open({
           message: t`Error`,
@@ -45,8 +38,6 @@ export function LoginForm() {
       });
   };
 
-  const test = 'test';
-
   return (
     <Formik
       validationSchema={validationSchema}
@@ -54,7 +45,7 @@ export function LoginForm() {
       onSubmit={handleSubmit}
     >
       <Form>
-        <FormItem name="email" hasFeedback label={t`Email ${{ test }}`}>
+        <FormItem name="email" hasFeedback label={t`Email`}>
           <Input name="email" type="email" />
         </FormItem>
 

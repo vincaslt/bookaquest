@@ -27,13 +27,13 @@ export function OrganizationDetails({
   ) =>
     organization &&
     api
-      .updateOrganization(organization.id, { [key]: value })
+      .updateOrganization(organization._id, { [key]: value })
       .then(onUpdateOrganization);
 
   return (
     <DetailsList title={t`Organization details`} loading={loading}>
       <DetailsItem label={t`ID:`}>
-        <Text copyable>{organization?.id}</Text>
+        <Text copyable>{organization?._id}</Text>
       </DetailsItem>
       <DetailsItem label={t`Name:`}>
         <EditableText

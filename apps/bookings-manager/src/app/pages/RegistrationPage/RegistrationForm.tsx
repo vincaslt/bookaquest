@@ -1,11 +1,13 @@
 import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
 import { notification } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
+import { navigate } from '@reach/router';
 import * as React from 'react';
 import * as Yup from 'yup';
 import { useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { CreateUser } from '../../interfaces/user';
+import { PublicRoutes } from '../../constants/routes';
 
 const initialValues: CreateUser = {
   email: '',
@@ -32,13 +34,7 @@ export function RegistrationForm() {
   ) => {
     api
       .register(values)
-      .then(() => {
-        notification.open({
-          message: t`Success`,
-          type: 'success',
-          description: t`User has been created`
-        });
-      })
+      .then(() => navigate(PublicRoutes.SignIn)) // TODO: auto login after registration
       .catch(() => {
         notification.open({
           message: t`Error`,

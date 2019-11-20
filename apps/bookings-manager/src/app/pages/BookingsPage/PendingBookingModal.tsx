@@ -10,22 +10,26 @@ interface Props {
   onClose: () => void;
 }
 
-export function PendingEventModal({ setBookings, booking, onClose }: Props) {
+export function PendingBookingModal({ setBookings, booking, onClose }: Props) {
   const { t } = useI18n();
   const [loading, withLoading] = useLoading();
 
   const handleReject = async () => {
-    const updatedBooking = await withLoading(api.rejectBooking(booking.id));
+    const updatedBooking = await withLoading(api.rejectBooking(booking._id));
     setBookings(bookings =>
-      bookings.map(b => (booking.id === updatedBooking.id ? updatedBooking : b))
+      bookings.map(b =>
+        booking._id === updatedBooking._id ? updatedBooking : b
+      )
     );
     onClose();
   };
 
   const handleAccept = async () => {
-    const updatedBooking = await withLoading(api.acceptBooking(booking.id));
+    const updatedBooking = await withLoading(api.acceptBooking(booking._id));
     setBookings(bookings =>
-      bookings.map(b => (booking.id === updatedBooking.id ? updatedBooking : b))
+      bookings.map(b =>
+        booking._id === updatedBooking._id ? updatedBooking : b
+      )
     );
     onClose();
   };

@@ -1,9 +1,9 @@
-import { BasicUserInfoDTO } from './user'
+import { UserInfoDTO } from './user';
 
 export interface OrganizationMemberDTO {
-  organizationId: string
-  userId: string
-  isOwner: boolean
-  user: BasicUserInfoDTO
-  createdAt: string
+  _id: string;
+  isOwner: boolean;
+  user: UserInfoDTO;
+  createdAt: string;
+  updatedAt: string;
 }

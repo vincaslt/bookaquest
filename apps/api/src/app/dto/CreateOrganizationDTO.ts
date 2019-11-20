@@ -14,9 +14,9 @@ export class CreateOrganizationDTO {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUrl()
-  website: string;
+  website?: string;
 
   @IsOptional()
   @ValidateNested({ each: true })

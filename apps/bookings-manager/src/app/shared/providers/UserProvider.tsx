@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { getAuthUserInfo } from '../../api/application';
-import { UserInfo } from '../../interfaces/user';
+import { UserInfo, UserMembership } from '../../interfaces/user';
 
 export interface UserProviderState {
   isLoading: boolean;
   userInfo: UserInfo | null;
+  memberships: UserMembership[] | null;
   setUserInfo: (userInfo: UserInfo) => void;
+  setMemberships: (userInfo: UserMembership[]) => void;
 }
 
 export const UserContext = React.createContext<UserProviderState | null>(null);
@@ -16,6 +18,9 @@ interface Props {
 
 export const UserProvider = ({ children }: Props) => {
   const [isLoading, setIsLoading] = React.useState(false);
+  const [memberships, setMemberships] = React.useState<UserMembership[] | null>(
+    null
+  );
   const [userInfo, setUserInfo] = React.useState<UserInfo | null>(null);
 
   // TODO: refreshing token actually logs out... fixit
@@ -25,13 +30,18 @@ export const UserProvider = ({ children }: Props) => {
     if (!userInfo && accessToken && refreshToken) {
       setIsLoading(true);
       getAuthUserInfo()
-        .then(setUserInfo)
+        .then(data => {
+          setMemberships(data.memberships);
+          setUserInfo(data.user);
+        })
         .finally(() => setIsLoading(false));
     }
   }, [userInfo]);
 
   return (
-    <UserContext.Provider value={{ userInfo, setUserInfo, isLoading }}>
+    <UserContext.Provider
+      value={{ userInfo, memberships, setUserInfo, setMemberships, isLoading }}
+    >
       {children}
     </UserContext.Provider>
   );

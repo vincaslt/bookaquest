@@ -11,20 +11,20 @@ import { useUser } from './shared/hooks/useUser';
 
 const RequireOrganization = ({
   component,
-  path
+  path,
+  ...rest
 }: {
   component: React.ReactType<{ path: string }>;
   path: string;
 }) => {
-  const { userInfo } = useUser();
+  const { memberships } = useUser();
 
-  const membership = userInfo && userInfo.memberships[0];
   const Route = component;
 
-  return membership ? (
-    <Route path={path} />
+  return memberships?.[0] ? (
+    <Route path={path} {...rest} />
   ) : (
-    <Redirect from={path} to={Routes.Organization} />
+    <Redirect noThrow from={path} to={Routes.Organization} />
   );
 };
 

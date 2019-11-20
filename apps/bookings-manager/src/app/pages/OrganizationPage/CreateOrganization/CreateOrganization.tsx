@@ -1,20 +1,16 @@
 import * as React from 'react';
-import { UserMembership } from '../../../interfaces/user';
 import { useUser } from '../../../shared/hooks/useUser';
 import { PageContent } from '../../../shared/layout/PageContent';
 import { CreateOrganizationSplash } from './CreateOrganizationSplash';
 import { CreateOrganizationForm } from './CreateOrganizationForm';
 
 export function CreateOrganization() {
-  const { userInfo, setUserInfo } = useUser();
-
-  const handleCreateOrganization = (memberships: UserMembership[]) =>
-    userInfo && setUserInfo({ ...userInfo, memberships });
+  const { setMemberships } = useUser();
 
   return (
     <PageContent className="flex flex-col items-center">
       <CreateOrganizationSplash />
-      <CreateOrganizationForm onCreateOrganization={handleCreateOrganization} />
+      <CreateOrganizationForm onCreateOrganization={setMemberships} />
     </PageContent>
   );
 }

@@ -7,19 +7,19 @@ import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
 import { Section } from '../../shared/layout/Section';
+import { environment } from '../../../environments/environment';
 import { CreateOrganization } from './CreateOrganization/CreateOrganization';
 import { OrganizationDetails } from './OrganizationDetails';
 import { OrganizationMembers } from './OrganizationMembers';
 import { OrganizationSchedule } from './OrganizationSchedule';
 import { Payments } from './Payments/Payments';
-import { environment } from 'apps/bookings-manager/src/environments/environment';
 
 // TODO: let user pick organizations / multiple organizations support
 export function OrganizationPage(props: RouteComponentProps) {
-  const { userInfo } = useUser();
+  const { memberships } = useUser();
 
-  const membership = userInfo && userInfo.memberships[0]; // TODO: use selected, instead of first one
-  const organizationId = membership && membership.organizationId;
+  const membership = memberships?.[0];
+  const organizationId = membership?.organization;
 
   const [organization, setOrganization] = React.useState<Organization>();
   const [loading, withLoading] = useLoading(true);
@@ -54,9 +54,7 @@ export function OrganizationPage(props: RouteComponentProps) {
             </Col>
             <Col span={8}>
               <Section>
-                <OrganizationMembers
-                  organizationId={membership.organizationId}
-                />
+                <OrganizationMembers organizationId={membership.organization} />
               </Section>
             </Col>
             {environment.paymentEnabled && (

@@ -1,4 +1,4 @@
 export interface BusinessHoursDTO {
-  weekday: number
-  hours: number[]
+  weekday: number;
+  hours: number[];
 }

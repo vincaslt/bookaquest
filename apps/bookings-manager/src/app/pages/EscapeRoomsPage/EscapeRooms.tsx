@@ -35,7 +35,7 @@ export function EscapeRooms({ organization }: Props) {
   const [isCreating, setIsCreating] = React.useState(false);
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
 
-  const organizationId = organization && organization.id;
+  const organizationId = organization?._id;
 
   React.useEffect(() => {
     if (organizationId) {
@@ -63,7 +63,9 @@ export function EscapeRooms({ organization }: Props) {
   }
 
   const handleSelectRoom = (escapeRoom: EscapeRoom) =>
-    navigate(getUrl(PrivateRoutes.EscapeRoom, { escapeRoomId: escapeRoom.id }));
+    navigate(
+      getUrl(PrivateRoutes.EscapeRoom, { escapeRoomId: escapeRoom._id })
+    );
 
   return escapeRooms.length > 0 || isLoading ? (
     <Row gutter={24}>

@@ -30,7 +30,7 @@ export function Payments({ organization, setOrganization }: Props) {
     <>
       <SectionTitle>{t`Stripe payment details`}</SectionTitle>
       <PaymentDetailsForm
-        organizationId={organization.id}
+        organizationId={organization._id}
         onUpdateDone={handleUpdateDone}
       />
     </>

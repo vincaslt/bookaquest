@@ -1,275 +1,248 @@
 import {
   addDays,
-  addSeconds,
   areIntervalsOverlapping,
   differenceInCalendarDays,
   differenceInMinutes,
   getISODay,
   isAfter,
   setMinutes,
-  startOfDay,
-  subSeconds
+  startOfDay
 } from 'date-fns';
-import { Between, getRepository, LessThan, MoreThan } from 'typeorm';
 import { send } from 'micro';
-import { get, post, put } from 'microrouter';
+import { get, post, put, AugmentedRequestHandler } from 'microrouter';
 import { times } from 'ramda';
 import * as Stripe from 'stripe';
-import { withParams } from '../lib/decorators/withParams';
-import { BookingEntity, BookingStatus } from '../entities/BookingEntity';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
-import { toBookingWithEscapeRoomDTO, toBookingDTO } from '../dto/BookingDTO';
-import { withBody } from '../lib/decorators/withBody';
 import { CreateBookingDTO } from '../dto/CreateBookingDTO';
-import { EscapeRoomEntity, PricingType } from '../entities/EscapeRoomEntity';
-import { PaymentDetailsEntity } from '../entities/PaymentDetailsEntity';
 import { isBetween } from '../helpers/number';
-import { withQuery } from '../lib/decorators/withQuery';
-import { EscapeRoomBusinessHoursEntity } from '../entities/EscapeRoomBusinessHoursEntity';
-import { withAuth } from '../lib/decorators/withAuth';
-import { isOrganizationMember } from '../helpers/organizationHelpers';
+import {
+  BookingModel,
+  BookingInitFields,
+  BookingStatus
+} from '../models/Booking';
+import { PricingType } from '../models/EscapeRoom';
+import {
+  requireBelongsToOrganization,
+  requireOrganization
+} from '../helpers/organization';
+import { getParams } from '../lib/utils/getParams';
+import { getAuth } from '../lib/utils/getAuth';
+import { getBody } from '../lib/utils/getBody';
+import { requireEscapeRoom } from '../helpers/escapeRoom';
+import { getQuery } from '../lib/utils/getQuery';
+import { requireBooking } from '../helpers/booking';
 
-const getBooking = withParams(
-  ['bookingId'],
-  ({ bookingId }) => async (req, res) => {
-    const bookingRepo = getRepository(BookingEntity);
+const getBooking: AugmentedRequestHandler = async (req, res) => {
+  const { bookingId } = getParams(req, ['bookingId']);
 
-    const booking = await bookingRepo.findOne(bookingId, {
-      relations: ['escapeRoom', 'escapeRoom.businessHours']
-    });
+  const booking = await BookingModel.findById(bookingId).populate('escapeRoom');
 
-    if (!booking) {
-      return send(res, STATUS_ERROR.NOT_FOUND);
-    }
-
-    return send(res, STATUS_SUCCESS.OK, toBookingWithEscapeRoomDTO(booking));
+  if (!booking) {
+    return send(res, STATUS_ERROR.NOT_FOUND);
   }
-);
 
-const createBooking = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
-  withBody(CreateBookingDTO, dto => async (req, res) => {
-    const escapeRoomRepo = getRepository(EscapeRoomEntity);
-    const bookingRepo = getRepository(BookingEntity);
-    const paymentDetailsRepo = getRepository(PaymentDetailsEntity);
+  return send(res, STATUS_SUCCESS.OK, booking);
+};
 
-    const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId, {
-      relations: ['organization']
-    });
+const listBookings: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+  const { escapeRoomId } = getParams(req, ['escapeRoomId']);
 
-    if (!escapeRoom) {
-      return send(res, STATUS_ERROR.NOT_FOUND);
-    }
+  const organization = await requireEscapeRoom(escapeRoomId);
+  await requireBelongsToOrganization(organization.id, userId);
 
-    const invalidInterval =
-      differenceInMinutes(dto.endDate, dto.startDate) !== escapeRoom.interval;
-    const invalidParticipants = !isBetween(
-      dto.participants,
-      escapeRoom.participants
+  const bookings = await BookingModel.find({
+    escapeRoom: escapeRoomId,
+    endDate: { $gt: new Date() }
+  });
+
+  return send(res, STATUS_SUCCESS.OK, bookings);
+};
+
+const createBooking: AugmentedRequestHandler = async (req, res) => {
+  const { escapeRoomId } = getParams(req, ['escapeRoomId']);
+  const dto = await getBody(req, CreateBookingDTO);
+
+  const escapeRoom = await requireEscapeRoom(escapeRoomId);
+
+  const invalidInterval =
+    differenceInMinutes(dto.endDate, dto.startDate) !== escapeRoom.interval;
+  const invalidParticipants = !isBetween(
+    dto.participants,
+    escapeRoom.participants
+  );
+
+  // TODO: validate if starts at timeslot start
+  if (invalidInterval || invalidParticipants) {
+    return send(res, STATUS_ERROR.BAD_REQUEST);
+  }
+
+  const overlap = await BookingModel.findOne({
+    escapeRoom: escapeRoomId,
+    status: BookingStatus.Accepted,
+    $or: [
+      { startDate: { $gt: dto.startDate, $lt: dto.endDate } },
+      { endDate: { $gt: dto.startDate, $lt: dto.endDate } }
+    ]
+  });
+
+  if (overlap) {
+    return send(
+      res,
+      STATUS_ERROR.BAD_REQUEST,
+      'A booking already exists at this time'
     );
+  }
 
-    // TODO: validate if starts at timeslot start
-    if (invalidInterval || invalidParticipants) {
-      return send(res, STATUS_ERROR.BAD_REQUEST);
+  const bookingFields: BookingInitFields = {
+    ...dto,
+    escapeRoom: escapeRoomId,
+    status: BookingStatus.Pending
+  };
+
+  if (escapeRoom.paymentEnabled) {
+    if (!dto.paymentToken) {
+      return send(res, STATUS_ERROR.BAD_REQUEST, 'Missing payment token');
     }
 
-    const dateInterval = Between(
-      addSeconds(dto.startDate, 1),
-      subSeconds(dto.endDate, 1)
-    );
+    const organization = await requireOrganization(escapeRoom.organization);
 
-    const overlap = await bookingRepo.findOne({
-      where: [
-        {
-          escapeRoomId,
-          startDate: dateInterval,
-          status: BookingStatus.Accepted
-        },
-        {
-          escapeRoomId,
-          endDate: dateInterval,
-          status: BookingStatus.Accepted
-        }
-      ]
-    });
-
-    if (overlap) {
-      return send(res, STATUS_ERROR.BAD_REQUEST);
-    }
-    let status = BookingStatus.Pending;
-
-    if (escapeRoom.paymentEnabled) {
-      const paymentDetails = await paymentDetailsRepo.findOne({
-        where: { organizationId: escapeRoom.organization.id }
-      });
-
-      // TODO: log error "payments disabled"
-      if (!paymentDetails || !dto.paymentToken) {
-        return send(res, STATUS_ERROR.BAD_REQUEST);
-      }
-
-      const stripe = new Stripe(paymentDetails.paymentSecretKey);
-
-      await stripe.charges.create({
-        amount:
-          (escapeRoom.pricingType === PricingType.FLAT
-            ? escapeRoom.price
-            : dto.participants * escapeRoom.price) * 100,
-        currency: 'eur',
-        description: 'An example charge', // TODO: give proper name
-        source: dto.paymentToken
-      });
-
-      status = BookingStatus.Accepted;
-    }
-
-    const booking = await bookingRepo.save(
-      bookingRepo.create({ ...dto, status, escapeRoomId })
-    );
-
-    return send(res, STATUS_SUCCESS.OK, toBookingDTO(booking));
-  })
-);
-
-const getAvailability = withParams(['escapeRoomId'], ({ escapeRoomId }) =>
-  withQuery(['from', 'to'], ({ from, to }) => async (req, res) => {
-    const dateNow = new Date();
-    const fromDay = from && startOfDay(new Date(from));
-    const toDay = to && startOfDay(new Date(to));
-
-    if (!fromDay || !toDay || differenceInCalendarDays(toDay, fromDay) > 35) {
-      return send(res, STATUS_ERROR.BAD_REQUEST);
-    }
-
-    const escapeRoomRepo = getRepository(EscapeRoomEntity);
-    const bookingRepo = getRepository(BookingEntity);
-    const businessHoursEntity = getRepository(EscapeRoomBusinessHoursEntity);
-
-    const escapeRoom = await escapeRoomRepo.findOne(escapeRoomId);
-
-    if (!escapeRoom) {
-      return send(res, STATUS_ERROR.NOT_FOUND);
-    }
-
-    const activeBookings = await bookingRepo.find({
-      where: {
-        escapeRoomId,
-        endDate: MoreThan(fromDay),
-        startDate: LessThan(toDay),
-        status: BookingStatus.Accepted
-      }
-    });
-
-    const allBusinessHours = await businessHoursEntity.find({
-      where: { escapeRoomId }
-    });
-
-    const availability = times(day => {
-      const date = addDays(fromDay, day);
-      const dayOfweek = getISODay(date);
-      const businessHours = allBusinessHours.find(
-        ({ weekday }) => weekday === dayOfweek
+    if (!organization.paymentDetails) {
+      return send(
+        res,
+        STATUS_ERROR.BAD_REQUEST,
+        'Payments not enabled for this escape room'
       );
+    }
 
-      if (date < startOfDay(dateNow) || !businessHours) {
-        return null;
-      }
+    const stripe = new Stripe(organization.paymentDetails.paymentSecretKey);
 
-      const [startHour, endHour] = businessHours.hours;
+    await stripe.charges.create({
+      amount:
+        (escapeRoom.pricingType === PricingType.FLAT
+          ? escapeRoom.price
+          : dto.participants * escapeRoom.price) * 100,
+      currency: 'eur',
+      description: 'Example charge', // TODO: give proper name
+      source: dto.paymentToken
+    });
 
-      // TODO: calculations are using local timezone, should use escapeRoom's
-      const timeslots = times(i => {
-        const start = setMinutes(
-          date,
-          startHour * 60 + i * escapeRoom.interval
-        );
-        const end = setMinutes(
-          date,
-          startHour * 60 + (i + 1) * escapeRoom.interval
-        );
-        return { start, end };
-      }, ((endHour - startHour) * 60) / escapeRoom.interval);
+    bookingFields.status = BookingStatus.Accepted;
+  }
 
-      const availableTimeslots = timeslots.filter(
-        ({ start, end }) =>
-          isAfter(start, dateNow) &&
-          activeBookings.every(
-            booking =>
-              !areIntervalsOverlapping(
-                { start, end },
-                { start: booking.startDate, end: booking.endDate }
-              )
-          )
+  const booking = await BookingModel.create(bookingFields);
+
+  return send(res, STATUS_SUCCESS.OK, booking);
+};
+
+const getAvailability: AugmentedRequestHandler = async (req, res) => {
+  const { escapeRoomId } = getParams(req, ['escapeRoomId']);
+  const { from, to } = getQuery(req, ['from', 'to']);
+
+  const dateNow = new Date();
+  const fromDay = startOfDay(new Date(from));
+  const toDay = startOfDay(new Date(to));
+
+  if (differenceInCalendarDays(toDay, fromDay) > 35) {
+    return send(res, STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
+  }
+
+  const escapeRoom = await requireEscapeRoom(escapeRoomId);
+  const activeBookings = await BookingModel.find({
+    escapeRoom: escapeRoomId,
+    endDate: { $gt: fromDay },
+    startDate: { $gt: toDay },
+    status: BookingStatus.Accepted
+  });
+
+  const availability = times(day => {
+    const date = addDays(fromDay, day);
+    const dayOfweek = getISODay(date);
+    const businessHours = escapeRoom.businessHours.find(
+      ({ weekday }) => weekday === dayOfweek
+    );
+
+    if (date < startOfDay(dateNow) || !businessHours) {
+      return null;
+    }
+
+    const [startHour, endHour] = businessHours.hours;
+
+    // TODO: calculations may be using local timezone, should use escapeRoom's
+    const timeslots = times(i => {
+      const start = setMinutes(date, startHour * 60 + i * escapeRoom.interval);
+      const end = setMinutes(
+        date,
+        startHour * 60 + (i + 1) * escapeRoom.interval
       );
+      return { start, end };
+    }, ((endHour - startHour) * 60) / escapeRoom.interval);
 
-      return { date, availableTimeslots };
-    }, differenceInCalendarDays(toDay, fromDay)).filter(Boolean);
+    const availableTimeslots = timeslots.filter(
+      ({ start, end }) =>
+        isAfter(start, dateNow) &&
+        activeBookings.every(
+          booking =>
+            !areIntervalsOverlapping(
+              { start, end },
+              { start: booking.startDate, end: booking.endDate }
+            )
+        )
+    );
 
-    return send(res, STATUS_SUCCESS.OK, availability);
-  })
-);
+    return { date, availableTimeslots };
+  }, differenceInCalendarDays(toDay, fromDay)).filter(Boolean);
 
-const rejectBooking = withAuth(({ userId }) =>
-  withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
-    const bookingRepo = getRepository(BookingEntity);
+  return send(res, STATUS_SUCCESS.OK, availability);
+};
 
-    const booking = await bookingRepo.findOne(bookingId, {
-      relations: ['escapeRoom']
-    });
+const rejectBooking: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+  const { bookingId } = getParams(req, ['bookingId']);
 
-    if (!booking) {
-      return send(res, STATUS_ERROR.NOT_FOUND);
-    }
+  const booking = await requireBooking(bookingId);
+  const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
+  await requireBelongsToOrganization(escapeRoom.organization, userId);
 
-    if (!isOrganizationMember(booking.escapeRoom.organizationId, userId)) {
-      return send(res, STATUS_ERROR.FORBIDDEN);
-    }
+  if (booking.status !== BookingStatus.Pending) {
+    return send(
+      res,
+      STATUS_ERROR.BAD_REQUEST,
+      'Only pending booking can be rejected'
+    );
+  }
 
-    // TODO: check permissions when implemented
-    if (booking.status !== BookingStatus.Pending) {
-      return send(res, STATUS_ERROR.BAD_REQUEST);
-    }
+  booking.status = BookingStatus.Rejected;
+  const savedBooking = await booking.save();
 
-    booking.status = BookingStatus.Rejected;
+  // TODO: send email
 
-    const savedBooking = await bookingRepo.save(booking);
-    // TODO: send email
+  return send(res, STATUS_SUCCESS.OK, savedBooking);
+};
 
-    return send(res, STATUS_SUCCESS.OK, toBookingDTO(savedBooking));
-  })
-);
+const acceptBooking: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+  const { bookingId } = getParams(req, ['bookingId']);
 
-const acceptBooking = withAuth(({ userId }) =>
-  withParams(['bookingId'], ({ bookingId }) => async (req, res) => {
-    const bookingRepo = getRepository(BookingEntity);
+  const booking = await requireBooking(bookingId);
+  const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
+  await requireBelongsToOrganization(escapeRoom.organization, userId);
 
-    const booking = await bookingRepo.findOne(bookingId, {
-      relations: ['escapeRoom']
-    });
+  if (booking.status !== BookingStatus.Pending) {
+    return send(res, STATUS_ERROR.BAD_REQUEST);
+  }
 
-    if (!booking) {
-      return send(res, STATUS_ERROR.NOT_FOUND);
-    }
+  booking.status = BookingStatus.Accepted;
+  const savedBooking = await booking.save();
 
-    if (!isOrganizationMember(booking.escapeRoom.organizationId, userId)) {
-      return send(res, STATUS_ERROR.FORBIDDEN);
-    }
+  // TODO: send email
 
-    // TODO: check permissions when implemented
-    if (booking.status !== BookingStatus.Pending) {
-      return send(res, STATUS_ERROR.BAD_REQUEST);
-    }
-
-    booking.status = BookingStatus.Accepted;
-
-    const savedBooking = await bookingRepo.save(booking);
-    // TODO: send email
-
-    return send(res, STATUS_SUCCESS.OK, toBookingDTO(savedBooking));
-  })
-);
+  return send(res, STATUS_SUCCESS.OK, savedBooking);
+};
 
 export const bookingHandlers = [
   post('/escape-room/:escapeRoomId/booking', createBooking),
+  get('/escape-room/:escapeRoomId/booking', listBookings),
   get('/escape-room/:escapeRoomId/availability', getAvailability),
   get('/booking/:bookingId', getBooking),
   put('/booking/:bookingId/reject', rejectBooking),

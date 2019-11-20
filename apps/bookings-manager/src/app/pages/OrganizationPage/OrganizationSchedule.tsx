@@ -44,7 +44,7 @@ export function OrganizationSchedule({
 
     try {
       const updatedOrg = await api.updateOrganization(
-        organization.id,
+        organization._id,
         schedule
       );
       setOrganization(updatedOrg);

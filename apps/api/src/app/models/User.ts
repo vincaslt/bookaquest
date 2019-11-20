@@ -1,0 +1,22 @@
+import { prop, getModelForClass } from '@typegoose/typegoose';
+
+export class UserInitFields {
+  email: string;
+  fullName: string;
+  password: string;
+}
+
+export class User {
+  @prop({ required: true, unique: true, index: true })
+  email: string;
+
+  @prop({ required: true })
+  fullName: string;
+
+  @prop({ required: true, select: false })
+  password: string;
+}
+
+export const UserModel = getModelForClass(User, {
+  schemaOptions: { timestamps: true }
+});

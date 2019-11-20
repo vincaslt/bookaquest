@@ -1,12 +1,12 @@
 import { Card, Divider, Icon } from 'antd';
+import Title from 'antd/lib/typography/Title';
+import Paragraph from 'antd/lib/typography/Paragraph';
+import AspectRatio from 'react-aspect-ratio';
 import times from 'ramda/es/times';
 import * as React from 'react';
-import AspectRatio from 'react-aspect-ratio';
 import styled from 'styled-components';
 import { EscapeRoom } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
-import Title from 'antd/lib/typography/Title';
-import Paragraph from 'antd/lib/typography/Paragraph';
 
 const StyledCard = styled(Card)`
   min-width: 40%;

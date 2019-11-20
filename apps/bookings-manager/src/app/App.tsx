@@ -27,10 +27,8 @@ const PageWithSidebarContainer = styled(Layout)`
 `;
 
 export const App = withUserProvider(() => {
-  const { isLoading, userInfo } = useUser();
+  const { isLoading, userInfo, memberships } = useUser();
   const { ready } = useI18n(undefined, { useSuspense: false });
-
-  const membership = userInfo && userInfo.memberships[0];
 
   if (isLoading || !ready) {
     return (
@@ -43,7 +41,7 @@ export const App = withUserProvider(() => {
   return (
     <Layout>
       {userInfo ? (
-        membership ? (
+        memberships?.[0] ? (
           <>
             <SideMenu />
             <PageWithSidebarContainer>

@@ -1,63 +1,71 @@
-import { getRepository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { send } from 'micro';
-import { post } from 'microrouter';
-import { withBody } from '../lib/decorators/withBody';
+import { post, AugmentedRequestHandler } from 'microrouter';
+import { omit } from 'ramda';
 import { SignInDTO } from '../dto/SignInDTO';
-import { UserEntity } from '../entities/UserEntity';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
 import {
   issueAccessToken,
   issueRefreshToken,
   refreshAccessToken
 } from '../helpers/auth';
-import { toUserInfoDTO } from '../dto/UserInfoDTO';
-import { withAuth } from '../lib/decorators/withAuth';
-import { RefreshTokenEntity } from '../entities/RefreshTokenEntity';
 import { RefreshTokenDTO } from '../dto/RefreshTokenDTO';
+import { UserModel } from '../models/User';
+import { RefreshTokenModel } from '../models/RefreshToken';
+import { getBody } from '../lib/utils/getBody';
+import { getAuth } from '../lib/utils/getAuth';
 
-const login = withBody(SignInDTO, dto => async (req, res) => {
-  const userRepo = getRepository(UserEntity);
-  const user = await userRepo.findOne({
-    where: { email: dto.email },
-    relations: ['memberships', 'memberships.organization']
-    // select: ['password'] // TODO: enable when fixed
+const login: AugmentedRequestHandler = async (req, res) => {
+  const { email, password } = await getBody(req, SignInDTO);
+
+  const user = await UserModel.findOne({ email })
+    .select('+password')
+    .populate('memberships');
+
+  const isPasswordCorrect =
+    user && (await bcrypt.compare(password, user.password));
+
+  if (!user || !isPasswordCorrect) {
+    return send(res, STATUS_ERROR.UNAUTHORIZED, 'Invalid credentials');
+  }
+
+  const refreshToken = await issueRefreshToken(user.id);
+  const accessToken = await issueAccessToken(user.id);
+
+  await RefreshTokenModel.deleteMany({
+    user: user.id,
+    expirationDate: { $lte: new Date() }
   });
-
-  if (!user) {
-    return send(res, STATUS_ERROR.UNAUTHORIZED);
-  }
-
-  const isPasswordCorrect = await bcrypt.compare(dto.password, user.password);
-
-  if (!isPasswordCorrect) {
-    return send(res, STATUS_ERROR.UNAUTHORIZED);
-  }
 
   return send(res, STATUS_SUCCESS.OK, {
     tokens: {
-      accessToken: await issueAccessToken(user.id),
-      refreshToken: await issueRefreshToken(user.id)
+      accessToken,
+      refreshToken
     },
-    user: toUserInfoDTO(user)
+    user: omit(['password'], user.toJSON())
   });
-});
+};
 
-const logout = withAuth(({ userId }) => async (req, res) => {
-  const tokenRepo = getRepository(RefreshTokenEntity);
-  await tokenRepo.delete({ userId });
-  return send(res, STATUS_SUCCESS.OK);
-});
+const logout: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+  const exists = await UserModel.exists({ user: userId });
 
-const refreshToken = withBody(RefreshTokenDTO, dto => async (req, res) => {
-  const token = await refreshAccessToken(dto.userId, dto.refreshToken);
-
-  if (!token) {
-    return send(res, STATUS_ERROR.UNAUTHORIZED);
+  if (!exists) {
+    return send(res, STATUS_ERROR.NOT_FOUND, 'User not found');
   }
 
+  await RefreshTokenModel.deleteMany({
+    user: userId
+  });
+
+  return send(res, STATUS_SUCCESS.OK);
+};
+
+const refreshToken: AugmentedRequestHandler = async (req, res) => {
+  const dto = await getBody(req, RefreshTokenDTO);
+  const token = await refreshAccessToken(dto.userId, dto.refreshToken);
   return send(res, STATUS_SUCCESS.OK, { token });
-});
+};
 
 export const authHandlers = [
   post('/login', login),

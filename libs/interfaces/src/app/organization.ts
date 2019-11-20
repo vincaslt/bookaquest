@@ -1,6 +1,6 @@
 import omit from 'ramda/es/omit';
-import { BusinessHours } from './businessHours';
 import { CreatePaymentDetailsDTO, OrganizationDTO } from '../dto/organization';
+import { BusinessHours } from './businessHours';
 
 export type CreatePaymentDetails = CreatePaymentDetailsDTO;
 

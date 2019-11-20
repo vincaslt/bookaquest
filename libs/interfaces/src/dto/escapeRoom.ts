@@ -17,8 +17,8 @@ export interface CreateEscapeRoomDTO {
 }
 
 export interface EscapeRoomDTO {
-  id: string;
-  organizationId: string;
+  _id: string;
+  organization: string;
   name: string;
   description: string;
   images: string[];

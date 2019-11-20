@@ -1,8 +1,13 @@
 import { OrganizationMemberDTO } from '@bookaquest/interfaces';
-import { BasicUserInfo, fromBasicUserInfoDTO } from './user';
+import { UserInfo, fromUserInfoDTO } from './user';
 
-export type OrganizationMember = Omit<OrganizationMemberDTO, 'user'> & {
-  user: BasicUserInfo;
+export type OrganizationMember = Omit<
+  OrganizationMemberDTO,
+  'user' | 'createdAt' | 'updatedAt'
+> & {
+  user: UserInfo;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export function fromOrganizationMemberDTO(
@@ -10,6 +15,8 @@ export function fromOrganizationMemberDTO(
 ): OrganizationMember {
   return {
     ...dto,
-    user: fromBasicUserInfoDTO(dto.user)
+    createdAt: new Date(dto.createdAt),
+    updatedAt: new Date(dto.updatedAt),
+    user: fromUserInfoDTO(dto.user)
   };
 }

@@ -14,8 +14,8 @@ import {
   Min,
   ValidateNested
 } from 'class-validator';
+import { PricingType } from '../models/EscapeRoom';
 import { BusinessHoursDTO } from './BusinessHoursDTO';
-import { PricingType } from '../entities/EscapeRoomEntity';
 
 export class UpdateEscapeRoomDTO {
   @IsOptional()
