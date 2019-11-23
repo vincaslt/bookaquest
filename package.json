@@ -68,7 +68,6 @@
     "react-aspect-ratio": "^1.0.41",
     "react-countdown-now": "^2.1.2",
     "react-dom": "16.10.2",
-    "react-hot-loader": "^4.12.18",
     "react-i18next": "^11.1.0",
     "react-stripe-elements": "^5.1.0",
     "react-use": "^13.6.2",
