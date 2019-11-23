@@ -1,8 +1,8 @@
 import { Tooltip } from 'antd';
-import { getDate, getMonth, isBefore, isSameDay, startOfDay } from 'date-fns';
+import { getMonth, isBefore, isSameDay, startOfDay, format } from 'date-fns';
 import AspectRatio from 'react-aspect-ratio';
 import { red } from '@ant-design/colors';
-import { useI18n } from '@bookaquest/utilities';
+import { useI18n, classNames } from '@bookaquest/utilities';
 import * as React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -46,7 +46,7 @@ export function Day({
   selected = false
 }: Props) {
   const now = new Date();
-  const { t } = useI18n();
+  const { t, dateFnsLocale } = useI18n();
 
   const isDisabled = isBefore(date, startOfDay(now));
 
@@ -72,16 +72,14 @@ export function Day({
       <span
         className={`p-2 flex items-center justify-center rounded-full w-10 h-10 ${todayClass}`}
       >
-        {getDate(date)}
+        {format(date, 'd', { locale: dateFnsLocale })}
       </span>
     </DayButton>
   );
 
   return (
     <td
-      className={`border ${[selectedClass, disabledClass, emptyClass].join(
-        ' '
-      )}`}
+      className={classNames('border', selectedClass, disabledClass, emptyClass)}
     >
       <AspectRatio ratio={1}>
         {isDisabled ? (

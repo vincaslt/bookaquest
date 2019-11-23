@@ -90,19 +90,22 @@ export function BookingItinerary() {
   const status = {
     [BookingStatus.Pending]: 'info' as 'info',
     [BookingStatus.Accepted]: 'success' as 'success',
-    [BookingStatus.Rejected]: 'error' as 'error'
+    [BookingStatus.Rejected]: 'error' as 'error',
+    [BookingStatus.Canceled]: 'error' as 'error'
   }[booking.status];
 
   const stepStatus = {
     [BookingStatus.Pending]: 'wait' as 'wait',
     [BookingStatus.Accepted]: 'finish' as 'finish',
-    [BookingStatus.Rejected]: 'error' as 'error'
+    [BookingStatus.Rejected]: 'error' as 'error',
+    [BookingStatus.Canceled]: 'error' as 'error'
   }[booking.status];
 
   const titleText = {
     [BookingStatus.Pending]: t`Booking request for "${escapeRoom.name}" has been received`,
     [BookingStatus.Accepted]: t`Booking for "${escapeRoom.name}" has been confirmed, see you in`,
-    [BookingStatus.Rejected]: t`Booking for "${escapeRoom.name}" has been rejected`
+    [BookingStatus.Rejected]: t`Booking for "${escapeRoom.name}" has been rejected`,
+    [BookingStatus.Canceled]: t`Booking for "${escapeRoom.name}" has been canceled`
   }[booking.status];
 
   const subtitleText = {
@@ -111,6 +114,9 @@ export function BookingItinerary() {
                   to this page to check your booking status.`,
     [BookingStatus.Accepted]: <RemainingTime date={booking.startDate} />,
     [BookingStatus.Rejected]: booking.comment
+      ? t`Comment: ${booking.comment}`
+      : '',
+    [BookingStatus.Canceled]: booking.comment
       ? t`Comment: ${booking.comment}`
       : ''
   }[booking.status];

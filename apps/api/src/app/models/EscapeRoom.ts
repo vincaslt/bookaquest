@@ -23,6 +23,7 @@ export interface EscapeRoomInitFields {
   paymentEnabled?: boolean;
 }
 
+// TODO: Classify parameters into PaymentInfo (price, type), BookingDetails (participants, interval) to copy into booking
 export class EscapeRoom {
   @prop({ required: true })
   name: string;
@@ -34,7 +35,7 @@ export class EscapeRoom {
   pricingType: PricingType;
 
   @prop({ required: true })
-  price: number;
+  price: number; // TODO: store in stripe price format (x100)
 
   @arrayProp({ items: Number, required: true })
   participants: [number, number];

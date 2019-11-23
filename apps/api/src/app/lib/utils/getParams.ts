@@ -2,10 +2,10 @@ import { ServerRequest } from 'microrouter';
 import { createError } from 'micro';
 import { STATUS_ERROR } from '../constants';
 
-export function getParams<K extends string>(
+export function getParams<T extends { [index in K]: string }, K extends string>(
   req: ServerRequest,
   keys: K[]
-): { [key in K]: string } {
+): T {
   const missingKey = keys.find(key => req.params[key] === undefined);
 
   if (missingKey) {
@@ -23,5 +23,5 @@ export function getParams<K extends string>(
       );
     }
     return { ...params, [key]: value };
-  }, {} as { [key in K]: string });
+  }, {} as T);
 }

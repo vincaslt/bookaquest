@@ -11,6 +11,7 @@ export interface BookingDTO {
   status: string;
   participants: number;
   createdAt: string;
+  price: number;
   comment?: string;
 }
 

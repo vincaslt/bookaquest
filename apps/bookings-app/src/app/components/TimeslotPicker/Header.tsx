@@ -1,8 +1,9 @@
 import { Icon } from 'antd';
-import { setDay } from 'date-fns';
+import { getDay } from 'date-fns';
 import * as React from 'react';
 import styled from 'styled-components';
 import { Time } from '@bookaquest/components';
+import { listWeekdays, useI18n } from '@bookaquest/utilities';
 
 const DayHeading = styled.th`
   width: calc(100% / 7);
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export function Header({ month, onPrev, onNext }: Props) {
+  const { dateFnsLocale } = useI18n();
+
   return (
     <thead className="bg-red-600 text-white">
       <tr className="text-center">
@@ -39,9 +42,9 @@ export function Header({ month, onPrev, onNext }: Props) {
         </th>
       </tr>
       <tr>
-        {[1, 2, 3, 4, 5, 6, 0].map(weekday => (
-          <DayHeading className="p-2 text-center" key={weekday}>
-            <Time date={setDay(new Date(), weekday)} type={{ format: 'ccc' }} />
+        {listWeekdays(dateFnsLocale).map(weekday => (
+          <DayHeading className="p-2 text-center" key={getDay(weekday)}>
+            <Time date={weekday} type={{ format: 'ccc' }} />
           </DayHeading>
         ))}
       </tr>

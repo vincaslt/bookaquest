@@ -1,10 +1,10 @@
 import { Checkbox, Col, Form, Row, TimePicker } from 'antd';
 import moment, { Moment } from 'moment';
-import times from 'ramda/es/times';
+import { getDay, format } from 'date-fns';
 import update from 'ramda/es/update';
 import * as React from 'react';
 import { BusinessHours } from '@bookaquest/interfaces';
-import { useI18n } from '@bookaquest/utilities';
+import { useI18n, listWeekdays } from '@bookaquest/utilities';
 
 interface Props {
   value: BusinessHours[];
@@ -13,17 +13,7 @@ interface Props {
 
 // TODO: use moment/date-fns weekdays to get weekdays and first day of week for locale
 export function BusinessHoursInput({ value, onChange }: Props) {
-  const { t } = useI18n();
-
-  const weekdays = [
-    t`Monday`,
-    t`Tuesday`,
-    t`Wednesday`,
-    t`Thursday`,
-    t`Friday`,
-    t`Saturday`,
-    t`Sunday`
-  ];
+  const { t, dateFnsLocale } = useI18n();
 
   const handleCheckWeekday = (day: number) => () => {
     const existingHours = value.find(({ weekday }) => weekday === day);
@@ -54,14 +44,15 @@ export function BusinessHoursInput({ value, onChange }: Props) {
 
   return (
     <Form.Item label={t`Weekdays`}>
-      {times(i => {
-        const day = value.find(({ weekday }) => weekday === i + 1);
+      {listWeekdays(dateFnsLocale).map(weekdayDate => {
+        const weekday = getDay(weekdayDate);
+        const day = value.find(businessDay => businessDay.weekday === weekday);
         const [open, close] = day ? day.hours : [];
         return (
-          <Row key={i} className="mb-2 w-full">
+          <Row key={weekday} className="mb-2 w-full">
             <Col span={8}>
-              <Checkbox checked={!!day} onChange={handleCheckWeekday(i + 1)}>
-                {weekdays[i]}
+              <Checkbox checked={!!day} onChange={handleCheckWeekday(weekday)}>
+                {format(weekdayDate, 'cccc')}
               </Checkbox>
             </Col>
             {day && (
@@ -70,7 +61,7 @@ export function BusinessHoursInput({ value, onChange }: Props) {
                   <TimePicker
                     minuteStep={15}
                     format="HH:mm"
-                    onChange={handleChangeHours(i + 1, 0)}
+                    onChange={handleChangeHours(weekday, 0)}
                     value={moment()
                       .hours(Math.floor(open))
                       .minutes((open % 1) * 60)}
@@ -80,7 +71,7 @@ export function BusinessHoursInput({ value, onChange }: Props) {
                   <TimePicker
                     minuteStep={15}
                     format="HH:mm"
-                    onChange={handleChangeHours(i + 1, 1)}
+                    onChange={handleChangeHours(weekday, 1)}
                     value={moment()
                       .hours(Math.floor(close))
                       .minutes((close % 1) * 60)}
@@ -90,7 +81,7 @@ export function BusinessHoursInput({ value, onChange }: Props) {
             )}
           </Row>
         );
-      }, 7)}
+      })}
     </Form.Item>
   );
 }

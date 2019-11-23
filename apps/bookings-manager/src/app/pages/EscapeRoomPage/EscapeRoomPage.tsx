@@ -9,9 +9,11 @@ import {
   Radio,
   Rate,
   Row,
-  Switch
+  Switch,
+  Spin
 } from 'antd';
 import AspectRatio from 'react-aspect-ratio';
+import { startOfWeek } from 'date-fns';
 import * as React from 'react';
 import * as Yup from 'yup';
 import {
@@ -22,6 +24,7 @@ import {
 } from '@bookaquest/interfaces';
 import { useI18n, asOption } from '@bookaquest/utilities';
 import { WorkHours } from '@bookaquest/components';
+import { environment } from '../../../environments/environment';
 import * as api from '../../api/application';
 import { DetailsItem } from '../../shared/components/DetailsList/DetailsItem';
 import { DetailsList } from '../../shared/components/DetailsList/DetailsList';
@@ -31,6 +34,7 @@ import { SectionTitle } from '../../shared/components/SectionTitle';
 import { PageContent } from '../../shared/layout/PageContent';
 import { Section } from '../../shared/layout/Section';
 import { ParticipantsEditableText } from './ParticipantsEditableText';
+import EarningsChart from './EarningsChart';
 
 const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
   name: Yup.string(),
@@ -59,24 +63,27 @@ interface UrlParams {
   escapeRoomId: string;
 }
 
-export function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
-  const { t } = useI18n();
-  const { escapeRoomId } = props;
+export function EscapeRoomPage({
+  escapeRoomId
+}: RouteComponentProps<UrlParams>) {
+  const { t, dateFnsLocale } = useI18n();
   const [escapeRoom, setEscapeRoom] = React.useState<EscapeRoom>();
   const [bookings, setBookings] = React.useState<Booking[]>();
 
   React.useEffect(() => {
-    console.log(props);
     if (escapeRoomId) {
       Promise.all([
         api.getEscapeRoom(escapeRoomId),
-        api.getEscapeRoomBookings(escapeRoomId)
+        api.getEscapeRoomBookings(
+          escapeRoomId,
+          startOfWeek(new Date(), { locale: dateFnsLocale })
+        )
       ]).then(([room, roomBookings]) => {
         setEscapeRoom(room);
         setBookings(roomBookings);
       });
     }
-  }, [escapeRoomId, props]);
+  }, [dateFnsLocale, escapeRoomId]);
 
   const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
     if (escapeRoomId) {
@@ -208,12 +215,14 @@ export function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
                         >{t`Per-person`}</Radio.Button>
                       </Radio.Group>
                     </DetailsItem>
-                    <DetailsItem label={t`Payment enabled:`}>
-                      <Switch
-                        onChange={updatePaymentEnabled}
-                        checked={escapeRoom.paymentEnabled}
-                      />
-                    </DetailsItem>
+                    {environment.paymentEnabled && (
+                      <DetailsItem label={t`Payment enabled:`}>
+                        <Switch
+                          onChange={updatePaymentEnabled}
+                          checked={escapeRoom.paymentEnabled}
+                        />
+                      </DetailsItem>
+                    )}
                   </DetailsList>
                 </Col>
                 <Col span={12}>
@@ -234,6 +243,9 @@ export function EscapeRoomPage(props: RouteComponentProps<UrlParams>) {
             </Section>
           </Col>
           <Col span={8}>
+            <Section title={t`Earnings`}>
+              {!bookings ? <Spin /> : <EarningsChart bookings={bookings} />}
+            </Section>
             <Section title={t`Bookings`}>
               <List
                 loading={!bookings}

@@ -3,8 +3,9 @@ import { EscapeRoom } from './EscapeRoom';
 
 export enum BookingStatus {
   Accepted = 'ACCEPTED',
+  Pending = 'PENDING',
   Rejected = 'REJECTED',
-  Pending = 'PENDING'
+  Canceled = 'CANCELED'
 }
 
 export interface BookingInitFields {
@@ -16,6 +17,7 @@ export interface BookingInitFields {
   phoneNumber: string;
   escapeRoom: string;
   status: BookingStatus;
+  price: number;
   comment?: string;
 }
 
@@ -46,6 +48,9 @@ export class Booking {
 
   @prop({ required: true })
   status: BookingStatus;
+
+  @prop({ required: true })
+  price: number;
 }
 
 export const BookingModel = getModelForClass(Booking, {

@@ -31,6 +31,8 @@
   "rules": {
     "prettier/prettier": "warn",
     "no-shadow": "warn",
+    "import/no-duplicates": "off",
+    "no-duplicate-imports": "warn",
     "import/named": "off",
     "import/default": "off",
     "import/order": [
@@ -47,6 +49,8 @@
         ]
       }
     ],
+    "no-useless-constructor": "off",
+    "@typescript-eslint/no-useless-constructor": "warn",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {

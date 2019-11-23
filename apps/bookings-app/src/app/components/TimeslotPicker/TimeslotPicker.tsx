@@ -38,7 +38,10 @@ export function TimeslotPicker({
 
   const startDay = startOfWeek(monthDate, { locale: dateFnsLocale });
 
-  const weeks = splitEvery(7, times(i => addDays(startDay, i), 7 * 5));
+  const weeks = splitEvery(
+    7,
+    times(i => addDays(startDay, i), 7 * 5)
+  );
   const isDayInWeek = (day: Date, week: Date[]) =>
     !!week.find(date => isSameDay(date, day));
 

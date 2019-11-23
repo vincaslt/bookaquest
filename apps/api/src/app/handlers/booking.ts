@@ -3,10 +3,10 @@ import {
   areIntervalsOverlapping,
   differenceInCalendarDays,
   differenceInMinutes,
-  getISODay,
   isAfter,
   setMinutes,
-  startOfDay
+  startOfDay,
+  getDay
 } from 'date-fns';
 import { send } from 'micro';
 import { get, post, put, AugmentedRequestHandler } from 'microrouter';
@@ -47,13 +47,17 @@ const getBooking: AugmentedRequestHandler = async (req, res) => {
 const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
+  const { from, to } = getQuery(req, undefined, ['from', 'to']);
 
   const organization = await requireEscapeRoom(escapeRoomId);
   await requireBelongsToOrganization(organization.id, userId);
 
+  const fromDate = from ? new Date(from) : new Date();
+  const toDate = to && new Date(to);
+
   const bookings = await BookingModel.find({
     escapeRoom: escapeRoomId,
-    endDate: { $gt: new Date() }
+    endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate }
   });
 
   return send(res, STATUS_SUCCESS.OK, bookings);
@@ -72,9 +76,14 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
     escapeRoom.participants
   );
 
+  // TODO: validate if timeslot is within business hours
   // TODO: validate if starts at timeslot start
   if (invalidInterval || invalidParticipants) {
-    return send(res, STATUS_ERROR.BAD_REQUEST);
+    return send(
+      res,
+      STATUS_ERROR.BAD_REQUEST,
+      'Booking has invalid interval or participants'
+    );
   }
 
   const overlap = await BookingModel.findOne({
@@ -94,8 +103,14 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
     );
   }
 
+  const price =
+    escapeRoom.pricingType === PricingType.FLAT
+      ? escapeRoom.price
+      : dto.participants * escapeRoom.price;
+
   const bookingFields: BookingInitFields = {
     ...dto,
+    price,
     escapeRoom: escapeRoomId,
     status: BookingStatus.Pending
   };
@@ -118,10 +133,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
     const stripe = new Stripe(organization.paymentDetails.paymentSecretKey);
 
     await stripe.charges.create({
-      amount:
-        (escapeRoom.pricingType === PricingType.FLAT
-          ? escapeRoom.price
-          : dto.participants * escapeRoom.price) * 100,
+      amount: price * 100,
       currency: 'eur',
       description: 'Example charge', // TODO: give proper name
       source: dto.paymentToken
@@ -157,7 +169,7 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
 
   const availability = times(day => {
     const date = addDays(fromDay, day);
-    const dayOfweek = getISODay(date);
+    const dayOfweek = getDay(date);
     const businessHours = escapeRoom.businessHours.find(
       ({ weekday }) => weekday === dayOfweek
     );
@@ -229,10 +241,38 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
   if (booking.status !== BookingStatus.Pending) {
-    return send(res, STATUS_ERROR.BAD_REQUEST);
+    return send(
+      res,
+      STATUS_ERROR.BAD_REQUEST,
+      'Only pending booking can be accepted'
+    );
   }
 
   booking.status = BookingStatus.Accepted;
+  const savedBooking = await booking.save();
+
+  // TODO: send email
+
+  return send(res, STATUS_SUCCESS.OK, savedBooking);
+};
+
+const cancelBooking: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+  const { bookingId } = getParams(req, ['bookingId']);
+
+  const booking = await requireBooking(bookingId);
+  const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
+  await requireBelongsToOrganization(escapeRoom.organization, userId);
+
+  if (booking.status !== BookingStatus.Accepted) {
+    return send(
+      res,
+      STATUS_ERROR.BAD_REQUEST,
+      'Only accepted booking can be canceled'
+    );
+  }
+
+  booking.status = BookingStatus.Canceled;
   const savedBooking = await booking.save();
 
   // TODO: send email
@@ -246,5 +286,6 @@ export const bookingHandlers = [
   get('/escape-room/:escapeRoomId/availability', getAvailability),
   get('/booking/:bookingId', getBooking),
   put('/booking/:bookingId/reject', rejectBooking),
-  put('/booking/:bookingId/accept', acceptBooking)
+  put('/booking/:bookingId/accept', acceptBooking),
+  put('/booking/:bookingId/cancel', cancelBooking)
 ];

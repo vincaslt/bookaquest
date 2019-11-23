@@ -51,7 +51,8 @@ export function BookingsPage(props: RouteComponentProps) {
                   backgroundColor: {
                     [BookingStatus.Accepted]: '#b7eb8f',
                     [BookingStatus.Pending]: '#ffe58f',
-                    [BookingStatus.Rejected]: '#ffa39e'
+                    [BookingStatus.Rejected]: '#ffa39e',
+                    [BookingStatus.Canceled]: '#ffa39e'
                   }[booking.status],
                   booking
                 }))

@@ -9,7 +9,8 @@ import { EscapeRoom, fromEscapeRoomDTO } from './escapeRoom';
 export enum BookingStatus {
   Accepted = 'ACCEPTED',
   Pending = 'PENDING',
-  Rejected = 'REJECTED'
+  Rejected = 'REJECTED',
+  Canceled = 'CANCELED'
 }
 
 export type Booking = Omit<

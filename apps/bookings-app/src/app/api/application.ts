@@ -1,3 +1,4 @@
+import Axios from 'axios';
 import {
   BookingDTO,
   BookingWithEscapeRoomDTO,
@@ -12,7 +13,6 @@ import {
   AvailabilityDTO,
   fromAvailabilityDTO
 } from '@bookaquest/interfaces';
-import Axios from 'axios';
 
 const api = Axios.create({
   baseURL: 'http://localhost:3001'
