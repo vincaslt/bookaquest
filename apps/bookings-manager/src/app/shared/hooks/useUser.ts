@@ -18,8 +18,9 @@ export function useUser() {
   const login = (credentials: SignIn) =>
     api
       .signIn(credentials)
-      .then(({ tokens: { accessToken, refreshToken }, userInfo }) => {
-        userState.setUserInfo(userInfo);
+      .then(({ tokens: { accessToken, refreshToken }, user, memberships }) => {
+        userState.setUserInfo(user);
+        userState.setMemberships(memberships);
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
       });

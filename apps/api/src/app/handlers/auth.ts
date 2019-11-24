@@ -14,13 +14,12 @@ import { UserModel } from '../models/User';
 import { RefreshTokenModel } from '../models/RefreshToken';
 import { getBody } from '../lib/utils/getBody';
 import { getAuth } from '../lib/utils/getAuth';
+import { OrganizationMembershipModel } from '../models/OrganizationMembership';
 
 const login: AugmentedRequestHandler = async (req, res) => {
   const { email, password } = await getBody(req, SignInDTO);
 
-  const user = await UserModel.findOne({ email })
-    .select('+password')
-    .populate('memberships');
+  const user = await UserModel.findOne({ email }).select('+password');
 
   const isPasswordCorrect =
     user && (await bcrypt.compare(password, user.password));
@@ -37,12 +36,17 @@ const login: AugmentedRequestHandler = async (req, res) => {
     expirationDate: { $lte: new Date() }
   });
 
+  const memberships = await OrganizationMembershipModel.find({
+    user: user.id
+  }).select('-user');
+
   return send(res, STATUS_SUCCESS.OK, {
     tokens: {
       accessToken,
       refreshToken
     },
-    user: omit(['password'], user.toJSON())
+    user: omit(['password'], user.toJSON()),
+    memberships
   });
 };
 

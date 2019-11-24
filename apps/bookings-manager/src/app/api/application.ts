@@ -30,10 +30,15 @@ export const register = (user: CreateUser) =>
 
 export const signIn = (credentials: SignIn) =>
   api
-    .post<{ tokens: AuthTokensDTO; user: UserInfoDTO }>('/login', credentials)
+    .post<{
+      tokens: AuthTokensDTO;
+      user: UserInfoDTO;
+      memberships: UserMembershipDTO[];
+    }>('/login', credentials)
     .then(res => ({
       tokens: res.data.tokens,
-      userInfo: fromUserInfoDTO(res.data.user)
+      user: fromUserInfoDTO(res.data.user),
+      memberships: res.data.memberships.map(fromUserMembershipDTO)
     }));
 
 export const signOut = withAuth(headers => () =>

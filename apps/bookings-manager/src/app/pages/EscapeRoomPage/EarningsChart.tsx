@@ -1,14 +1,9 @@
 import { format, addWeeks, isAfter } from 'date-fns';
 import { isSameDay } from 'date-fns/esm';
 import { Button } from 'antd';
-import { green } from '@ant-design/colors';
+import { green, blue } from '@ant-design/colors';
+import AspectRatio from 'react-aspect-ratio';
 import * as React from 'react';
-import {
-  VictoryChart,
-  VictoryArea,
-  VictoryTooltip,
-  VictoryVoronoiContainer
-} from 'victory';
 import { Booking, BookingStatus } from '@bookaquest/interfaces';
 import { listWeekdays, useI18n } from '@bookaquest/utilities';
 import sum from 'ramda/es/sum';
@@ -18,6 +13,7 @@ import pipe from 'ramda/es/pipe';
 import filter from 'ramda/es/filter';
 import map from 'ramda/es/map';
 import dec from 'ramda/es/dec';
+import { AreaChart, XAxis, Tooltip, Area, ResponsiveContainer } from 'recharts';
 
 type BookingFilter = (weekdayDate: Date) => (booking: Booking) => boolean;
 type EarningsCalculator = (weekdayDate: Date) => (x: Booking[]) => number;
@@ -58,64 +54,80 @@ interface Props {
 // TODO: query last weeks bookings when going back
 function EarningsChart({ bookings }: Props) {
   const now = new Date();
-  const { dateFnsLocale } = useI18n();
+  const { t, dateFnsLocale } = useI18n();
   const [weekOffset, setWeekOffset] = React.useState(0);
 
   const weekdays = listWeekdays(dateFnsLocale, addWeeks(now, weekOffset));
 
-  const toChartDataFor = (calc: EarningsCalculator) =>
-    weekdays.map(weekdayDate => {
-      const earnings = calc(weekdayDate)(bookings);
-      return {
-        x: format(weekdayDate, 'ccc', { locale: dateFnsLocale }),
-        y: earnings,
-        label: `${format(weekdayDate, 'cccc', {
-          locale: dateFnsLocale
-        })}: ${earnings}`
-      };
-    });
+  const chartData = weekdays.map(weekdayDate => {
+    return {
+      day: format(weekdayDate, 'MM-dd', { locale: dateFnsLocale }),
+      completed: completedEarnings(weekdayDate)(bookings),
+      projected: projectedEarnings(weekdayDate)(bookings),
+      pending: pendingEarnings(weekdayDate)(bookings)
+    };
+  });
 
-  const pending = toChartDataFor(pendingEarnings);
-  const projected = toChartDataFor(projectedEarnings);
-  const completed = toChartDataFor(completedEarnings);
+  console.log(chartData);
 
-  const totalProjected = sum(projected.map(prop('y')));
+  const axisNames: { [key: string]: string } = {
+    completed: t`Completed`,
+    projected: t`Projected`,
+    pending: t`Pending`
+  };
 
   return (
     <div className="flex items-center">
       <Button
-        className="flex justify-center"
+        className="flex justify-center mr-4"
         shape="circle"
         icon="left"
         disabled={weekOffset === 0}
         onClick={() => setWeekOffset(dec)}
       />
-      <VictoryChart containerComponent={<VictoryVoronoiContainer />}>
-        <VictoryArea
-          labelComponent={<></>}
-          domain={totalProjected ? undefined : { y: [0, 10] }}
-          style={{
-            data: { fill: green[1] }
-          }}
-          data={projected}
-        />
-        <VictoryArea
-          labelComponent={<></>}
-          domain={totalProjected ? undefined : { y: [0, 10] }}
-          style={{ data: { fill: green[5] } }}
-          data={completed}
-        />
-        <VictoryArea
-          labelComponent={<VictoryTooltip />}
-          domain={totalProjected ? undefined : { y: [0, 10] }}
-          style={{
-            data: { fill: 'none', stroke: green[3], strokeDasharray: '5,5' }
-          }}
-          data={pending}
-        />
-      </VictoryChart>
+      <AspectRatio ratio="5/3" style={{ width: '100%' }}>
+        <ResponsiveContainer>
+          <AreaChart margin={{ left: 20, right: 20 }} data={chartData}>
+            <Tooltip
+              formatter={(value, key, { payload }) =>
+                key === 'pending'
+                  ? [payload.pending - payload.projected, axisNames[key]]
+                  : [value, axisNames[key]]
+              }
+            />
+            <XAxis interval={0} dataKey="day" />
+
+            <Area
+              animationDuration={300}
+              type="monotone"
+              dataKey="projected"
+              stackId="2"
+              fill={blue[3]}
+              stroke="none"
+            />
+            <Area
+              animationDuration={300}
+              type="monotone"
+              dataKey="completed"
+              stackId="1"
+              fill={green[3]}
+              stroke="none"
+            />
+            <Area
+              animationDuration={300}
+              type="monotone"
+              dataKey="pending"
+              stackId="3"
+              stroke={blue[6]}
+              strokeDasharray="5,5"
+              fill="none"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </AspectRatio>
+
       <Button
-        className="flex justify-center"
+        className="flex justify-center ml-4"
         shape="circle"
         icon="right"
         onClick={() => setWeekOffset(inc)}
