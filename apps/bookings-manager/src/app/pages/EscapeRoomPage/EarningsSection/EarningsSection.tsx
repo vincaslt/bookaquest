@@ -8,6 +8,7 @@ import { Link } from '../../../shared/components/Link';
 import { EarningsStats } from './EarningsStats';
 
 interface Props {
+  todaysBookings?: Booking[];
   weeklyBookings?: Booking[];
   week: Date;
   onNextWeek: () => void;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function EarningsSection({
+  todaysBookings,
   weeklyBookings,
   week,
   onNextWeek,
@@ -34,7 +36,7 @@ export function EarningsSection({
         </Link>
       }
     >
-      {!weeklyBookings ? (
+      {!weeklyBookings || !todaysBookings ? (
         <Spin />
       ) : (
         <div className="flex items-center">
@@ -46,7 +48,11 @@ export function EarningsSection({
           />
           <div className="flex flex-grow">
             {mode === 'stats' ? (
-              <EarningsStats bookings={weeklyBookings} />
+              <EarningsStats
+                todaysBookings={todaysBookings}
+                weeklyBookings={weeklyBookings}
+                week={week}
+              />
             ) : (
               <EarningsChart weeklyBookings={weeklyBookings} week={week} />
             )}

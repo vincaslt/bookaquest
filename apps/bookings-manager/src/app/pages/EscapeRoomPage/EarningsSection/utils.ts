@@ -12,19 +12,25 @@ type GetEarningsCalculator = (
   bookingsFilter: BookingFilter
 ) => EarningsCalculator;
 
-const acceptedBooking: BookingFilter = weekdayDate => booking =>
-  isSameDay(booking.endDate, weekdayDate) &&
+export const isBookingAccepted = (booking: Booking) =>
   booking.status === BookingStatus.Accepted;
-
-const pendingBooking: BookingFilter = weekdayDate => booking =>
-  isSameDay(booking.endDate, weekdayDate) &&
+export const isBookingPending = (booking: Booking) =>
   booking.status === BookingStatus.Pending;
+export const isBookingCompleted = (booking: Booking) =>
+  isAfter(new Date(), booking.endDate) && isBookingAccepted(booking);
 
-const completedBooking: BookingFilter = weekdayDate => booking =>
-  isAfter(new Date(), booking.endDate) && acceptedBooking(weekdayDate)(booking);
+const acceptedBookingFilter: BookingFilter = weekdayDate => booking =>
+  isSameDay(booking.endDate, weekdayDate) && isBookingAccepted(booking);
+
+const pendingBookingFilter: BookingFilter = weekdayDate => booking =>
+  isSameDay(booking.endDate, weekdayDate) && isBookingPending(booking);
+
+const completedBookingFilter: BookingFilter = weekdayDate => booking =>
+  isSameDay(booking.endDate, weekdayDate) && isBookingCompleted(booking);
 
 const pendingOrAcceptedBooking: BookingFilter = weekdayDate => booking =>
-  acceptedBooking(weekdayDate)(booking) || pendingBooking(weekdayDate)(booking);
+  acceptedBookingFilter(weekdayDate)(booking) ||
+  pendingBookingFilter(weekdayDate)(booking);
 
 const getEarningsCalculator: GetEarningsCalculator = bookingFilter => weekdayDate =>
   pipe(
@@ -34,5 +40,5 @@ const getEarningsCalculator: GetEarningsCalculator = bookingFilter => weekdayDat
   );
 
 export const pendingEarnings = getEarningsCalculator(pendingOrAcceptedBooking);
-export const projectedEarnings = getEarningsCalculator(acceptedBooking);
-export const completedEarnings = getEarningsCalculator(completedBooking);
+export const projectedEarnings = getEarningsCalculator(acceptedBookingFilter);
+export const completedEarnings = getEarningsCalculator(completedBookingFilter);

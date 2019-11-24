@@ -1,6 +1,6 @@
 import { RouteComponentProps } from '@reach/router';
 import { Button, Col, PageHeader, Row } from 'antd';
-import { addWeeks, startOfWeek, endOfWeek } from 'date-fns';
+import { addWeeks, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
 import * as React from 'react';
 import { EscapeRoom, Booking } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
@@ -21,6 +21,7 @@ export function EscapeRoomPage({
 }: RouteComponentProps<UrlParams>) {
   const { t, dateFnsLocale } = useI18n();
   const [escapeRoom, setEscapeRoom] = React.useState<EscapeRoom>();
+  const [todaysBookings, setTodaysBookings] = React.useState<Booking[]>();
   const [weeklyBookings, setWeeklyBookings] = React.useState<Booking[]>();
   const [weekOffset, setWeekOffset] = React.useState(0);
 
@@ -31,7 +32,8 @@ export function EscapeRoomPage({
   }, [escapeRoomId]);
 
   React.useEffect(() => {
-    const week = addWeeks(new Date(), weekOffset);
+    const now = new Date();
+    const week = addWeeks(now, weekOffset);
 
     if (escapeRoomId) {
       api
@@ -40,16 +42,23 @@ export function EscapeRoomPage({
           startOfWeek(week, { locale: dateFnsLocale }),
           endOfWeek(week, { locale: dateFnsLocale })
         )
-        .then(setWeeklyBookings);
+        .then(bookings => {
+          if (weekOffset === 0) {
+            setTodaysBookings(
+              bookings.filter(booking => isSameDay(now, booking.endDate))
+            );
+          }
+          setWeeklyBookings(bookings);
+        });
     }
   }, [weekOffset, escapeRoomId, dateFnsLocale]);
 
   const nextWeek = () => setWeekOffset(inc);
   const prevWeek = () => setWeekOffset(dec);
 
+  // TODO: generate lots of test data for escape room bookings
+  // TODO: bookings section should show paginated bookings ordered by date
   // TODO: proper URL for booking page
-  // TODO: correct inputs for difficulty and interval
-  // TODO: not show payment details (only info message) if no paymentDetails from org
   return (
     <PageContent
       header={
@@ -80,6 +89,7 @@ export function EscapeRoomPage({
           </Col>
           <Col span={8}>
             <EarningsSection
+              todaysBookings={todaysBookings}
               weeklyBookings={weeklyBookings}
               week={addWeeks(new Date(), weekOffset)}
               onNextWeek={nextWeek}
