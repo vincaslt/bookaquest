@@ -23,7 +23,7 @@ interface Props {
 }
 
 export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
-  const { t } = useI18n();
+  const { t, dateFnsLocale } = useI18n();
 
   const calculateEarnings = (f: (booking: Booking) => boolean) =>
     pipe(filter<Booking, 'array'>(f), map(prop('price')), sum);
@@ -37,9 +37,9 @@ export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
   const projectedWeekly = calculateEarnings(isBookingAccepted)(weeklyBookings);
 
   return (
-    <div>
+    <div className="mx-4">
       <h3 className="mb-2 font-semibold">{t`Today`}</h3>
-      <div className="flex mb-4">
+      <div className="flex mb-8">
         <Statistic
           className="mr-8"
           title={t`Earned`}
@@ -65,8 +65,8 @@ export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
         />
       </div>
       <h3 className="mb-2 font-semibold">
-        {format(startOfWeek(week), 'MMM d')} -{' '}
-        {format(endOfWeek(week), 'MMM d')}
+        {format(startOfWeek(week), 'MMM d', { locale: dateFnsLocale })} -{' '}
+        {format(endOfWeek(week), 'MMM d', { locale: dateFnsLocale })}
       </h3>
       <div className="flex">
         <Statistic

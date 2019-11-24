@@ -58,7 +58,7 @@ export function EarningsChart({ weeklyBookings, week }: Props) {
             type="monotone"
             dataKey="completed"
             stackId="1"
-            fill={green[6]}
+            fill={green[5]}
             stroke="none"
           />
           <Area
