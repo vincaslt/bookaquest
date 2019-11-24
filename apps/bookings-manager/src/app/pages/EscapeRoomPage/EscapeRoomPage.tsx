@@ -1,63 +1,16 @@
 import { RouteComponentProps } from '@reach/router';
-import {
-  Button,
-  Col,
-  Icon,
-  List,
-  notification,
-  PageHeader,
-  Radio,
-  Rate,
-  Row,
-  Switch,
-  Spin
-} from 'antd';
-import AspectRatio from 'react-aspect-ratio';
-import { startOfWeek } from 'date-fns';
+import { Button, Col, PageHeader, Row } from 'antd';
+import { addWeeks, startOfWeek, endOfWeek } from 'date-fns';
 import * as React from 'react';
-import * as Yup from 'yup';
-import {
-  UpdateEscapeRoom,
-  PricingType,
-  EscapeRoom,
-  Booking
-} from '@bookaquest/interfaces';
-import { useI18n, asOption } from '@bookaquest/utilities';
-import { WorkHours } from '@bookaquest/components';
-import { environment } from '../../../environments/environment';
+import { EscapeRoom, Booking } from '@bookaquest/interfaces';
+import { useI18n } from '@bookaquest/utilities';
+import dec from 'ramda/es/dec';
+import inc from 'ramda/es/inc';
 import * as api from '../../api/application';
-import { DetailsItem } from '../../shared/components/DetailsList/DetailsItem';
-import { DetailsList } from '../../shared/components/DetailsList/DetailsList';
-import { EditableText } from '../../shared/components/EditableText';
 import { Link } from '../../shared/components/Link';
-import { SectionTitle } from '../../shared/components/SectionTitle';
 import { PageContent } from '../../shared/layout/PageContent';
-import { Section } from '../../shared/layout/Section';
-import { ParticipantsEditableText } from './ParticipantsEditableText';
-import EarningsChart from './EarningsChart';
-
-const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
-  name: Yup.string(),
-  description: Yup.string(),
-  location: Yup.string(),
-  difficulty: Yup.number()
-    .min(1)
-    .max(5),
-  interval: Yup.number().min(10),
-  participants: Yup.array()
-    .notRequired()
-    .of(Yup.number())
-    .test(
-      'rangeTest',
-      'Invalid range',
-      (range: [number, number]) => !range || range[0] <= range[1]
-    ),
-  price: Yup.number().positive(),
-  pricingType: Yup.string().oneOf(Object.values(PricingType)) as Yup.Schema<
-    PricingType
-  >,
-  paymentEnabled: Yup.boolean()
-});
+import { EscapeRoomEditSection } from './EscapeRoomEditSection';
+import { EarningsSection } from './EarningsSection/EarningsSection';
 
 interface UrlParams {
   escapeRoomId: string;
@@ -68,57 +21,31 @@ export function EscapeRoomPage({
 }: RouteComponentProps<UrlParams>) {
   const { t, dateFnsLocale } = useI18n();
   const [escapeRoom, setEscapeRoom] = React.useState<EscapeRoom>();
-  const [bookings, setBookings] = React.useState<Booking[]>();
+  const [weeklyBookings, setWeeklyBookings] = React.useState<Booking[]>();
+  const [weekOffset, setWeekOffset] = React.useState(0);
 
   React.useEffect(() => {
     if (escapeRoomId) {
-      Promise.all([
-        api.getEscapeRoom(escapeRoomId),
-        api.getEscapeRoomBookings(
-          escapeRoomId,
-          startOfWeek(new Date(), { locale: dateFnsLocale })
-        )
-      ]).then(([room, roomBookings]) => {
-        setEscapeRoom(room);
-        setBookings(roomBookings);
-      });
+      api.getEscapeRoom(escapeRoomId).then(setEscapeRoom);
     }
-  }, [dateFnsLocale, escapeRoomId]);
+  }, [escapeRoomId]);
 
-  const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
+  React.useEffect(() => {
+    const week = addWeeks(new Date(), weekOffset);
+
     if (escapeRoomId) {
-      try {
-        const dto = await validationSchema.validate(values);
-        const updatedRoom = await api.updateEscapeRoom(escapeRoomId, dto);
-        await notification.success({
-          message: t`Escape room info has been updated`
-        });
-        setEscapeRoom(updatedRoom);
-      } catch (err) {
-        notification.error({
-          message: err.message || t`Update failed, please try again`
-        });
-      }
+      api
+        .getEscapeRoomBookings(
+          escapeRoomId,
+          startOfWeek(week, { locale: dateFnsLocale }),
+          endOfWeek(week, { locale: dateFnsLocale })
+        )
+        .then(setWeeklyBookings);
     }
-  };
+  }, [weekOffset, escapeRoomId, dateFnsLocale]);
 
-  const updateName = (name: string) => updateEscapeRoom({ name });
-  const updateInterval = (interval: number) => updateEscapeRoom({ interval });
-  const updatePrice = (price: number) => updateEscapeRoom({ price });
-  const updateLocation = (location: string) => updateEscapeRoom({ location });
-  const updateDescription = (description: string) =>
-    updateEscapeRoom({ description });
-  const updatePricingType = (pricingType: PricingType) =>
-    updateEscapeRoom({ pricingType });
-  const updatePaymentEnabled = (paymentEnabled: boolean) =>
-    updateEscapeRoom({ paymentEnabled });
-  const updateParticipants = (participants: [number?, number?]) =>
-    updateEscapeRoom({ participants } as UpdateEscapeRoom);
-  const updateDifficulty = (difficulty: number) => {
-    if (!escapeRoom || difficulty !== escapeRoom.difficulty) {
-      updateEscapeRoom({ difficulty });
-    }
-  };
+  const nextWeek = () => setWeekOffset(inc);
+  const prevWeek = () => setWeekOffset(dec);
 
   // TODO: proper URL for booking page
   // TODO: correct inputs for difficulty and interval
@@ -146,107 +73,19 @@ export function EscapeRoomPage({
       {escapeRoom && (
         <Row gutter={16}>
           <Col span={16}>
-            <Section>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <DetailsList title={t`Details`}>
-                    <DetailsItem label={t`Name:`}>
-                      <EditableText onChange={updateName}>
-                        {escapeRoom.name}
-                      </EditableText>
-                    </DetailsItem>
-                    <DetailsItem label={t`Difficulty:`}>
-                      <Rate
-                        allowClear={false}
-                        onChange={updateDifficulty}
-                        value={escapeRoom.difficulty}
-                        character={<Icon type="lock" theme="filled" />}
-                      />
-                    </DetailsItem>
-                    <DetailsItem label={t`Interval:`}>
-                      <EditableText
-                        onChange={val => updateInterval(+val)}
-                        inputProps={{ type: 'number' }}
-                      >
-                        {escapeRoom.interval}
-                      </EditableText>
-                    </DetailsItem>
-                    <DetailsItem label={t`Participants:`}>
-                      <ParticipantsEditableText
-                        participants={escapeRoom.participants}
-                        onChange={updateParticipants}
-                      />
-                    </DetailsItem>
-                    <DetailsItem label={t`Location:`}>
-                      <EditableText onChange={updateLocation}>
-                        {escapeRoom.location}
-                      </EditableText>
-                    </DetailsItem>
-                    <DetailsItem
-                      className="items-start pt-2"
-                      label={t`Description:`}
-                    >
-                      <EditableText onChange={updateDescription} multiline>
-                        {escapeRoom.description}
-                      </EditableText>
-                    </DetailsItem>
-                  </DetailsList>
-                  <DetailsList className="mt-8" title={t`Pricing`}>
-                    <DetailsItem label={t`Price:`}>
-                      <EditableText
-                        onChange={val => updatePrice(+val)}
-                        inputProps={{ type: 'number' }}
-                      >
-                        {escapeRoom.price}
-                      </EditableText>
-                    </DetailsItem>
-                    <DetailsItem label={t`Pricing type:`}>
-                      <Radio.Group
-                        disabled={!escapeRoom.price}
-                        name="pricingType"
-                        value={escapeRoom.pricingType}
-                        onChange={asOption(updatePricingType)}
-                      >
-                        <Radio.Button
-                          value={PricingType.FLAT}
-                        >{t`Flat`}</Radio.Button>
-                        <Radio.Button
-                          value={PricingType.PER_PERSON}
-                        >{t`Per-person`}</Radio.Button>
-                      </Radio.Group>
-                    </DetailsItem>
-                    {environment.paymentEnabled && (
-                      <DetailsItem label={t`Payment enabled:`}>
-                        <Switch
-                          onChange={updatePaymentEnabled}
-                          checked={escapeRoom.paymentEnabled}
-                        />
-                      </DetailsItem>
-                    )}
-                  </DetailsList>
-                </Col>
-                <Col span={12}>
-                  <div className="mb-8">
-                    <SectionTitle>{t`Images`}</SectionTitle>
-                    <AspectRatio ratio="532/320">
-                      <img
-                        className="object-cover"
-                        src={escapeRoom.images[0]}
-                        alt={`${escapeRoom.name} cover`}
-                      />
-                    </AspectRatio>
-                  </div>
-                  <SectionTitle>{t`Business hours`}</SectionTitle>
-                  <WorkHours businessHours={escapeRoom.businessHours} />
-                </Col>
-              </Row>
-            </Section>
+            <EscapeRoomEditSection
+              escapeRoom={escapeRoom}
+              setEscapeRoom={setEscapeRoom}
+            />
           </Col>
           <Col span={8}>
-            <Section title={t`Earnings`}>
-              {!bookings ? <Spin /> : <EarningsChart bookings={bookings} />}
-            </Section>
-            <Section title={t`Bookings`}>
+            <EarningsSection
+              weeklyBookings={weeklyBookings}
+              week={addWeeks(new Date(), weekOffset)}
+              onNextWeek={nextWeek}
+              onPrevWeek={prevWeek}
+            />
+            {/* <Section title={t`Bookings`}>
               <List
                 loading={!bookings}
                 itemLayout="horizontal"
@@ -260,7 +99,7 @@ export function EscapeRoomPage({
                   </List.Item>
                 )}
               />
-            </Section>
+            </Section> */}
           </Col>
         </Row>
       )}

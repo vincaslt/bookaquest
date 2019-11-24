@@ -8,7 +8,7 @@ interface Props {
 export function SectionTitle({ children, extra }: Props) {
   return (
     <div className="flex justify-between">
-      <div className="ant-descriptions-title">{children}</div>
+      <h2 className="ant-descriptions-title">{children}</h2>
       <div>{extra}</div>
     </div>
   );

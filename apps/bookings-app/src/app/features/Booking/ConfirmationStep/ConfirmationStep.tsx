@@ -99,7 +99,7 @@ export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
                   ? escapeRoom.price
                   : escapeRoom.price * bookingInfo.participants
               }
-              suffix="$"
+              suffix="$" // TODO: dynamic currency
             />
           </div>
           {!escapeRoom.paymentEnabled && (
