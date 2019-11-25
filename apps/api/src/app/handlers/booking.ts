@@ -32,6 +32,9 @@ import { requireEscapeRoom } from '../helpers/escapeRoom';
 import { getQuery } from '../lib/utils/getQuery';
 import { requireBooking } from '../helpers/booking';
 
+const MAX_DAYS_SELECT = 35;
+const PAGINATION_LIMIT = 500;
+
 const getBooking: AugmentedRequestHandler = async (req, res) => {
   const { bookingId } = getParams(req, ['bookingId']);
 
@@ -47,7 +50,12 @@ const getBooking: AugmentedRequestHandler = async (req, res) => {
 const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
-  const { from, to } = getQuery(req, undefined, ['from', 'to']);
+  const { from, to, offset, take } = getQuery(req, undefined, [
+    'from',
+    'to',
+    'offset',
+    'take'
+  ]);
 
   const organization = await requireEscapeRoom(escapeRoomId);
   await requireBelongsToOrganization(organization.id, userId);
@@ -55,12 +63,31 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
   const fromDate = from ? new Date(from) : new Date();
   const toDate = to && new Date(to);
 
-  const bookings = await BookingModel.find({
+  if (
+    !take &&
+    toDate &&
+    differenceInCalendarDays(toDate, fromDate) > MAX_DAYS_SELECT
+  ) {
+    return send(res, STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
+  }
+
+  const skip = offset && !isNaN(+offset) ? +offset : 0;
+  const limit = take && !isNaN(+take) ? +take : PAGINATION_LIMIT;
+
+  const query = {
     escapeRoom: escapeRoomId,
     endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate }
-  });
+  };
+  const [bookings, total] = await Promise.all([
+    BookingModel.find(query, null, {
+      sort: { endDate: -1 },
+      skip,
+      limit
+    }),
+    BookingModel.count(query)
+  ]);
 
-  return send(res, STATUS_SUCCESS.OK, bookings);
+  return send(res, STATUS_SUCCESS.OK, { bookings, total });
 };
 
 const createBooking: AugmentedRequestHandler = async (req, res) => {
@@ -155,7 +182,7 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
   const fromDay = startOfDay(new Date(from));
   const toDay = startOfDay(new Date(to));
 
-  if (differenceInCalendarDays(toDay, fromDay) > 35) {
+  if (differenceInCalendarDays(toDay, fromDay) > MAX_DAYS_SELECT) {
     return send(res, STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
   }
 

@@ -43,7 +43,7 @@ export class Booking {
   @prop()
   comment?: string;
 
-  @prop({ required: true, ref: 'EscapeRoom' })
+  @prop({ required: true, ref: 'EscapeRoom', index: true })
   escapeRoom: Ref<EscapeRoom>;
 
   @prop({ required: true })

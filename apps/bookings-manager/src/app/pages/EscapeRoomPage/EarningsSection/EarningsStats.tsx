@@ -1,20 +1,19 @@
-import * as React from 'react';
-import { Statistic } from 'antd';
-import { Booking } from '@bookaquest/interfaces';
 import { green, blue, orange } from '@ant-design/colors';
+import { format, startOfWeek, endOfWeek } from 'date-fns';
+import { Statistic } from 'antd';
+import * as React from 'react';
+import { Booking } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
-import {
-  isBookingCompleted,
-  isBookingAccepted,
-  isBookingPending
-} from './utils';
-import { format, startOfWeek } from 'date-fns';
 import pipe from 'ramda/es/pipe';
 import prop from 'ramda/es/prop';
 import sum from 'ramda/es/sum';
 import map from 'ramda/es/map';
 import filter from 'ramda/es/filter';
-import { endOfWeek } from 'date-fns/esm';
+import {
+  isBookingCompleted,
+  isBookingAccepted,
+  isBookingPending
+} from './utils';
 
 interface Props {
   todaysBookings: Booking[];
@@ -36,12 +35,15 @@ export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
   const pendingWeekly = calculateEarnings(isBookingPending)(weeklyBookings);
   const projectedWeekly = calculateEarnings(isBookingAccepted)(weeklyBookings);
 
+  const start = format(startOfWeek(week), 'MMM d', { locale: dateFnsLocale });
+  const end = format(endOfWeek(week), 'MMM d', { locale: dateFnsLocale });
+
   return (
-    <div className="mx-4">
+    <div className="pl-4 w-full">
       <h3 className="mb-2 font-semibold">{t`Today`}</h3>
-      <div className="flex mb-8">
+      <div className="flex justify-between mb-8">
         <Statistic
-          className="mr-8"
+          className="mr-4"
           title={t`Earned`}
           value={earningsToday}
           precision={2}
@@ -49,14 +51,15 @@ export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
           suffix="$"
         />
         <Statistic
+          className="mr-4"
           title={t`Projected`}
-          className="mr-8"
           value={projectedToday}
           precision={2}
           valueStyle={{ color: blue[6] }}
           suffix="$"
         />
         <Statistic
+          className="mr-4"
           title={t`Pending`}
           value={pendingToday}
           precision={2}
@@ -64,11 +67,8 @@ export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
           suffix="$"
         />
       </div>
-      <h3 className="mb-2 font-semibold">
-        {format(startOfWeek(week), 'MMM d', { locale: dateFnsLocale })} -{' '}
-        {format(endOfWeek(week), 'MMM d', { locale: dateFnsLocale })}
-      </h3>
-      <div className="flex">
+      <h3 className="mb-2 font-semibold">{`${start} - ${end}`}</h3>
+      <div className="flex justify-between">
         <Statistic
           className="mr-4"
           title={t`Earned`}
@@ -78,14 +78,15 @@ export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
           suffix="$"
         />
         <Statistic
+          className="mr-4"
           title={t`Projected`}
-          className="mr-8"
           value={projectedWeekly}
           precision={2}
           valueStyle={{ color: blue[6] }}
           suffix="$"
         />
         <Statistic
+          className="mr-4"
           title={t`Pending`}
           value={pendingWeekly}
           precision={2}

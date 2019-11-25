@@ -109,13 +109,28 @@ export const getOrganizationBookings = withAuth(
 );
 
 export const getEscapeRoomBookings = withAuth(
-  headers => (escapeRoomId: string, from?: Date, to?: Date) =>
+  headers => (
+    escapeRoomId: string,
+    params: {
+      from?: Date;
+      to?: Date;
+      offset?: number;
+      take?: number;
+    }
+  ) =>
     api
-      .get<BookingDTO[]>(`/escape-room/${escapeRoomId}/booking`, {
-        headers,
-        params: { from, to }
-      })
-      .then(res => res.data.map(fromBookingDTO))
+      .get<{ bookings: BookingDTO[]; total: number }>(
+        `/escape-room/${escapeRoomId}/booking`,
+        {
+          headers,
+          params
+        }
+      )
+      .then(res => res.data)
+      .then(({ bookings, total }) => ({
+        bookings: bookings.map(fromBookingDTO),
+        total
+      }))
 );
 
 export const getOrganizationMembers = withAuth(
