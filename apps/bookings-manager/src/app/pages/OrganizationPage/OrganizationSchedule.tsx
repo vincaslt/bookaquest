@@ -109,7 +109,11 @@ export function OrganizationSchedule({
         {({ values, setFieldValue }) => (
           <Form layout="vertical">
             <FormItem name="timezone" hasFeedback label={t`Timezone`}>
-              <AutoComplete name="timezone" dataSource={timezoneOptions} />
+              <AutoComplete
+                name="timezone"
+                dataSource={timezoneOptions}
+                filterOption
+              />
             </FormItem>
             <BusinessHoursInput
               value={values.businessHours}

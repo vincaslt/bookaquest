@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { Section } from '../../shared/layout/Section';
 import { List, Pagination } from 'antd';
+import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
-import * as api from '../../api/application';
 import { Booking } from '@bookaquest/interfaces';
+import { Section } from '../../shared/layout/Section';
+import * as api from '../../api/application';
 
-const BOOKINGS_PER_PAGE = 3;
+const BOOKINGS_PER_PAGE = 10;
 
 interface Props {
   escapeRoomId: string;
@@ -27,10 +27,10 @@ export function BookingsSection({ escapeRoomId }: Props) {
           offset: (page - 1) * BOOKINGS_PER_PAGE,
           take: BOOKINGS_PER_PAGE
         })
-        .then(({ bookings, total }) => {
+        .then(result => {
           if (!isCancelled) {
-            setTotal(total);
-            setBookings(bookings);
+            setTotal(result.total);
+            setBookings(result.bookings);
           }
         });
 
@@ -55,7 +55,7 @@ export function BookingsSection({ escapeRoomId }: Props) {
           </List.Item>
         )}
       />
-      {total && (
+      {total > BOOKINGS_PER_PAGE && (
         <Pagination
           defaultCurrent={page}
           total={total}

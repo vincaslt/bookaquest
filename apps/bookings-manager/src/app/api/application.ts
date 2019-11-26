@@ -161,3 +161,7 @@ export const getOrganization = (organizationId: string) =>
     .get<OrganizationDTO>(`/organization/${organizationId}`)
     .then(res => res.data)
     .then(fromOrganizationDTO);
+
+export const deleteEscapeRoom = withAuth(headers => (escapeRoomId: string) =>
+  api.delete(`/escape-room/${escapeRoomId}`, { headers })
+);

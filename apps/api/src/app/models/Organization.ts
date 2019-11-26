@@ -1,6 +1,5 @@
-import { prop, Ref, arrayProp, getModelForClass } from '@typegoose/typegoose';
+import { prop, arrayProp, getModelForClass } from '@typegoose/typegoose';
 import { BusinessHours } from './BusinessHours';
-import { EscapeRoom } from './EscapeRoom';
 
 export class PaymentDetails {
   @prop({ required: true, select: false })
@@ -37,9 +36,6 @@ export class Organization {
 
   @arrayProp({ items: BusinessHours, _id: false })
   businessHours?: BusinessHours[];
-
-  @arrayProp({ ref: 'EscapeRoom', index: true })
-  escapeRooms: Ref<EscapeRoom>[];
 }
 
 export const OrganizationModel = getModelForClass(Organization, {

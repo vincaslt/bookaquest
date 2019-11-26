@@ -1,22 +1,35 @@
+import {
+  Row,
+  Col,
+  Rate,
+  Icon,
+  Radio,
+  Switch,
+  notification,
+  Spin,
+  Button,
+  Popconfirm
+} from 'antd';
+import AspectRatio from 'react-aspect-ratio';
+import { navigate } from '@reach/router';
 import * as React from 'react';
-import { Section } from '../../shared/layout/Section';
-import { Row, Col, Rate, Icon, Radio, Switch, notification, Spin } from 'antd';
-import { DetailsList } from '../../shared/components/DetailsList/DetailsList';
-import { DetailsItem } from '../../shared/components/DetailsList/DetailsItem';
-import { EditableText } from '../../shared/components/EditableText';
-import { ParticipantsEditableText } from './ParticipantsEditableText';
-import { asOption, useI18n } from '@bookaquest/utilities';
+import { WorkHours } from '@bookaquest/components';
+import * as Yup from 'yup';
 import {
   PricingType,
   EscapeRoom,
   UpdateEscapeRoom
 } from '@bookaquest/interfaces';
-import { environment } from 'apps/bookings-manager/src/environments/environment.prod';
+import { asOption, useI18n, useLoading } from '@bookaquest/utilities';
+import { environment } from '../../../environments/environment.prod';
+import { Section } from '../../shared/layout/Section';
+import { DetailsList } from '../../shared/components/DetailsList/DetailsList';
+import { DetailsItem } from '../../shared/components/DetailsList/DetailsItem';
+import { EditableText } from '../../shared/components/EditableText';
 import { SectionTitle } from '../../shared/components/SectionTitle';
-import { WorkHours } from '@bookaquest/components';
-import * as Yup from 'yup';
 import * as api from '../../api/application';
-import AspectRatio from 'react-aspect-ratio';
+import { PrivateRoutes } from '../../constants/routes';
+import { ParticipantsEditableText } from './ParticipantsEditableText';
 
 const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
   name: Yup.string(),
@@ -48,16 +61,33 @@ interface Props {
 
 export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
   const { t } = useI18n();
+  const [loading, withLoading] = useLoading();
+
+  const deleteEscapeRoom = async () => {
+    if (escapeRoom) {
+      try {
+        await api.deleteEscapeRoom(escapeRoom._id);
+        navigate(PrivateRoutes.EscapeRooms);
+        notification.success({
+          message: t`Escape room has been deleted`
+        });
+      } catch (err) {
+        notification.error({
+          message: err.message || t`Failed to delete, please try again`
+        });
+      }
+    }
+  };
 
   const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
     if (escapeRoom) {
       try {
         const dto = await validationSchema.validate(values);
         const updatedRoom = await api.updateEscapeRoom(escapeRoom._id, dto);
-        await notification.success({
+        setEscapeRoom(updatedRoom);
+        notification.success({
           message: t`Escape room info has been updated`
         });
-        setEscapeRoom(updatedRoom);
       } catch (err) {
         notification.error({
           message: err.message || t`Update failed, please try again`
@@ -172,8 +202,23 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
               />
             </AspectRatio>
           </div>
-          <SectionTitle>{t`Business hours`}</SectionTitle>
-          <WorkHours businessHours={escapeRoom.businessHours} />
+          <div className="mb-8">
+            <SectionTitle>{t`Business hours`}</SectionTitle>
+            <WorkHours businessHours={escapeRoom.businessHours} />
+          </div>
+          <div className="flex justify-end">
+            <Popconfirm
+              title={t`Are you sure?`}
+              onConfirm={() => withLoading(deleteEscapeRoom())}
+              okText={t`Yes`}
+              cancelText={t`No`}
+            >
+              <Button
+                loading={loading}
+                type="danger"
+              >{t`Delete escape room`}</Button>
+            </Popconfirm>
+          </div>
         </Col>
       </Row>
     </Section>

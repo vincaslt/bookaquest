@@ -59,11 +59,14 @@ export class EscapeRoom {
   interval: number; // in minutes
 
   // TODO: 1-5 validation
-  @prop()
+  @prop({ required: true })
   difficulty: number;
 
   @prop({ default: false })
   paymentEnabled: boolean;
+
+  @prop({ default: false, select: false, index: true })
+  deleted: boolean;
 }
 
 export const EscapeRoomModel = getModelForClass(EscapeRoom, {

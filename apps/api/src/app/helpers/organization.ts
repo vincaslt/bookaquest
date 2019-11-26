@@ -4,6 +4,23 @@ import { OrganizationMembershipModel } from '../models/OrganizationMembership';
 import { STATUS_ERROR } from '../lib/constants';
 import { OrganizationModel, Organization } from '../models/Organization';
 
+export async function requireOwnerOfOrganization(
+  organization: string | Ref<Organization>,
+  user: string
+) {
+  const membershipExists = OrganizationMembershipModel.exists({
+    organization,
+    user,
+    isOwner: true
+  });
+  if (!membershipExists) {
+    throw createError(
+      STATUS_ERROR.FORBIDDEN,
+      'Not the owner of the organization'
+    );
+  }
+}
+
 export async function requireBelongsToOrganization(
   organization: string | Ref<Organization>,
   user: string

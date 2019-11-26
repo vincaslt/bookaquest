@@ -1,5 +1,5 @@
 import { send } from 'micro';
-import { get, post, put, AugmentedRequestHandler } from 'microrouter';
+import { get, post, put, del, AugmentedRequestHandler } from 'microrouter';
 import { prop, uniqBy } from 'ramda';
 import { CreateEscapeRoomDTO } from '../dto/CreateEscapeRoomDTO';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
@@ -9,7 +9,7 @@ import { EscapeRoomModel, EscapeRoomInitFields } from '../models/EscapeRoom';
 import { OrganizationModel } from '../models/Organization';
 import {
   requireBelongsToOrganization,
-  requireOrganization
+  requireOwnerOfOrganization
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getBody } from '../lib/utils/getBody';
@@ -21,7 +21,6 @@ const createEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   const { organizationId } = getParams(req, ['organizationId']);
   const dto = await getBody(req, CreateEscapeRoomDTO);
 
-  const organization = await requireOrganization(organizationId);
   await requireBelongsToOrganization(organizationId, userId);
 
   const hasDuplicateWeekday =
@@ -42,8 +41,6 @@ const createEscapeRoom: AugmentedRequestHandler = async (req, res) => {
     organization: organizationId
   };
   const escapeRoom = await EscapeRoomModel.create(escapeRoomFields);
-  organization.escapeRooms.push(escapeRoom.id);
-  await organization.save();
 
   return send(res, STATUS_SUCCESS.OK, escapeRoom);
 };
@@ -56,8 +53,8 @@ const updateEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   const escapeRoom = await requireEscapeRoom(escapeRoomId);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
-  const updatedEscapeRoom = await EscapeRoomModel.findByIdAndUpdate(
-    escapeRoomId,
+  const updatedEscapeRoom = await EscapeRoomModel.findOneAndUpdate(
+    { escapeRoom: escapeRoomId, deleted: false },
     dto,
     {
       runValidators: true,
@@ -81,20 +78,37 @@ const getEscapeRoom: AugmentedRequestHandler = async (req, res) => {
 const listEscapeRooms: AugmentedRequestHandler = async (req, res) => {
   const { organizationId } = getParams(req, ['organizationId']);
 
-  const organization = await OrganizationModel.findById(
-    organizationId
-  ).populate('escapeRooms');
+  const organization = await OrganizationModel.findById(organizationId);
 
   if (!organization) {
     return send(res, STATUS_ERROR.NOT_FOUND);
   }
 
-  return send(res, STATUS_SUCCESS.OK, organization.escapeRooms);
+  const escapeRooms = await EscapeRoomModel.find({
+    organization: organization.id,
+    deleted: false
+  });
+
+  return send(res, STATUS_SUCCESS.OK, escapeRooms);
+};
+
+const deleteEscapeRoom: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+  const { escapeRoomId } = getParams(req, ['escapeRoomId']);
+
+  const escapeRoom = await requireEscapeRoom(escapeRoomId);
+  await requireOwnerOfOrganization(escapeRoom.organization, userId);
+
+  escapeRoom.deleted = true;
+  await escapeRoom.save();
+
+  return send(res, STATUS_SUCCESS.OK);
 };
 
 export const escapeRoomHandlers = [
   get('/organization/:organizationId/escape-room', listEscapeRooms), // TODO mark as public? No auth required
   post('/organization/:organizationId/escape-room', createEscapeRoom),
   get('/escape-room/:escapeRoomId', getEscapeRoom), // TODO mark as public?
-  put('/escape-room/:escapeRoomId', updateEscapeRoom)
+  put('/escape-room/:escapeRoomId', updateEscapeRoom),
+  del('/escape-room/:escapeRoomId', deleteEscapeRoom)
 ];

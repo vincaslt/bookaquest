@@ -6,7 +6,10 @@ import { EscapeRoomModel, EscapeRoom } from '../models/EscapeRoom';
 export async function requireEscapeRoom(
   escapeRoomId: string | Ref<EscapeRoom>
 ) {
-  const escapeRoom = await EscapeRoomModel.findById(escapeRoomId);
+  const escapeRoom = await EscapeRoomModel.findOne({
+    _id: escapeRoomId,
+    deleted: false
+  });
   if (!escapeRoom) {
     throw createError(STATUS_ERROR.NOT_FOUND, 'Escape room not found');
   }
