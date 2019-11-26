@@ -10,7 +10,7 @@ import { Section } from '../../shared/layout/Section';
 import { environment } from '../../../environments/environment';
 import { CreateOrganization } from './CreateOrganization/CreateOrganization';
 import { OrganizationDetails } from './OrganizationDetails';
-import { OrganizationMembers } from './OrganizationMembers';
+import { OrganizationMembers } from './OrganizationMembers/OrganizationMembers';
 import { OrganizationSchedule } from './OrganizationSchedule';
 import { Payments } from './Payments/Payments';
 
@@ -53,9 +53,7 @@ export function OrganizationPage(props: RouteComponentProps) {
               </Section>
             </Col>
             <Col span={8}>
-              <Section>
-                <OrganizationMembers organizationId={membership.organization} />
-              </Section>
+              <OrganizationMembers organizationId={membership.organization} />
             </Col>
             {environment.paymentEnabled && (
               <Col span={8}>

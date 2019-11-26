@@ -38,21 +38,19 @@ export function PaymentDetailsForm({ organizationId, onUpdateDone }: Props) {
       initialValues={initialValues}
       onSubmit={handleSubmit}
     >
-      {() => (
-        <Form labelCol={{ span: 6 }} wrapperCol={{ span: 12 }}>
-          <FormItem name="paymentClientKey" hasFeedback label={t`Client key`}>
-            <Input name="paymentClientKey" />
-          </FormItem>
-          <FormItem name="paymentSecretKey" hasFeedback label={t`Secret key`}>
-            <Input name="paymentSecretKey" />
-          </FormItem>
-          <Row>
-            <Col push={6}>
-              <SubmitButton>{t`Save`}</SubmitButton>
-            </Col>
-          </Row>
-        </Form>
-      )}
+      <Form labelCol={{ span: 6 }} wrapperCol={{ span: 12 }}>
+        <FormItem name="paymentClientKey" hasFeedback label={t`Client key`}>
+          <Input name="paymentClientKey" />
+        </FormItem>
+        <FormItem name="paymentSecretKey" hasFeedback label={t`Secret key`}>
+          <Input name="paymentSecretKey" />
+        </FormItem>
+        <Row>
+          <Col push={6}>
+            <SubmitButton>{t`Save`}</SubmitButton>
+          </Col>
+        </Row>
+      </Form>
     </Formik>
   );
 }

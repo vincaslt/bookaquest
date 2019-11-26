@@ -1,4 +1,7 @@
-import { OrganizationMemberDTO } from '@bookaquest/interfaces';
+import {
+  OrganizationMemberDTO,
+  InviteOrganizationMemberDTO
+} from '@bookaquest/interfaces';
 import { UserInfo, fromUserInfoDTO } from './user';
 
 export type OrganizationMember = Omit<
@@ -20,3 +23,5 @@ export function fromOrganizationMemberDTO(
     user: fromUserInfoDTO(dto.user)
   };
 }
+
+export type InviteOrganizationMember = InviteOrganizationMemberDTO;

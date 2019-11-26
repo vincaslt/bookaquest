@@ -7,3 +7,7 @@ export interface OrganizationMemberDTO {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface InviteOrganizationMemberDTO {
+  email: string;
+}
