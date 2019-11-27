@@ -49,7 +49,7 @@ export class EscapeRoom {
   @arrayProp({ required: true, items: BusinessHours, _id: false })
   businessHours: BusinessHours[];
 
-  @prop({ ref: 'Organization', required: true })
+  @prop({ ref: 'Organization', required: true, index: true })
   organization: Ref<Organization>;
 
   @prop()

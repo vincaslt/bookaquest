@@ -14,6 +14,7 @@ import { bookingHandlers } from './handlers/booking';
 import { escapeRoomHandlers } from './handlers/escapeRoom';
 import { organizationHandlers } from './handlers/organization';
 import { userHandlers } from './handlers/user';
+import { withErrorHandling } from './lib/decorators/withErrorHandling';
 
 // TODO: loging (Sentry)
 async function init() {
@@ -32,12 +33,14 @@ async function init() {
 
   const port = process.env.PORT || 3001;
   const handler = withCors(
-    withRouter(
-      userHandlers,
-      authHandlers,
-      bookingHandlers,
-      escapeRoomHandlers,
-      organizationHandlers
+    withErrorHandling(
+      withRouter(
+        userHandlers,
+        authHandlers,
+        bookingHandlers,
+        escapeRoomHandlers,
+        organizationHandlers
+      )
     )
   );
 

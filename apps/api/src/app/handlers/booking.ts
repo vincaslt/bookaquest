@@ -8,11 +8,11 @@ import {
   startOfDay,
   getDay
 } from 'date-fns';
-import { send } from 'micro';
+import { createError } from 'micro';
 import { get, post, put, AugmentedRequestHandler } from 'microrouter';
 import { times } from 'ramda';
 import * as Stripe from 'stripe';
-import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
+import { STATUS_ERROR } from '../lib/constants';
 import { CreateBookingDTO } from '../dto/CreateBookingDTO';
 import { isBetween } from '../helpers/number';
 import {
@@ -41,10 +41,10 @@ const getBooking: AugmentedRequestHandler = async (req, res) => {
   const booking = await BookingModel.findById(bookingId).populate('escapeRoom');
 
   if (!booking) {
-    return send(res, STATUS_ERROR.NOT_FOUND);
+    throw createError(STATUS_ERROR.NOT_FOUND, 'Booking not found');
   }
 
-  return send(res, STATUS_SUCCESS.OK, booking);
+  return booking;
 };
 
 const listBookings: AugmentedRequestHandler = async (req, res) => {
@@ -68,7 +68,7 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
     toDate &&
     differenceInCalendarDays(toDate, fromDate) > MAX_DAYS_SELECT
   ) {
-    return send(res, STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
+    throw createError(STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
   }
 
   const skip = offset && !isNaN(+offset) ? +offset : 0;
@@ -87,7 +87,7 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
     BookingModel.count(query)
   ]);
 
-  return send(res, STATUS_SUCCESS.OK, { bookings, total });
+  return { bookings, total };
 };
 
 const createBooking: AugmentedRequestHandler = async (req, res) => {
@@ -106,8 +106,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
   // TODO: validate if timeslot is within business hours
   // TODO: validate if starts at timeslot start
   if (invalidInterval || invalidParticipants) {
-    return send(
-      res,
+    throw createError(
       STATUS_ERROR.BAD_REQUEST,
       'Booking has invalid interval or participants'
     );
@@ -123,8 +122,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
   });
 
   if (overlap) {
-    return send(
-      res,
+    throw createError(
       STATUS_ERROR.BAD_REQUEST,
       'A booking already exists at this time'
     );
@@ -144,14 +142,13 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
   if (escapeRoom.paymentEnabled) {
     if (!dto.paymentToken) {
-      return send(res, STATUS_ERROR.BAD_REQUEST, 'Missing payment token');
+      throw createError(STATUS_ERROR.BAD_REQUEST, 'Missing payment token');
     }
 
     const organization = await requireOrganization(escapeRoom.organization);
 
     if (!organization.paymentDetails) {
-      return send(
-        res,
+      throw createError(
         STATUS_ERROR.BAD_REQUEST,
         'Payments not enabled for this escape room'
       );
@@ -171,7 +168,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
   const booking = await BookingModel.create(bookingFields);
 
-  return send(res, STATUS_SUCCESS.OK, booking);
+  return booking;
 };
 
 const getAvailability: AugmentedRequestHandler = async (req, res) => {
@@ -183,7 +180,7 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
   const toDay = startOfDay(new Date(to));
 
   if (differenceInCalendarDays(toDay, fromDay) > MAX_DAYS_SELECT) {
-    return send(res, STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
+    throw createError(STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
   }
 
   const escapeRoom = await requireEscapeRoom(escapeRoomId);
@@ -232,7 +229,7 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
     return { date, availableTimeslots };
   }, differenceInCalendarDays(toDay, fromDay)).filter(Boolean);
 
-  return send(res, STATUS_SUCCESS.OK, availability);
+  return availability;
 };
 
 const rejectBooking: AugmentedRequestHandler = async (req, res) => {
@@ -244,8 +241,7 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
   if (booking.status !== BookingStatus.Pending) {
-    return send(
-      res,
+    throw createError(
       STATUS_ERROR.BAD_REQUEST,
       'Only pending booking can be rejected'
     );
@@ -256,7 +252,7 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
 
   // TODO: send email
 
-  return send(res, STATUS_SUCCESS.OK, savedBooking);
+  return savedBooking;
 };
 
 const acceptBooking: AugmentedRequestHandler = async (req, res) => {
@@ -268,8 +264,7 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
   if (booking.status !== BookingStatus.Pending) {
-    return send(
-      res,
+    throw createError(
       STATUS_ERROR.BAD_REQUEST,
       'Only pending booking can be accepted'
     );
@@ -280,7 +275,7 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
 
   // TODO: send email
 
-  return send(res, STATUS_SUCCESS.OK, savedBooking);
+  return savedBooking;
 };
 
 const cancelBooking: AugmentedRequestHandler = async (req, res) => {
@@ -292,8 +287,7 @@ const cancelBooking: AugmentedRequestHandler = async (req, res) => {
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
   if (booking.status !== BookingStatus.Accepted) {
-    return send(
-      res,
+    throw createError(
       STATUS_ERROR.BAD_REQUEST,
       'Only accepted booking can be canceled'
     );
@@ -304,7 +298,7 @@ const cancelBooking: AugmentedRequestHandler = async (req, res) => {
 
   // TODO: send email
 
-  return send(res, STATUS_SUCCESS.OK, savedBooking);
+  return savedBooking;
 };
 
 export const bookingHandlers = [

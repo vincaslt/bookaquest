@@ -1,15 +1,15 @@
-import { send } from 'micro';
+import { createError } from 'micro';
 import { get, post, put, del, AugmentedRequestHandler } from 'microrouter';
 import { prop, uniqBy } from 'ramda';
 import { CreateEscapeRoomDTO } from '../dto/CreateEscapeRoomDTO';
-import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
+import { STATUS_ERROR } from '../lib/constants';
 import { isBetween } from '../helpers/number';
 import { UpdateEscapeRoomDTO } from '../dto/UpdateEscapeRoomDTO';
 import { EscapeRoomModel, EscapeRoomInitFields } from '../models/EscapeRoom';
-import { OrganizationModel } from '../models/Organization';
 import {
   requireBelongsToOrganization,
-  requireOwnerOfOrganization
+  requireOwnerOfOrganization,
+  requireOrganization
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getBody } from '../lib/utils/getBody';
@@ -33,7 +33,7 @@ const createEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   );
 
   if (hasDuplicateWeekday || badHoursFormat) {
-    return send(res, STATUS_ERROR.BAD_REQUEST, 'Invalid business hours');
+    throw createError(STATUS_ERROR.BAD_REQUEST, 'Invalid business hours');
   }
 
   const escapeRoomFields: EscapeRoomInitFields = {
@@ -42,7 +42,7 @@ const createEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   };
   const escapeRoom = await EscapeRoomModel.create(escapeRoomFields);
 
-  return send(res, STATUS_SUCCESS.OK, escapeRoom);
+  return escapeRoom;
 };
 
 const updateEscapeRoom: AugmentedRequestHandler = async (req, res) => {
@@ -63,33 +63,29 @@ const updateEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   );
 
   if (!updatedEscapeRoom) {
-    return send(res, STATUS_ERROR.NOT_FOUND, 'Escape room not found');
+    throw createError(STATUS_ERROR.NOT_FOUND, 'Escape room not found');
   }
 
-  return send(res, STATUS_SUCCESS.OK, updatedEscapeRoom);
+  return updatedEscapeRoom;
 };
 
 const getEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
   const escapeRoom = await requireEscapeRoom(escapeRoomId);
-  return send(res, STATUS_SUCCESS.OK, escapeRoom);
+  return escapeRoom;
 };
 
 const listEscapeRooms: AugmentedRequestHandler = async (req, res) => {
   const { organizationId } = getParams(req, ['organizationId']);
 
-  const organization = await OrganizationModel.findById(organizationId);
-
-  if (!organization) {
-    return send(res, STATUS_ERROR.NOT_FOUND);
-  }
+  const organization = await requireOrganization(organizationId);
 
   const escapeRooms = await EscapeRoomModel.find({
     organization: organization.id,
     deleted: false
   });
 
-  return send(res, STATUS_SUCCESS.OK, escapeRooms);
+  return escapeRooms;
 };
 
 const deleteEscapeRoom: AugmentedRequestHandler = async (req, res) => {
@@ -101,8 +97,6 @@ const deleteEscapeRoom: AugmentedRequestHandler = async (req, res) => {
 
   escapeRoom.deleted = true;
   await escapeRoom.save();
-
-  return send(res, STATUS_SUCCESS.OK);
 };
 
 export const escapeRoomHandlers = [

@@ -1,9 +1,10 @@
-import { send } from 'micro';
+import { createError } from 'micro';
 import { get, post, put, AugmentedRequestHandler } from 'microrouter';
 import { omit } from 'ramda';
 import { CreateOrganizationDTO } from '../dto/CreateOrganizationDTO';
-import { STATUS_SUCCESS, STATUS_ERROR } from '../lib/constants';
+import { STATUS_ERROR } from '../lib/constants';
 import { UpdateOrganizationDTO } from '../dto/UpdateOrganizationDTO';
+import { CreateOrganizationInvitationDTO } from '../dto/CreateOrganizationInvitationDTO';
 import {
   OrganizationModel,
   OrganizationInitFields
@@ -15,11 +16,18 @@ import {
 import { BookingModel } from '../models/Booking';
 import {
   requireBelongsToOrganization,
-  requireOrganization
+  requireOwnerOfOrganization
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
 import { getBody } from '../lib/utils/getBody';
+import { EscapeRoomModel } from '../models/EscapeRoom';
+import {
+  OrganizationInvitationModel,
+  OrganizationInvitationInitFields,
+  InvitationStatus
+} from '../models/OrganizationInvitation';
+import { UserModel } from '../models/User';
 
 const createOrganization: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
@@ -31,7 +39,10 @@ const createOrganization: AugmentedRequestHandler = async (req, res) => {
 
   if (belongsToOtherOrganization) {
     // Temporarily disallow multiple memberships
-    return send(res, STATUS_ERROR.FORBIDDEN);
+    throw createError(
+      STATUS_ERROR.FORBIDDEN,
+      'User is already a member of an organization'
+    );
   }
 
   const organizationFields: OrganizationInitFields = dto;
@@ -48,7 +59,7 @@ const createOrganization: AugmentedRequestHandler = async (req, res) => {
     user: userId
   }).select('-user');
 
-  return send(res, STATUS_SUCCESS.OK, memberships);
+  return memberships;
 };
 
 const updateOrganization: AugmentedRequestHandler = async (req, res) => {
@@ -65,25 +76,28 @@ const updateOrganization: AugmentedRequestHandler = async (req, res) => {
   ).select('-members -escapeRooms');
 
   if (!organization) {
-    return send(res, STATUS_ERROR.NOT_FOUND);
+    throw createError(STATUS_ERROR.NOT_FOUND, 'Organization not found');
   }
 
-  return send(res, STATUS_SUCCESS.OK, organization);
+  return organization;
 };
 
 const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { organizationId } = getParams(req, ['organizationId']);
 
-  const organization = await requireOrganization(organizationId);
   await requireBelongsToOrganization(organizationId, userId);
 
-  const bookings = await BookingModel.find({
-    escapeRoom: { $in: organization.escapeRooms },
-    endDate: { $gt: new Date() }
-  }).select('-escapeRoom');
+  const escapeRooms = await EscapeRoomModel.find({
+    organization: organizationId
+  });
 
-  return send(res, STATUS_SUCCESS.OK, bookings);
+  const bookings = await BookingModel.find({
+    escapeRoom: { $in: escapeRooms.map(({ id }) => id) },
+    endDate: { $gt: new Date() }
+  });
+
+  return bookings;
 };
 
 const listMembers: AugmentedRequestHandler = async (req, res) => {
@@ -98,11 +112,7 @@ const listMembers: AugmentedRequestHandler = async (req, res) => {
     .select('-organization')
     .populate('user');
 
-  return send(
-    res,
-    STATUS_SUCCESS.OK,
-    memberships.map(m => omit(['memberships'], m.toJSON()))
-  );
+  return memberships.map(m => omit(['memberships'], m.toJSON()));
 };
 
 const getOrganization: AugmentedRequestHandler = async (req, res) => {
@@ -113,10 +123,48 @@ const getOrganization: AugmentedRequestHandler = async (req, res) => {
   );
 
   if (!organization) {
-    return send(res, STATUS_ERROR.NOT_FOUND);
+    throw createError(STATUS_ERROR.NOT_FOUND, 'Organization not found');
   }
 
-  return send(res, STATUS_SUCCESS.OK, organization);
+  return organization;
+};
+
+const createOrganizationInvitation: AugmentedRequestHandler = async (
+  req,
+  res
+) => {
+  const { userId } = getAuth(req);
+  const { organizationId } = getParams(req, ['organizationId']);
+  const { email } = await getBody(req, CreateOrganizationInvitationDTO);
+
+  await requireOwnerOfOrganization(organizationId, userId);
+  const user = await UserModel.findOne({ email });
+
+  if (!user) {
+    throw createError(STATUS_ERROR.NOT_FOUND, 'User not found');
+  }
+
+  const isMemberOfAnyOrganization = await OrganizationMembershipModel.exists({
+    user: user.id
+  });
+
+  // TODO: remove other organization check when support multiple organizations is added
+  if (isMemberOfAnyOrganization) {
+    throw createError(
+      STATUS_ERROR.BAD_REQUEST,
+      'User already a member of an organization'
+    );
+  }
+
+  const invitationFields: OrganizationInvitationInitFields = {
+    organization: organizationId,
+    status: InvitationStatus.PENDING,
+    user: user.id
+  };
+
+  await OrganizationInvitationModel.create(invitationFields);
+
+  // TODO: send invitation email
 };
 
 export const organizationHandlers = [
@@ -124,5 +172,6 @@ export const organizationHandlers = [
   put('/organization/:organizationId', updateOrganization),
   get('/organization/:organizationId/booking', listBookings),
   get('/organization/:organizationId/member', listMembers),
+  post('/organization/:organizationId/member', createOrganizationInvitation),
   get('/organization/:organizationId', getOrganization) // TODO mark as public? no auth required
 ];

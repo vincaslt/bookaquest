@@ -7,7 +7,7 @@ export interface BookingDTO {
   name: string;
   email: string;
   phoneNumber: string;
-  escapeRoomId: string;
+  escapeRoom: string;
   status: string;
   participants: number;
   createdAt: string;
@@ -15,7 +15,8 @@ export interface BookingDTO {
   comment?: string;
 }
 
-export interface BookingWithEscapeRoomDTO extends BookingDTO {
+export interface BookingWithEscapeRoomDTO
+  extends Omit<BookingDTO, 'escapeRoom'> {
   escapeRoom: EscapeRoomDTO;
 }
 

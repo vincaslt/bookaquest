@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcryptjs';
-import { send } from 'micro';
+import { createError } from 'micro';
 import { post, AugmentedRequestHandler } from 'microrouter';
 import { omit } from 'ramda';
 import { SignInDTO } from '../dto/SignInDTO';
-import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
+import { STATUS_ERROR } from '../lib/constants';
 import {
   issueAccessToken,
   issueRefreshToken,
@@ -15,6 +15,7 @@ import { RefreshTokenModel } from '../models/RefreshToken';
 import { getBody } from '../lib/utils/getBody';
 import { getAuth } from '../lib/utils/getAuth';
 import { OrganizationMembershipModel } from '../models/OrganizationMembership';
+import { OrganizationInvitationModel } from '../models/OrganizationInvitation';
 
 const login: AugmentedRequestHandler = async (req, res) => {
   const { email, password } = await getBody(req, SignInDTO);
@@ -25,7 +26,7 @@ const login: AugmentedRequestHandler = async (req, res) => {
     user && (await bcrypt.compare(password, user.password));
 
   if (!user || !isPasswordCorrect) {
-    return send(res, STATUS_ERROR.UNAUTHORIZED, 'Invalid credentials');
+    throw createError(STATUS_ERROR.UNAUTHORIZED, 'Invalid credentials');
   }
 
   const refreshToken = await issueRefreshToken(user.id);
@@ -40,14 +41,17 @@ const login: AugmentedRequestHandler = async (req, res) => {
     user: user.id
   }).select('-user');
 
-  return send(res, STATUS_SUCCESS.OK, {
+  const invitations = await OrganizationInvitationModel.find({ user: user.id });
+
+  return {
     tokens: {
       accessToken,
       refreshToken
     },
     user: omit(['password'], user.toJSON()),
-    memberships
-  });
+    memberships,
+    invitations
+  };
 };
 
 const logout: AugmentedRequestHandler = async (req, res) => {
@@ -55,20 +59,18 @@ const logout: AugmentedRequestHandler = async (req, res) => {
   const exists = await UserModel.exists({ user: userId });
 
   if (!exists) {
-    return send(res, STATUS_ERROR.NOT_FOUND, 'User not found');
+    throw createError(STATUS_ERROR.NOT_FOUND, 'User not found');
   }
 
   await RefreshTokenModel.deleteMany({
     user: userId
   });
-
-  return send(res, STATUS_SUCCESS.OK);
 };
 
 const refreshToken: AugmentedRequestHandler = async (req, res) => {
   const dto = await getBody(req, RefreshTokenDTO);
   const token = await refreshAccessToken(dto.userId, dto.refreshToken);
-  return send(res, STATUS_SUCCESS.OK, { token });
+  return { token };
 };
 
 export const authHandlers = [

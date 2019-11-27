@@ -33,40 +33,38 @@ export function OrganizationPage(props: RouteComponentProps) {
   return (
     <PageContent noBackground>
       {membership ? (
-        <>
-          <Row gutter={24}>
+        <Row gutter={24}>
+          <Col span={8}>
+            <Section>
+              <OrganizationDetails
+                loading={loading}
+                organization={organization}
+                onUpdateOrganization={setOrganization}
+              />
+            </Section>
+
+            <Section>
+              <OrganizationSchedule
+                organization={organization}
+                loading={loading}
+                setOrganization={setOrganization}
+              />
+            </Section>
+          </Col>
+          <Col span={8}>
+            <OrganizationMembers organizationId={membership.organization} />
+          </Col>
+          {environment.paymentEnabled && (
             <Col span={8}>
               <Section>
-                <OrganizationDetails
-                  loading={loading}
+                <Payments
                   organization={organization}
-                  onUpdateOrganization={setOrganization}
-                />
-              </Section>
-
-              <Section>
-                <OrganizationSchedule
-                  organization={organization}
-                  loading={loading}
                   setOrganization={setOrganization}
                 />
               </Section>
             </Col>
-            <Col span={8}>
-              <OrganizationMembers organizationId={membership.organization} />
-            </Col>
-            {environment.paymentEnabled && (
-              <Col span={8}>
-                <Section>
-                  <Payments
-                    organization={organization}
-                    setOrganization={setOrganization}
-                  />
-                </Section>
-              </Col>
-            )}
-          </Row>
-        </>
+          )}
+        </Row>
       ) : (
         <CreateOrganization />
       )}

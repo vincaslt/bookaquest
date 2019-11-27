@@ -1,19 +1,20 @@
 import * as bcrypt from 'bcryptjs';
-import { send } from 'micro';
+import { createError } from 'micro';
 import { get, post, AugmentedRequestHandler } from 'microrouter';
 import { CreateUserDTO } from '../dto/CreateUserDTO';
-import { STATUS_ERROR, STATUS_SUCCESS } from '../lib/constants';
+import { STATUS_ERROR } from '../lib/constants';
 import { UserModel, UserInitFields } from '../models/User';
 import { OrganizationMembershipModel } from '../models/OrganizationMembership';
 import { getBody } from '../lib/utils/getBody';
 import { getAuth } from '../lib/utils/getAuth';
+import { OrganizationInvitationModel } from '../models/OrganizationInvitation';
 
 const createUser: AugmentedRequestHandler = async (req, res) => {
   const dto = await getBody(req, CreateUserDTO);
   const exists = await UserModel.exists({ email: dto.email });
 
   if (exists) {
-    return send(res, STATUS_ERROR.BAD_REQUEST, 'User already exists');
+    throw createError(STATUS_ERROR.BAD_REQUEST, 'User already exists');
   }
 
   const password = await bcrypt.hash(dto.password, 10);
@@ -23,8 +24,6 @@ const createUser: AugmentedRequestHandler = async (req, res) => {
   };
 
   await UserModel.create(user);
-
-  return send(res, STATUS_SUCCESS.OK);
 };
 
 const getAuthUserInfo: AugmentedRequestHandler = async (req, res) => {
@@ -33,14 +32,16 @@ const getAuthUserInfo: AugmentedRequestHandler = async (req, res) => {
   const user = await UserModel.findById(userId);
 
   if (!user) {
-    return send(res, STATUS_ERROR.NOT_FOUND, 'User not found');
+    throw createError(STATUS_ERROR.NOT_FOUND, 'User not found');
   }
 
   const memberships = await OrganizationMembershipModel.find({
     user: userId
   }).select('-user');
 
-  return send(res, STATUS_SUCCESS.OK, { user, memberships });
+  const invitations = await OrganizationInvitationModel.find({ user: userId });
+
+  return { user, memberships, invitations };
 };
 
 export const userHandlers = [

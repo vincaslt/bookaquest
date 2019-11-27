@@ -1,39 +1,52 @@
-import * as React from 'react';
-import { Modal } from 'antd';
-import { Formik } from 'formik';
+import { Modal, Button, notification } from 'antd';
+import { Formik, FormikHelpers } from 'formik';
 import { Form, Input, FormItem } from 'formik-antd';
+import * as React from 'react';
 import * as Yup from 'yup';
-import { InviteOrganizationMember } from '../../../interfaces/organizationMember';
 import { useI18n } from '@bookaquest/utilities';
+import { InviteOrganizationMember } from '../../../interfaces/organizationMember';
+import { createOrganizationInvitation } from '../../../api/application';
 
-interface Props {
+interface FormModalProps {
+  loading: boolean;
   visible: boolean;
   close: () => void;
-}
-
-interface ModalProps extends Props {
   resetForm: () => void;
   submitForm: () => void;
 }
 
-function MemberInviteModal({
+function FormModal({
   visible,
   close,
+  loading,
   resetForm,
   submitForm
-}: ModalProps) {
+}: FormModalProps) {
   const { t } = useI18n();
 
   React.useEffect(() => {
     if (!visible) {
       resetForm();
     }
-  }, [visible]);
+  }, [resetForm, visible]);
 
   return (
     <Modal
       title={t`Invite member`}
       visible={visible}
+      footer={[
+        <Button key="back" onClick={close}>
+          {t`Cancel`}
+        </Button>,
+        <Button
+          key="submit"
+          type="primary"
+          loading={loading}
+          onClick={submitForm}
+        >
+          {t`Invite`}
+        </Button>
+      ]}
       onOk={submitForm}
       onCancel={close}
     >
@@ -46,7 +59,19 @@ function MemberInviteModal({
   );
 }
 
-function FormWrapper({ close, ...rest }: Props) {
+interface MemberInviteModalProps {
+  organizationId: string;
+  visible: boolean;
+  close: () => void;
+}
+
+export function MemberInviteModal({
+  close,
+  organizationId,
+  ...rest
+}: MemberInviteModalProps) {
+  const { t } = useI18n();
+
   const validationSchema = Yup.object().shape<InviteOrganizationMember>({
     email: Yup.string()
       .email()
@@ -57,9 +82,22 @@ function FormWrapper({ close, ...rest }: Props) {
     email: ''
   };
 
-  const handleSubmit = () => {
-    // TODO: send invitation
-    close();
+  const handleSubmit = async (
+    values: InviteOrganizationMember,
+    helpers: FormikHelpers<InviteOrganizationMember>
+  ) => {
+    try {
+      await createOrganizationInvitation(organizationId, values);
+      close();
+    } catch (e) {
+      console.log(e.response);
+      notification.error({
+        message:
+          e.response.data?.message || t`Invitation failed, try again later`
+      });
+      // notification
+      helpers.setSubmitting(false);
+    }
   };
 
   return (
@@ -68,16 +106,15 @@ function FormWrapper({ close, ...rest }: Props) {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ submitForm, resetForm }) => (
-        <MemberInviteModal
+      {({ submitForm, resetForm, isSubmitting }) => (
+        <FormModal
           close={close}
           submitForm={submitForm}
           resetForm={resetForm}
+          loading={isSubmitting}
           {...rest}
         />
       )}
     </Formik>
   );
 }
-
-export { FormWrapper as MemberInviteModal };

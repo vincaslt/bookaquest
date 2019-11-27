@@ -8,7 +8,7 @@ export async function requireOwnerOfOrganization(
   organization: string | Ref<Organization>,
   user: string
 ) {
-  const membershipExists = OrganizationMembershipModel.exists({
+  const membershipExists = await OrganizationMembershipModel.exists({
     organization,
     user,
     isOwner: true
@@ -25,7 +25,7 @@ export async function requireBelongsToOrganization(
   organization: string | Ref<Organization>,
   user: string
 ) {
-  const membershipExists = OrganizationMembershipModel.exists({
+  const membershipExists = await OrganizationMembershipModel.exists({
     organization,
     user
   });

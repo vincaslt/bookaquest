@@ -10,7 +10,8 @@ import {
   fromOrganizationDTO,
   BookingDTO,
   fromBookingDTO,
-  OrganizationMemberDTO
+  OrganizationMemberDTO,
+  InviteOrganizationMemberDTO
 } from '@bookaquest/interfaces';
 import { SignIn } from '../interfaces/auth';
 import {
@@ -164,4 +165,9 @@ export const getOrganization = (organizationId: string) =>
 
 export const deleteEscapeRoom = withAuth(headers => (escapeRoomId: string) =>
   api.delete(`/escape-room/${escapeRoomId}`, { headers })
+);
+
+export const createOrganizationInvitation = withAuth(
+  headers => (organizationId: string, dto: InviteOrganizationMemberDTO) =>
+    api.post(`/organization/${organizationId}/member`, dto, { headers })
 );

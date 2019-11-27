@@ -4,6 +4,7 @@ import { PageContent } from '../../../shared/layout/PageContent';
 import { CreateOrganizationSplash } from './CreateOrganizationSplash';
 import { CreateOrganizationForm } from './CreateOrganizationForm';
 
+// TODO: free users can't create organizations, only accept invitations, paid users must pay during organization creation
 export function CreateOrganization() {
   const { setMemberships } = useUser();
 

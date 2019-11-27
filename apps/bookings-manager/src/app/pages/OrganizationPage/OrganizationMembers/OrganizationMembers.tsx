@@ -31,6 +31,7 @@ export function OrganizationMembers({ organizationId }: Props) {
       }
     >
       <MemberInviteModal
+        organizationId={organizationId}
         visible={isInviteModalVisible}
         close={() => setInviteModalVisible(false)}
       />
