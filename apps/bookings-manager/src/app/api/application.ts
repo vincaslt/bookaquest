@@ -11,14 +11,20 @@ import {
   BookingDTO,
   fromBookingDTO,
   OrganizationMemberDTO,
-  InviteOrganizationMemberDTO
+  InviteOrganizationMemberDTO,
+  MemberInvitationDTO,
+  OrganizationInvitationDTO
 } from '@bookaquest/interfaces';
 import { SignIn } from '../interfaces/auth';
 import {
   CreateOrganization,
   UpdateOrganization
 } from '../interfaces/organization';
-import { fromOrganizationMemberDTO } from '../interfaces/organizationMember';
+import {
+  fromOrganizationMemberDTO,
+  fromMemberInvitationDTO,
+  fromOrganizationInvitationDTO
+} from '../interfaces/organizationMember';
 import {
   CreateUser,
   fromUserInfoDTO,
@@ -48,13 +54,18 @@ export const signOut = withAuth(headers => () =>
 
 export const getAuthUserInfo = withAuth(headers => () =>
   api
-    .get<{ user: UserInfoDTO; memberships: UserMembershipDTO[] }>('/user/me', {
+    .get<{
+      user: UserInfoDTO;
+      memberships: UserMembershipDTO[];
+      invitations: OrganizationInvitationDTO[];
+    }>('/user/me', {
       headers
     })
     .then(res => res.data)
-    .then(({ user, memberships }) => ({
+    .then(({ user, memberships, invitations }) => ({
       user: fromUserInfoDTO(user),
-      memberships: memberships.map(fromUserMembershipDTO)
+      memberships: memberships.map(fromUserMembershipDTO),
+      invitations: invitations.map(fromOrganizationInvitationDTO)
     }))
 );
 
@@ -137,10 +148,17 @@ export const getEscapeRoomBookings = withAuth(
 export const getOrganizationMembers = withAuth(
   headers => (organizationId: string) =>
     api
-      .get<OrganizationMemberDTO[]>(`/organization/${organizationId}/member`, {
+      .get<{
+        invitations: MemberInvitationDTO[];
+        memberships: OrganizationMemberDTO[];
+      }>(`/organization/${organizationId}/member`, {
         headers
       })
-      .then(res => res.data.map(fromOrganizationMemberDTO))
+      .then(res => res.data)
+      .then(({ invitations, memberships }) => ({
+        memberships: memberships.map(fromOrganizationMemberDTO),
+        invitations: invitations.map(fromMemberInvitationDTO)
+      }))
 );
 
 export const rejectBooking = withAuth(headers => (bookingId: string) =>

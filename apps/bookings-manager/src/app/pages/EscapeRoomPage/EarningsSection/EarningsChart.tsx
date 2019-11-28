@@ -1,10 +1,17 @@
-import { format } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { green, blue, orange } from '@ant-design/colors';
 import AspectRatio from 'react-aspect-ratio';
 import * as React from 'react';
 import { Booking } from '@bookaquest/interfaces';
 import { listWeekdays, useI18n } from '@bookaquest/utilities';
-import { AreaChart, XAxis, Tooltip, Area, ResponsiveContainer } from 'recharts';
+import {
+  AreaChart,
+  XAxis,
+  Tooltip,
+  Area,
+  ResponsiveContainer,
+  CartesianGrid
+} from 'recharts';
 import { completedEarnings, projectedEarnings, pendingEarnings } from './utils';
 
 interface Props {
@@ -19,7 +26,7 @@ export function EarningsChart({ weeklyBookings, week }: Props) {
 
   const chartData = weekdays.map(weekdayDate => {
     return {
-      day: format(weekdayDate, 'MM-dd', { locale: dateFnsLocale }),
+      day: weekdayDate.getTime(),
       completed: completedEarnings(weekdayDate)(weeklyBookings),
       projected: projectedEarnings(weekdayDate)(weeklyBookings),
       pending: pendingEarnings(weekdayDate)(weeklyBookings)
@@ -36,14 +43,38 @@ export function EarningsChart({ weeklyBookings, week }: Props) {
     <AspectRatio ratio="5/3" style={{ width: '100%' }}>
       <ResponsiveContainer>
         <AreaChart margin={{ left: 20, right: 20 }} data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
+            labelFormatter={day =>
+              format(new Date(day), 'cccc', { locale: dateFnsLocale })
+            }
             formatter={(value, key, { payload }) =>
               key === 'pending'
                 ? [payload.pending - payload.projected, axisNames[key]]
                 : [value, axisNames[key]]
             }
           />
-          <XAxis interval={0} dataKey="day" />
+          <XAxis
+            interval={0}
+            dataKey="day"
+            tick={({ payload, x, y }) => {
+              const date = new Date(payload.value);
+              const formattedDate = format(date, 'MM-dd', {
+                locale: dateFnsLocale
+              });
+              return (
+                <text
+                  x={x}
+                  y={y}
+                  textAnchor="middle"
+                  dy="0.7em"
+                  className={isToday(date) ? 'font-bold' : undefined}
+                >
+                  {formattedDate}
+                </text>
+              );
+            }}
+          />
 
           <Area
             animationDuration={300}

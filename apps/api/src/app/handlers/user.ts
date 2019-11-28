@@ -39,7 +39,9 @@ const getAuthUserInfo: AugmentedRequestHandler = async (req, res) => {
     user: userId
   }).select('-user');
 
-  const invitations = await OrganizationInvitationModel.find({ user: userId });
+  const invitations = await OrganizationInvitationModel.find({
+    user: userId
+  }).populate('organization');
 
   return { user, memberships, invitations };
 };

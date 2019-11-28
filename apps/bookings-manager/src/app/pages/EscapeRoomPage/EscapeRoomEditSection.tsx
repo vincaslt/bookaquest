@@ -65,34 +65,22 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
 
   const deleteEscapeRoom = async () => {
     if (escapeRoom) {
-      try {
-        await api.deleteEscapeRoom(escapeRoom._id);
-        navigate(PrivateRoutes.EscapeRooms);
-        notification.success({
-          message: t`Escape room has been deleted`
-        });
-      } catch (err) {
-        notification.error({
-          message: err.message || t`Failed to delete, please try again`
-        });
-      }
+      await api.deleteEscapeRoom(escapeRoom._id);
+      navigate(PrivateRoutes.EscapeRooms);
+      notification.success({
+        message: t`Escape room has been deleted`
+      });
     }
   };
 
   const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
     if (escapeRoom) {
-      try {
-        const dto = await validationSchema.validate(values);
-        const updatedRoom = await api.updateEscapeRoom(escapeRoom._id, dto);
-        setEscapeRoom(updatedRoom);
-        notification.success({
-          message: t`Escape room info has been updated`
-        });
-      } catch (err) {
-        notification.error({
-          message: err.message || t`Update failed, please try again`
-        });
-      }
+      const dto = await validationSchema.validate(values);
+      const updatedRoom = await api.updateEscapeRoom(escapeRoom._id, dto);
+      setEscapeRoom(updatedRoom);
+      notification.success({
+        message: t`Escape room info has been updated`
+      });
     }
   };
 

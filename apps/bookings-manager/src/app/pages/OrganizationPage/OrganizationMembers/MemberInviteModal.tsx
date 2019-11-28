@@ -1,5 +1,5 @@
-import { Modal, Button, notification } from 'antd';
-import { Formik, FormikHelpers } from 'formik';
+import { Modal, Button } from 'antd';
+import { Formik } from 'formik';
 import { Form, Input, FormItem } from 'formik-antd';
 import * as React from 'react';
 import * as Yup from 'yup';
@@ -70,8 +70,6 @@ export function MemberInviteModal({
   organizationId,
   ...rest
 }: MemberInviteModalProps) {
-  const { t } = useI18n();
-
   const validationSchema = Yup.object().shape<InviteOrganizationMember>({
     email: Yup.string()
       .email()
@@ -82,22 +80,9 @@ export function MemberInviteModal({
     email: ''
   };
 
-  const handleSubmit = async (
-    values: InviteOrganizationMember,
-    helpers: FormikHelpers<InviteOrganizationMember>
-  ) => {
-    try {
-      await createOrganizationInvitation(organizationId, values);
-      close();
-    } catch (e) {
-      console.log(e.response);
-      notification.error({
-        message:
-          e.response.data?.message || t`Invitation failed, try again later`
-      });
-      // notification
-      helpers.setSubmitting(false);
-    }
+  const handleSubmit = async (values: InviteOrganizationMember) => {
+    await createOrganizationInvitation(organizationId, values);
+    close();
   };
 
   return (

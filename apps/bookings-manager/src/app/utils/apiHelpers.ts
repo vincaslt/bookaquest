@@ -1,4 +1,5 @@
 import Axios, { AxiosError } from 'axios';
+import { notification } from 'antd';
 import { config } from '@bookaquest/utilities';
 import {
   RequestRefreshTokenDTO,
@@ -10,6 +11,21 @@ import { JwtPayload } from '../interfaces/auth';
 export const api = Axios.create({
   baseURL: config.backendUrl
 });
+
+api.interceptors.response.use(
+  res => res,
+  err => {
+    const error = new Error(
+      err.response.data?.message || "Something's wrong, try again later"
+    );
+    if (err.response.status !== 401) {
+      notification.error({
+        message: error.message
+      });
+    }
+    return Promise.reject(err);
+  }
+);
 
 const refreshAuthToken = (dto: RequestRefreshTokenDTO) =>
   api.post<RefreshTokenDTO>('/refreshToken', dto).then(res => res.data);
@@ -27,7 +43,7 @@ function createAuthHeaders(accessToken: string) {
 // TODO: this seems like it might not be refreshing expired tokens but instead logging out
 export function withAuth<Args extends any[], T>(
   request: (headers: { Authorization: string }) => (...args: Args) => Promise<T>
-) {
+): (...args: Args) => Promise<T> {
   return (...args: Args): Promise<T> => {
     const accessToken = localStorage.getItem('accessToken');
 

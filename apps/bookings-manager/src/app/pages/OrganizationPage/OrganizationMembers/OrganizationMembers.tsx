@@ -1,8 +1,13 @@
-import { List, Button } from 'antd';
+import { List, Button, Divider } from 'antd';
+import { format } from 'date-fns';
 import * as React from 'react';
 import { useLoading, useI18n } from '@bookaquest/utilities';
 import * as api from '../../../api/application';
-import { OrganizationMember } from '../../../interfaces/organizationMember';
+import {
+  OrganizationMember,
+  MemberInvitation,
+  InvitationStatus
+} from '../../../interfaces/organizationMember';
 import { Link } from '../../../shared/components/Link';
 import { Section } from '../../../shared/layout/Section';
 import { MemberInviteModal } from './MemberInviteModal';
@@ -11,14 +16,23 @@ interface Props {
   organizationId: string;
 }
 
+// TODO: invitations request should return only pending?
 export function OrganizationMembers({ organizationId }: Props) {
+  const { t, dateFnsLocale } = useI18n();
   const [loading, withLoading] = useLoading(true);
-  const [members, setMembers] = React.useState<OrganizationMember[]>([]);
+  const [invitations, setInvitations] = React.useState<MemberInvitation[]>([]);
+  const [memberships, setMemberships] = React.useState<OrganizationMember[]>(
+    []
+  );
   const [isInviteModalVisible, setInviteModalVisible] = React.useState(false);
-  const { t } = useI18n();
 
   React.useEffect(() => {
-    withLoading(api.getOrganizationMembers(organizationId).then(setMembers));
+    withLoading(
+      api.getOrganizationMembers(organizationId).then(data => {
+        setMemberships(data.memberships);
+        setInvitations(data.invitations);
+      })
+    );
   }, [organizationId, withLoading]);
 
   const handleInviteClick = () => setInviteModalVisible(true);
@@ -36,18 +50,18 @@ export function OrganizationMembers({ organizationId }: Props) {
         close={() => setInviteModalVisible(false)}
       />
       <List loading={loading}>
-        {members.map(member => (
+        {memberships.map(membership => (
           <List.Item
-            key={member._id}
+            key={membership._id}
             actions={[
-              !member.isOwner && <Link key="remove-user">{t`remove`}</Link>
+              !membership.isOwner && <Link key="remove-user">{t`remove`}</Link>
             ]}
           >
             <List.Item.Meta
-              title={member.user.fullName}
-              description={member.user.email}
+              title={membership.user.fullName}
+              description={membership.user.email}
             />
-            {member.isOwner ? (
+            {membership.isOwner ? (
               <strong>{t`Owner`}</strong>
             ) : (
               <div>{t`Member`}</div>
@@ -55,6 +69,28 @@ export function OrganizationMembers({ organizationId }: Props) {
           </List.Item>
         ))}
       </List>
+      {invitations.length > 0 && (
+        <>
+          <Divider>{t`Invited`}</Divider>
+          {invitations
+            .filter(
+              invitation => invitation.status === InvitationStatus.PENDING
+            )
+            .map(invitation => (
+              <List.Item key={invitation._id}>
+                <List.Item.Meta
+                  title={invitation.user.fullName}
+                  description={invitation.user.email}
+                />
+                {
+                  <div>{t`Sent at ${format(invitation.createdAt, 'Pp', {
+                    locale: dateFnsLocale
+                  })}`}</div>
+                }
+              </List.Item>
+            ))}
+        </>
+      )}
     </Section>
   );
 }

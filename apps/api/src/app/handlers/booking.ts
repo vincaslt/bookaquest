@@ -57,8 +57,8 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
     'take'
   ]);
 
-  const organization = await requireEscapeRoom(escapeRoomId);
-  await requireBelongsToOrganization(organization.id, userId);
+  const escapeRoom = await requireEscapeRoom(escapeRoomId);
+  await requireBelongsToOrganization(escapeRoom.organization, userId);
 
   const fromDate = from ? new Date(from) : new Date();
   const toDate = to && new Date(to);

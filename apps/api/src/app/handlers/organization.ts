@@ -38,7 +38,7 @@ const createOrganization: AugmentedRequestHandler = async (req, res) => {
   });
 
   if (belongsToOtherOrganization) {
-    // Temporarily disallow multiple memberships
+    // TODO: remove when multiple memberships are allowed
     throw createError(
       STATUS_ERROR.FORBIDDEN,
       'User is already a member of an organization'
@@ -112,7 +112,16 @@ const listMembers: AugmentedRequestHandler = async (req, res) => {
     .select('-organization')
     .populate('user');
 
-  return memberships.map(m => omit(['memberships'], m.toJSON()));
+  const invitations = await OrganizationInvitationModel.find({
+    organization: organizationId
+  })
+    .select('-organization')
+    .populate('user');
+
+  return {
+    invitations,
+    memberships: memberships.map(m => omit(['memberships'], m.toJSON()))
+  };
 };
 
 const getOrganization: AugmentedRequestHandler = async (req, res) => {
@@ -153,6 +162,18 @@ const createOrganizationInvitation: AugmentedRequestHandler = async (
     throw createError(
       STATUS_ERROR.BAD_REQUEST,
       'User already a member of an organization'
+    );
+  }
+
+  const isAlreadyInvited = await OrganizationInvitationModel.exists({
+    user: user.id,
+    organization: organizationId
+  });
+
+  if (isAlreadyInvited) {
+    throw createError(
+      STATUS_ERROR.BAD_REQUEST,
+      'User is already invited to this organization'
     );
   }
 

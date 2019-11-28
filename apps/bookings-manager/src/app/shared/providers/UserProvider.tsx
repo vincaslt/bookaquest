@@ -1,16 +1,21 @@
 import * as React from 'react';
 import { getAuthUserInfo } from '../../api/application';
 import { UserInfo, UserMembership } from '../../interfaces/user';
+import { OrganizationInvitation } from '../../interfaces/organizationMember';
 
 export interface UserProviderState {
   isLoading: boolean;
-  userInfo: UserInfo | null;
-  memberships: UserMembership[] | null;
+  userInfo?: UserInfo;
+  memberships?: UserMembership[];
+  invitations?: OrganizationInvitation[];
   setUserInfo: (userInfo: UserInfo) => void;
-  setMemberships: (userInfo: UserMembership[]) => void;
+  setMemberships: (memberships: UserMembership[]) => void;
+  setInvitations: (invitations: OrganizationInvitation[]) => void;
 }
 
-export const UserContext = React.createContext<UserProviderState | null>(null);
+export const UserContext = React.createContext<UserProviderState | undefined>(
+  undefined
+);
 
 interface Props {
   children: React.ReactNode;
@@ -18,10 +23,11 @@ interface Props {
 
 export const UserProvider = ({ children }: Props) => {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [memberships, setMemberships] = React.useState<UserMembership[] | null>(
-    null
-  );
-  const [userInfo, setUserInfo] = React.useState<UserInfo | null>(null);
+  const [memberships, setMemberships] = React.useState<UserMembership[]>();
+  const [invitations, setInvitations] = React.useState<
+    OrganizationInvitation[]
+  >();
+  const [userInfo, setUserInfo] = React.useState<UserInfo>();
 
   // TODO: refreshing token actually logs out... fixit
   React.useEffect(() => {
@@ -32,6 +38,7 @@ export const UserProvider = ({ children }: Props) => {
       getAuthUserInfo()
         .then(data => {
           setMemberships(data.memberships);
+          setInvitations(data.invitations);
           setUserInfo(data.user);
         })
         .finally(() => setIsLoading(false));
@@ -40,7 +47,15 @@ export const UserProvider = ({ children }: Props) => {
 
   return (
     <UserContext.Provider
-      value={{ userInfo, memberships, setUserInfo, setMemberships, isLoading }}
+      value={{
+        userInfo,
+        memberships,
+        invitations,
+        setUserInfo,
+        setMemberships,
+        setInvitations,
+        isLoading
+      }}
     >
       {children}
     </UserContext.Provider>

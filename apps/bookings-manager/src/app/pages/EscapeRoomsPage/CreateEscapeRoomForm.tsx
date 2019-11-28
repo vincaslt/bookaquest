@@ -129,7 +129,7 @@ export function CreateEscapeRoomForm({
       });
   };
 
-  // TODO: show error / disallow, when organization has no working hours (or show a working hours picker)
+  // TODO: show error / disallow, when organization has no working hours (or show a working hours picker), same with timezone
   // TODO: validate accept payments in backend - to have payment codes first
   return (
     <Formik
