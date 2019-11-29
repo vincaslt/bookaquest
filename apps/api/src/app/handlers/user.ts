@@ -4,10 +4,12 @@ import { get, post, AugmentedRequestHandler } from 'microrouter';
 import { CreateUserDTO } from '../dto/CreateUserDTO';
 import { STATUS_ERROR } from '../lib/constants';
 import { UserModel, UserInitFields } from '../models/User';
-import { OrganizationMembershipModel } from '../models/OrganizationMembership';
 import { getBody } from '../lib/utils/getBody';
 import { getAuth } from '../lib/utils/getAuth';
-import { OrganizationInvitationModel } from '../models/OrganizationInvitation';
+import {
+  findUserInvitations,
+  findUserMemberships
+} from '../helpers/organization';
 
 const createUser: AugmentedRequestHandler = async (req, res) => {
   const dto = await getBody(req, CreateUserDTO);
@@ -35,13 +37,10 @@ const getAuthUserInfo: AugmentedRequestHandler = async (req, res) => {
     throw createError(STATUS_ERROR.NOT_FOUND, 'User not found');
   }
 
-  const memberships = await OrganizationMembershipModel.find({
-    user: userId
-  }).select('-user');
-
-  const invitations = await OrganizationInvitationModel.find({
-    user: userId
-  }).populate('organization');
+  const [memberships, invitations] = await Promise.all([
+    findUserMemberships(user.id),
+    findUserInvitations(user.id)
+  ]);
 
   return { user, memberships, invitations };
 };

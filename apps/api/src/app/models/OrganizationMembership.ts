@@ -1,10 +1,11 @@
 import { Ref, prop, getModelForClass } from '@typegoose/typegoose';
+import { RefType } from '@typegoose/typegoose/lib/types';
 import { User } from './User';
 import { Organization } from './Organization';
 
 export interface OrganizationMembershipInitFields {
   user: string;
-  organization: string;
+  organization: RefType;
   isOwner: boolean;
 }
 

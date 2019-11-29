@@ -41,11 +41,13 @@ export const signIn = (credentials: SignIn) =>
       tokens: AuthTokensDTO;
       user: UserInfoDTO;
       memberships: UserMembershipDTO[];
+      invitations: OrganizationInvitationDTO[];
     }>('/login', credentials)
     .then(res => ({
       tokens: res.data.tokens,
       user: fromUserInfoDTO(res.data.user),
-      memberships: res.data.memberships.map(fromUserMembershipDTO)
+      memberships: res.data.memberships.map(fromUserMembershipDTO),
+      invitations: res.data.invitations.map(fromOrganizationInvitationDTO)
     }));
 
 export const signOut = withAuth(headers => () =>
@@ -188,4 +190,16 @@ export const deleteEscapeRoom = withAuth(headers => (escapeRoomId: string) =>
 export const createOrganizationInvitation = withAuth(
   headers => (organizationId: string, dto: InviteOrganizationMemberDTO) =>
     api.post(`/organization/${organizationId}/member`, dto, { headers })
+);
+
+export const acceptInvitation = withAuth(headers => (invitationId: string) =>
+  api
+    .post<{
+      memberships: UserMembershipDTO[];
+      invitations: OrganizationInvitationDTO[];
+    }>(`/invitation/${invitationId}/accept`, undefined, { headers })
+    .then(res => ({
+      memberships: res.data.memberships.map(fromUserMembershipDTO),
+      invitations: res.data.invitations.map(fromOrganizationInvitationDTO)
+    }))
 );

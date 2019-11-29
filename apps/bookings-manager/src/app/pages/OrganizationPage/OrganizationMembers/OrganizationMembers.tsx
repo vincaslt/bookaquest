@@ -37,6 +37,10 @@ export function OrganizationMembers({ organizationId }: Props) {
 
   const handleInviteClick = () => setInviteModalVisible(true);
 
+  const pendingInvitations = invitations.filter(
+    invitation => invitation.status === InvitationStatus.PENDING
+  );
+
   return (
     <Section
       title={t`Members`}
@@ -69,26 +73,22 @@ export function OrganizationMembers({ organizationId }: Props) {
           </List.Item>
         ))}
       </List>
-      {invitations.length > 0 && (
+      {pendingInvitations.length > 0 && (
         <>
           <Divider>{t`Invited`}</Divider>
-          {invitations
-            .filter(
-              invitation => invitation.status === InvitationStatus.PENDING
-            )
-            .map(invitation => (
-              <List.Item key={invitation._id}>
-                <List.Item.Meta
-                  title={invitation.user.fullName}
-                  description={invitation.user.email}
-                />
-                {
-                  <div>{t`Sent at ${format(invitation.createdAt, 'Pp', {
-                    locale: dateFnsLocale
-                  })}`}</div>
-                }
-              </List.Item>
-            ))}
+          {pendingInvitations.map(invitation => (
+            <List.Item key={invitation._id}>
+              <List.Item.Meta
+                title={invitation.user.fullName}
+                description={invitation.user.email}
+              />
+              {
+                <div>{t`Sent at ${format(invitation.createdAt, 'Pp', {
+                  locale: dateFnsLocale
+                })}`}</div>
+              }
+            </List.Item>
+          ))}
         </>
       )}
     </Section>

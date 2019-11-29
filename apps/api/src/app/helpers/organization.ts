@@ -1,8 +1,13 @@
 import { Ref } from '@typegoose/typegoose';
+import { RefType } from '@typegoose/typegoose/lib/types';
 import { createError } from 'micro';
 import { OrganizationMembershipModel } from '../models/OrganizationMembership';
 import { STATUS_ERROR } from '../lib/constants';
 import { OrganizationModel, Organization } from '../models/Organization';
+import {
+  InvitationStatus,
+  OrganizationInvitationModel
+} from '../models/OrganizationInvitation';
 
 export async function requireOwnerOfOrganization(
   organization: string | Ref<Organization>,
@@ -45,4 +50,17 @@ export async function requireOrganization(
     throw createError(STATUS_ERROR.NOT_FOUND, 'Organization not found');
   }
   return organization;
+}
+
+export async function findUserMemberships(user: RefType) {
+  return await OrganizationMembershipModel.find({
+    user
+  }).select('-user');
+}
+
+export async function findUserInvitations(user: RefType) {
+  return await OrganizationInvitationModel.find({
+    user,
+    status: InvitationStatus.PENDING
+  }).populate('organization');
 }

@@ -56,7 +56,7 @@ const login: AugmentedRequestHandler = async (req, res) => {
 
 const logout: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
-  const exists = await UserModel.exists({ user: userId });
+  const exists = await UserModel.exists({ _id: userId });
 
   if (!exists) {
     throw createError(STATUS_ERROR.NOT_FOUND, 'User not found');

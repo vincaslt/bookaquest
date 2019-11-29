@@ -18,12 +18,20 @@ export function useUser() {
   const login = (credentials: SignIn) =>
     api
       .signIn(credentials)
-      .then(({ tokens: { accessToken, refreshToken }, user, memberships }) => {
-        userState.setUserInfo(user);
-        userState.setMemberships(memberships);
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-      });
+      .then(
+        ({
+          tokens: { accessToken, refreshToken },
+          user,
+          memberships,
+          invitations
+        }) => {
+          userState.setUserInfo(user);
+          userState.setMemberships(memberships);
+          userState.setInvitations(invitations);
+          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+        }
+      );
 
   return { ...userState, logout, login };
 }

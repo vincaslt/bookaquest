@@ -1,6 +1,7 @@
 import { createError } from 'micro';
 import { get, post, put, AugmentedRequestHandler } from 'microrouter';
 import { omit } from 'ramda';
+import { Types } from 'mongoose';
 import { CreateOrganizationDTO } from '../dto/CreateOrganizationDTO';
 import { STATUS_ERROR } from '../lib/constants';
 import { UpdateOrganizationDTO } from '../dto/UpdateOrganizationDTO';
@@ -16,7 +17,9 @@ import {
 import { BookingModel } from '../models/Booking';
 import {
   requireBelongsToOrganization,
-  requireOwnerOfOrganization
+  requireOwnerOfOrganization,
+  findUserMemberships,
+  findUserInvitations
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
@@ -188,11 +191,48 @@ const createOrganizationInvitation: AugmentedRequestHandler = async (
   // TODO: send invitation email
 };
 
+const acceptOrganizationInvitation: AugmentedRequestHandler = async (
+  req,
+  res
+) => {
+  const { userId } = getAuth(req);
+  const { invitationId } = getParams(req, ['invitationId']);
+
+  const invitation = await OrganizationInvitationModel.findOne({
+    _id: invitationId,
+    user: userId,
+    status: InvitationStatus.PENDING
+  });
+
+  if (!invitation) {
+    throw createError(STATUS_ERROR.NOT_FOUND, 'Pending invitation not found');
+  }
+
+  invitation.status = InvitationStatus.ACCEPTED;
+  const { organization } = await invitation.save();
+
+  const membershipFields: OrganizationMembershipInitFields = {
+    isOwner: false,
+    organization: organization as Types.ObjectId,
+    user: userId
+  };
+
+  await OrganizationMembershipModel.create(membershipFields);
+
+  const [memberships, invitations] = await Promise.all([
+    findUserMemberships(userId),
+    findUserInvitations(userId)
+  ]);
+
+  return { memberships, invitations };
+};
+
 export const organizationHandlers = [
   post('/organization', createOrganization),
   put('/organization/:organizationId', updateOrganization),
   get('/organization/:organizationId/booking', listBookings),
   get('/organization/:organizationId/member', listMembers),
   post('/organization/:organizationId/member', createOrganizationInvitation),
-  get('/organization/:organizationId', getOrganization) // TODO mark as public? no auth required
+  get('/organization/:organizationId', getOrganization), // TODO mark as public? no auth required
+  post('/invitation/:invitationId/accept', acceptOrganizationInvitation)
 ];

@@ -28,6 +28,7 @@ export const CardForm = injectStripe(({ onSubmit, loading, stripe }: Props) => {
 
     const { token } = await stripe.createToken({ name });
 
+    // TODO: use Message instead of notifications
     if (!token) {
       notification.open({
         message: t`Error`,
