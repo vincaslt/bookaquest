@@ -15,6 +15,7 @@ import {
   MemberInvitationDTO,
   OrganizationInvitationDTO
 } from '@bookaquest/interfaces';
+import map from 'ramda/es/map';
 import { SignIn } from '../interfaces/auth';
 import {
   CreateOrganization,
@@ -104,7 +105,8 @@ export const createOrganization = withAuth(
   headers => (dto: CreateOrganization) =>
     api
       .post<UserMembershipDTO[]>('/organization', dto, { headers })
-      .then(res => res.data.map(fromUserMembershipDTO))
+      .then(res => res.data)
+      .then(map(fromUserMembershipDTO))
 );
 
 export const updateOrganization = withAuth(
@@ -119,7 +121,8 @@ export const getOrganizationBookings = withAuth(
   headers => (organizationId: string) =>
     api
       .get<BookingDTO[]>(`/organization/${organizationId}/booking`, { headers })
-      .then(res => res.data.map(fromBookingDTO))
+      .then(res => res.data)
+      .then(map(fromBookingDTO))
 );
 
 export const getEscapeRoomBookings = withAuth(
@@ -189,7 +192,14 @@ export const deleteEscapeRoom = withAuth(headers => (escapeRoomId: string) =>
 
 export const createOrganizationInvitation = withAuth(
   headers => (organizationId: string, dto: InviteOrganizationMemberDTO) =>
-    api.post(`/organization/${organizationId}/member`, dto, { headers })
+    api
+      .post<MemberInvitationDTO[]>(
+        `/organization/${organizationId}/member`,
+        dto,
+        { headers }
+      )
+      .then(res => res.data)
+      .then(map(fromMemberInvitationDTO))
 );
 
 export const acceptInvitation = withAuth(headers => (invitationId: string) =>
@@ -202,4 +212,15 @@ export const acceptInvitation = withAuth(headers => (invitationId: string) =>
       memberships: res.data.memberships.map(fromUserMembershipDTO),
       invitations: res.data.invitations.map(fromOrganizationInvitationDTO)
     }))
+);
+
+export const declineInvitation = withAuth(headers => (invitationId: string) =>
+  api
+    .post<OrganizationInvitationDTO[]>(
+      `/invitation/${invitationId}/decline`,
+      undefined,
+      { headers }
+    )
+    .then(res => res.data)
+    .then(map(fromOrganizationInvitationDTO))
 );

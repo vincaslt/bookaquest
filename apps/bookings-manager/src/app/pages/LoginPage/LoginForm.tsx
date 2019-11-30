@@ -13,7 +13,9 @@ const initialValues: SignIn = {
 };
 
 const validationSchema = Yup.object().shape<SignIn>({
-  email: Yup.string().required(),
+  email: Yup.string()
+    .email()
+    .required(),
   password: Yup.string().required()
 });
 

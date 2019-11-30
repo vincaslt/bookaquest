@@ -20,7 +20,7 @@ export function CreateOrganization() {
             setMemberships(mem);
             setInvitations(inv);
           }}
-          onCancel={setInvitations}
+          onDecline={setInvitations}
         />
       ) : (
         <CreateOrganizationForm onCreateOrganization={setMemberships} />

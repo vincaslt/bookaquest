@@ -34,7 +34,7 @@ export function PrivateHeader({ sidebarVisible = false }: Props) {
       className="px-4 py-8 bg-white flex justify-end items-center z-10"
     >
       {userInfo && (
-        <Dropdown overlay={menu}>
+        <Dropdown trigger={['click']} overlay={menu}>
           <button className="px-2 ant-dropdown-link flex items-center hover:bg-gray-100">
             {userInfo.email} <Icon className="ml-1" type="down" />
           </button>

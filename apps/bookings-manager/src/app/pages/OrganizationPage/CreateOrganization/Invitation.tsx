@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { OrganizationInvitation } from '../../../interfaces/organizationMember';
-import { useI18n } from '@bookaquest/utilities';
-import * as api from '../../../api/application';
 import { Trans } from 'react-i18next';
 import { Button, Alert } from 'antd';
+import * as React from 'react';
+import { useI18n, useLoading } from '@bookaquest/utilities';
+import { OrganizationInvitation } from '../../../interfaces/organizationMember';
+import * as api from '../../../api/application';
 import { UserMembership } from '../../../interfaces/user';
 
 interface Props {
@@ -12,22 +12,26 @@ interface Props {
     memberships: UserMembership[],
     invitations: OrganizationInvitation[]
   ) => void;
-  onCancel: (invitations: OrganizationInvitation[]) => void;
+  onDecline: (invitations: OrganizationInvitation[]) => void;
 }
 
-export function Invitation({ invitation, onAccept, onCancel }: Props) {
+export function Invitation({ invitation, onAccept, onDecline }: Props) {
   const { t } = useI18n();
+  const [acceptLoading, withAcceptLoading] = useLoading();
+  const [declineLoading, withDeclineLoading] = useLoading();
 
   const handleAcceptClick = async () => {
-    const { invitations, memberships } = await api.acceptInvitation(
-      invitation._id
+    const { invitations, memberships } = await withAcceptLoading(
+      api.acceptInvitation(invitation._id)
     );
     onAccept(memberships, invitations);
   };
 
-  const handleCancelClick = () => {
-    // TODO: implement
-    onCancel([]);
+  const handleDeclineClick = async () => {
+    const invitations = await withDeclineLoading(
+      api.declineInvitation(invitation._id)
+    );
+    onDecline(invitations);
   };
 
   return (
@@ -45,10 +49,15 @@ export function Invitation({ invitation, onAccept, onCancel }: Props) {
       />
       <Button
         type="danger"
-        onClick={handleCancelClick}
+        onClick={handleDeclineClick}
         className="mr-2"
-      >{t`Reject`}</Button>
-      <Button type="primary" onClick={handleAcceptClick}>{t`Accept`}</Button>
+        loading={declineLoading}
+      >{t`Decline`}</Button>
+      <Button
+        type="primary"
+        onClick={handleAcceptClick}
+        loading={acceptLoading}
+      >{t`Accept`}</Button>
     </div>
   );
 }

@@ -14,8 +14,10 @@ import { UserModel } from '../models/User';
 import { RefreshTokenModel } from '../models/RefreshToken';
 import { getBody } from '../lib/utils/getBody';
 import { getAuth } from '../lib/utils/getAuth';
-import { OrganizationMembershipModel } from '../models/OrganizationMembership';
-import { OrganizationInvitationModel } from '../models/OrganizationInvitation';
+import {
+  findUserInvitations,
+  findUserMemberships
+} from '../helpers/organization';
 
 const login: AugmentedRequestHandler = async (req, res) => {
   const { email, password } = await getBody(req, SignInDTO);
@@ -37,11 +39,10 @@ const login: AugmentedRequestHandler = async (req, res) => {
     expirationDate: { $lte: new Date() }
   });
 
-  const memberships = await OrganizationMembershipModel.find({
-    user: user.id
-  }).select('-user');
-
-  const invitations = await OrganizationInvitationModel.find({ user: user.id });
+  const [memberships, invitations] = await Promise.all([
+    findUserMemberships(user.id),
+    findUserInvitations(user.id)
+  ]);
 
   return {
     tokens: {

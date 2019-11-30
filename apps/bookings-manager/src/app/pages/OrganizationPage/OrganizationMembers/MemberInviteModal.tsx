@@ -4,7 +4,10 @@ import { Form, Input, FormItem } from 'formik-antd';
 import * as React from 'react';
 import * as Yup from 'yup';
 import { useI18n } from '@bookaquest/utilities';
-import { InviteOrganizationMember } from '../../../interfaces/organizationMember';
+import {
+  InviteOrganizationMember,
+  MemberInvitation
+} from '../../../interfaces/organizationMember';
 import { createOrganizationInvitation } from '../../../api/application';
 
 interface FormModalProps {
@@ -62,11 +65,13 @@ function FormModal({
 interface MemberInviteModalProps {
   organizationId: string;
   visible: boolean;
+  onInvitationSent: (invitations: MemberInvitation[]) => void;
   close: () => void;
 }
 
 export function MemberInviteModal({
   close,
+  onInvitationSent,
   organizationId,
   ...rest
 }: MemberInviteModalProps) {
@@ -81,7 +86,11 @@ export function MemberInviteModal({
   };
 
   const handleSubmit = async (values: InviteOrganizationMember) => {
-    await createOrganizationInvitation(organizationId, values);
+    const invitations = await createOrganizationInvitation(
+      organizationId,
+      values
+    );
+    onInvitationSent(invitations);
     close();
   };
 

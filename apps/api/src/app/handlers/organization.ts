@@ -19,7 +19,8 @@ import {
   requireBelongsToOrganization,
   requireOwnerOfOrganization,
   findUserMemberships,
-  findUserInvitations
+  findUserInvitations,
+  findOrganizationInvitations
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
@@ -115,11 +116,7 @@ const listMembers: AugmentedRequestHandler = async (req, res) => {
     .select('-organization')
     .populate('user');
 
-  const invitations = await OrganizationInvitationModel.find({
-    organization: organizationId
-  })
-    .select('-organization')
-    .populate('user');
+  const invitations = await findOrganizationInvitations(organizationId);
 
   return {
     invitations,
@@ -170,7 +167,8 @@ const createOrganizationInvitation: AugmentedRequestHandler = async (
 
   const isAlreadyInvited = await OrganizationInvitationModel.exists({
     user: user.id,
-    organization: organizationId
+    organization: organizationId,
+    status: { $in: [InvitationStatus.ACCEPTED, InvitationStatus.PENDING] }
   });
 
   if (isAlreadyInvited) {
@@ -189,6 +187,8 @@ const createOrganizationInvitation: AugmentedRequestHandler = async (
   await OrganizationInvitationModel.create(invitationFields);
 
   // TODO: send invitation email
+
+  return await findOrganizationInvitations(organizationId);
 };
 
 const acceptOrganizationInvitation: AugmentedRequestHandler = async (
@@ -227,6 +227,29 @@ const acceptOrganizationInvitation: AugmentedRequestHandler = async (
   return { memberships, invitations };
 };
 
+const declineOrganizationInvitation: AugmentedRequestHandler = async (
+  req,
+  res
+) => {
+  const { userId } = getAuth(req);
+  const { invitationId } = getParams(req, ['invitationId']);
+
+  const invitation = await OrganizationInvitationModel.findOne({
+    _id: invitationId,
+    user: userId,
+    status: InvitationStatus.PENDING
+  });
+
+  if (!invitation) {
+    throw createError(STATUS_ERROR.NOT_FOUND, 'Pending invitation not found');
+  }
+
+  invitation.status = InvitationStatus.DECLINED;
+  await invitation.save();
+
+  return await findUserInvitations(userId);
+};
+
 export const organizationHandlers = [
   post('/organization', createOrganization),
   put('/organization/:organizationId', updateOrganization),
@@ -234,5 +257,6 @@ export const organizationHandlers = [
   get('/organization/:organizationId/member', listMembers),
   post('/organization/:organizationId/member', createOrganizationInvitation),
   get('/organization/:organizationId', getOrganization), // TODO mark as public? no auth required
-  post('/invitation/:invitationId/accept', acceptOrganizationInvitation)
+  post('/invitation/:invitationId/accept', acceptOrganizationInvitation),
+  post('/invitation/:invitationId/decline', declineOrganizationInvitation)
 ];

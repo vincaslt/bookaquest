@@ -64,3 +64,12 @@ export async function findUserInvitations(user: RefType) {
     status: InvitationStatus.PENDING
   }).populate('organization');
 }
+
+// TODO: rename stuff in frontend - user invitation (in user), organization invitation (in org)
+export async function findOrganizationInvitations(organization: RefType) {
+  return await OrganizationInvitationModel.find({
+    organization
+  })
+    .select('-organization')
+    .populate('user');
+}

@@ -15,7 +15,7 @@ export interface OrganizationInvitationInitFields {
 }
 
 export class OrganizationInvitation {
-  @prop({ ref: 'User', unique: true, required: true, index: true })
+  @prop({ ref: 'User', required: true, index: true })
   user: Ref<User>;
 
   @prop({ ref: 'Organization', required: true, index: true })

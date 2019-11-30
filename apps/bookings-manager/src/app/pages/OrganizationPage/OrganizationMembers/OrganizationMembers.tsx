@@ -51,6 +51,7 @@ export function OrganizationMembers({ organizationId }: Props) {
       <MemberInviteModal
         organizationId={organizationId}
         visible={isInviteModalVisible}
+        onInvitationSent={setInvitations}
         close={() => setInviteModalVisible(false)}
       />
       <List loading={loading}>
@@ -75,7 +76,7 @@ export function OrganizationMembers({ organizationId }: Props) {
       </List>
       {pendingInvitations.length > 0 && (
         <>
-          <Divider>{t`Invited`}</Divider>
+          <Divider>{t`Sent invitations`}</Divider>
           {pendingInvitations.map(invitation => (
             <List.Item key={invitation._id}>
               <List.Item.Meta
