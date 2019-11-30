@@ -6,5 +6,5 @@ export class BusinessHours {
   weekday: number;
 
   @arrayProp({ items: Number })
-  hours: number[];
+  hours: number[]; // TODO: rework into an object
 }

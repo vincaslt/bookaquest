@@ -1,20 +1,22 @@
-import FullCalendar from '@fullcalendar/react';
-import timeGridWeek from '@fullcalendar/timegrid';
 import { RouteComponentProps } from '@reach/router';
+import { startOfDay, endOfDay } from 'date-fns';
 import * as React from 'react';
 import { useLoading } from '@bookaquest/utilities';
-import { Booking, BookingStatus } from '@bookaquest/interfaces';
+import { Booking, Organization, EscapeRoom } from '@bookaquest/interfaces';
 import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
+import { ResourceScheduler } from '../../shared/components/ResourceScheduler/ResourceScheduler';
 import { PendingBookingModal } from './PendingBookingModal';
+import { Spin } from 'antd';
 
-// TODO: show bookings as resources (per escape room)
 export function BookingsPage(props: RouteComponentProps) {
   const popupContainer = React.useRef<HTMLElement>();
   const { memberships } = useUser();
-  const [isLoading, withLoading] = useLoading(true);
-  const [bookings, setBookings] = React.useState<Booking[]>([]);
+  const [loading, withLoading] = useLoading(true);
+  const [, setBookings] = React.useState<Booking[]>([]);
+  const [organization, setOrganization] = React.useState<Organization>();
+  const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>();
   const [selectedBooking, selectBooking] = React.useState<Booking>();
 
   const membership = memberships?.[0]; // TODO: use selected, instead of first one
@@ -22,7 +24,15 @@ export function BookingsPage(props: RouteComponentProps) {
   React.useEffect(() => {
     if (membership) {
       withLoading(
-        api.getOrganizationBookings(membership.organization).then(setBookings)
+        Promise.all([
+          api.getOrganizationBookings(membership.organization),
+          api.getOrganization(membership.organization),
+          api.getEscapeRooms(membership.organization)
+        ]).then(([bkgs, org, esc]) => {
+          setBookings(bkgs);
+          setOrganization(org);
+          setEscapeRooms(esc);
+        })
       );
     }
 
@@ -34,37 +44,25 @@ export function BookingsPage(props: RouteComponentProps) {
 
   return (
     <PageContent>
-      {membership && (
-        <FullCalendar
-          defaultView="timeGridWeek"
-          plugins={[timeGridWeek]}
-          eventClick={info => selectBooking(info.event.extendedProps.booking)}
-          events={{
-            events: isLoading
-              ? []
-              : bookings.map(booking => ({
-                  title: booking.name,
-                  start: booking.startDate,
-                  end: booking.endDate,
-                  borderColor: 'rgba(0,0,0,0.8)',
-                  textColor: 'rgba(0,0,0,0.8)',
-                  backgroundColor: {
-                    [BookingStatus.Accepted]: '#b7eb8f',
-                    [BookingStatus.Pending]: '#ffe58f',
-                    [BookingStatus.Rejected]: '#ffa39e',
-                    [BookingStatus.Canceled]: '#ffa39e'
-                  }[booking.status],
-                  booking
-                }))
-          }}
-        />
-      )}
       {selectedBooking && (
         <PendingBookingModal
           setBookings={setBookings}
           onClose={handleCloseModal}
           booking={selectedBooking}
         />
+      )}
+      {loading ? (
+        <Spin />
+      ) : (
+        escapeRooms && (
+          <ResourceScheduler
+            baseAvailability={organization?.businessHours}
+            resources={escapeRooms.map(escapeRoom => ({
+              name: escapeRoom.name,
+              availability: escapeRoom.businessHours
+            }))}
+          />
+        )
       )}
     </PageContent>
   );
