@@ -54,7 +54,7 @@ const updateEscapeRoom: AugmentedRequestHandler = async (req, res) => {
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
   const updatedEscapeRoom = await EscapeRoomModel.findOneAndUpdate(
-    { escapeRoom: escapeRoomId, deleted: false },
+    { _id: escapeRoomId, deleted: false },
     dto,
     {
       runValidators: true,

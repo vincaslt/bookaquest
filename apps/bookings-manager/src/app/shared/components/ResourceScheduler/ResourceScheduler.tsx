@@ -1,52 +1,122 @@
-import * as React from 'react';
-import { eachDayOfInterval, addDays, addHours } from 'date-fns/esm';
 import {
-  startOfDay,
-  endOfDay,
   differenceInHours,
   format,
   min,
   getDay,
   setHours,
-  getHours
+  endOfHour,
+  eachDayOfInterval,
+  addHours,
+  isWithinInterval,
+  startOfHour,
+  Interval
 } from 'date-fns';
+import * as React from 'react';
 import times from 'ramda/es/times';
-import { BusinessHours } from '@bookaquest/interfaces';
+import { BusinessHours, Booking } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 import styled from 'styled-components';
+import { ResourceEvent } from './ResourceEvent';
 
-const HourHeading = styled.th`
-  min-width: 50px;
+const ROW_HEIGHT = 60;
+const COLUMN_WIDTH = 120;
+
+const TableHeading = styled.th`
+  height: 36px;
 `;
 
-const DayText = styled.th`
-  position: sticky;
-  left: 0;
+const DayHeading = styled.th`
+  height: 36px;
+  border: 1px solid #d9d9d9;
+  padding: 0.5em;
+  border-top: none;
+  &:first-child {
+    border-left: none;
+  }
+  &:last-child {
+    border-right: none;
+  }
+`;
+
+const HourHeading = styled.th`
+  min-width: ${COLUMN_WIDTH}px;
+  height: 36px;
+  border: 1px solid #d9d9d9;
+  padding: 0.5em;
+  &:first-child {
+    border-left: none;
+  }
+  &:last-child {
+    border-right: none;
+  }
+`;
+
+const HourStartCell = styled.td`
+  min-width: ${COLUMN_WIDTH / 2}px;
+  height: ${ROW_HEIGHT}px;
+  background-color: #fafafa;
+  border: 1px solid #d9d9d9;
+  border-right: none;
+  &:first-child {
+    border-left: none;
+  }
+`;
+
+const HourEndCell = styled.td`
+  min-width: ${COLUMN_WIDTH / 2}px;
+  height: ${ROW_HEIGHT}px;
+  background-color: #fafafa;
+  border: 1px solid #d9d9d9;
+  border-left: 1px dashed #d9d9d9;
+  &:last-child {
+    border-right: none;
+  }
+`;
+
+const ResourceNameCell = styled.td`
+  height: ${ROW_HEIGHT}px;
+  border: 1px solid #d9d9d9;
+  border-left: none;
+  padding: 0.5em;
 `;
 
 const SchedulerContainer = styled.div`
   width: 100%;
+  position: relative;
   overflow-x: auto;
+`;
+
+const ResourceNamesTable = styled.table`
+  border-right: 1px solid #d9d9d9;
+  border-left: 1px solid #d9d9d9;
+`;
+
+const DayHeadingText = styled.span`
+  position: sticky;
+  left: 0.5em;
 `;
 
 interface Resource {
   name: string;
   availability: BusinessHours[];
+  bookings: Booking[];
 }
 
 interface Props {
+  range: Interval;
   resources: Resource[];
   baseAvailability?: BusinessHours[];
 }
 
+// TODO: resource name height dynamic based on row height
 // TODO: take timezone into account
-export function ResourceScheduler({ resources, baseAvailability }: Props) {
+export function ResourceScheduler({
+  range,
+  resources,
+  baseAvailability
+}: Props) {
   const { dateFnsLocale } = useI18n();
-  const today = new Date();
-  const days = eachDayOfInterval({
-    start: startOfDay(today),
-    end: endOfDay(addDays(today, 7))
-  });
+  const days = eachDayOfInterval(range);
 
   const weeklyAvailability = days.map(day => {
     const weekday = getDay(day);
@@ -93,53 +163,94 @@ export function ResourceScheduler({ resources, baseAvailability }: Props) {
   );
 
   return (
-    <SchedulerContainer>
-      <table className="table-fixed">
-        <thead>
-          <tr>
-            <th></th>
-            {globalWorkHours.map(({ day, hours }) => (
-              <th colSpan={hours.length}>
-                <DayText>
-                  {format(day, 'MMM d, cccc', {
-                    locale: dateFnsLocale
-                  })}
-                </DayText>
-              </th>
-            ))}
-          </tr>
-          <tr>
-            <th></th>
-            {globalWorkHours.map(({ hours }) =>
-              hours.map(hour => (
-                <HourHeading>
-                  {format(hour, 'p', { locale: dateFnsLocale })}
-                </HourHeading>
-              ))
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {resources.map(resource => (
+    <div className="flex">
+      <div className="flex border-t border-r mr-auto max-w-full">
+        <ResourceNamesTable>
+          <thead>
             <tr>
-              <td>{resource.name}</td>
-              {globalWorkHours.map(({ day, hours }) => {
-                const dayAvailability = resource.availability.find(
-                  availability => availability.weekday === getDay(day)
-                );
-                return hours.map(hour => (
-                  <td className="bordered">
-                    {dayAvailability &&
-                      getHours(hour) >= dayAvailability.hours[0] &&
-                      getHours(hour) <= dayAvailability.hours[1] &&
-                      'x'}
-                  </td>
-                ));
-              })}
+              <TableHeading />
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </SchedulerContainer>
+            <tr>
+              <TableHeading />
+            </tr>
+          </thead>
+          <tbody>
+            {resources.map((resource, i) => (
+              <tr key={i}>
+                <ResourceNameCell>{resource.name}</ResourceNameCell>
+              </tr>
+            ))}
+          </tbody>
+        </ResourceNamesTable>
+
+        <SchedulerContainer>
+          <table>
+            <thead>
+              <tr>
+                {globalWorkHours.map(({ day, hours }, i) => (
+                  <DayHeading key={i} colSpan={hours.length * 2}>
+                    <DayHeadingText>
+                      {format(day, 'MMM d, cccc', {
+                        locale: dateFnsLocale
+                      })}
+                    </DayHeadingText>
+                  </DayHeading>
+                ))}
+              </tr>
+              <tr>
+                {globalWorkHours.map(({ hours }) =>
+                  hours.map((hour, i) => (
+                    <HourHeading key={i} colSpan={2}>
+                      {format(hour, 'p', { locale: dateFnsLocale })}
+                    </HourHeading>
+                  ))
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {resources.map((resource, i) => (
+                <tr key={i}>
+                  {globalWorkHours.map(({ day, hours }) => {
+                    // const dayAvailability = resource.availability.find(
+                    //   availability => availability.weekday === getDay(day)
+                    // );
+                    return hours.map((hour, j) => {
+                      const booking = resource.bookings.find(({ startDate }) =>
+                        isWithinInterval(startDate, {
+                          start: startOfHour(hour),
+                          end: endOfHour(hour)
+                        })
+                      );
+                      return (
+                        <React.Fragment key={j}>
+                          <HourStartCell className="relative">
+                            {/* {dayAvailability &&
+                            getHours(hour) >= dayAvailability.hours[0] &&
+                            getHours(hour) <= dayAvailability.hours[1] &&
+                            'x'} */}
+                            {booking && (
+                              <ResourceEvent
+                                rowHeight={ROW_HEIGHT}
+                                columnWidth={COLUMN_WIDTH}
+                                name={booking.name}
+                                time={{
+                                  start: booking.startDate,
+                                  end: booking.endDate
+                                }}
+                              />
+                            )}
+                          </HourStartCell>
+                          <HourEndCell />
+                        </React.Fragment>
+                      );
+                    });
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </SchedulerContainer>
+      </div>
+    </div>
   );
 }

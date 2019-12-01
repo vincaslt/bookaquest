@@ -86,6 +86,7 @@ const updateOrganization: AugmentedRequestHandler = async (req, res) => {
   return organization;
 };
 
+// TODO: limit by to/from like escape room
 const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { organizationId } = getParams(req, ['organizationId']);
