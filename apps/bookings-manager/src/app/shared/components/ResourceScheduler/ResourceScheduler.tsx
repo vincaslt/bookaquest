@@ -9,14 +9,16 @@ import {
   addHours,
   isWithinInterval,
   startOfHour,
-  Interval
+  Interval,
+  max
 } from 'date-fns';
 import * as React from 'react';
 import times from 'ramda/es/times';
-import { BusinessHours, Booking } from '@bookaquest/interfaces';
+import { BusinessHours, Booking, BookingStatus } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 import styled from 'styled-components';
 import { ResourceEvent } from './ResourceEvent';
+import { CurrentHourMarker } from './CurrentHourMarker';
 
 const ROW_HEIGHT = 60;
 const COLUMN_WIDTH = 120;
@@ -27,9 +29,10 @@ const TableHeading = styled.th`
 
 const DayHeading = styled.th`
   height: 36px;
-  border: 1px solid #d9d9d9;
   padding: 0.5em;
   border-top: none;
+  border-bottom: 1px solid #d9d9d9;
+  border-right: 2px solid #d9d9d9;
   &:first-child {
     border-left: none;
   }
@@ -41,8 +44,12 @@ const DayHeading = styled.th`
 const HourHeading = styled.th`
   min-width: ${COLUMN_WIDTH}px;
   height: 36px;
-  border: 1px solid #d9d9d9;
   padding: 0.5em;
+  border-bottom: 1px solid #d9d9d9;
+  border-left: 1px solid #d9d9d9;
+  border-right: ${({ lastHour }: { lastHour: boolean }) =>
+      lastHour ? '2px' : '1px'}
+    solid #d9d9d9;
   &:first-child {
     border-left: none;
   }
@@ -55,8 +62,9 @@ const HourStartCell = styled.td`
   min-width: ${COLUMN_WIDTH / 2}px;
   height: ${ROW_HEIGHT}px;
   background-color: #fafafa;
-  border: 1px solid #d9d9d9;
-  border-right: none;
+  border-bottom: 1px solid #d9d9d9;
+  border-left: 1px solid #d9d9d9;
+  border-right: 1px dashed #d9d9d9;
   &:first-child {
     border-left: none;
   }
@@ -66,8 +74,10 @@ const HourEndCell = styled.td`
   min-width: ${COLUMN_WIDTH / 2}px;
   height: ${ROW_HEIGHT}px;
   background-color: #fafafa;
-  border: 1px solid #d9d9d9;
-  border-left: 1px dashed #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
+  border-right: ${({ lastHour }: { lastHour: boolean }) =>
+      lastHour ? '2px' : '1px'}
+    solid #d9d9d9;
   &:last-child {
     border-right: none;
   }
@@ -106,6 +116,7 @@ interface Props {
   range: Interval;
   resources: Resource[];
   baseAvailability?: BusinessHours[];
+  onClickEvent: (booking: Booking) => void;
 }
 
 // TODO: resource name height dynamic based on row height
@@ -113,10 +124,36 @@ interface Props {
 export function ResourceScheduler({
   range,
   resources,
-  baseAvailability
+  baseAvailability,
+  onClickEvent
 }: Props) {
-  const { dateFnsLocale } = useI18n();
+  const { dateFnsLocale, t } = useI18n();
+  const [now, setNow] = React.useState(new Date());
   const days = eachDayOfInterval(range);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 1000 * 60);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const bookingStatus = (booking: Booking) =>
+    ({
+      [BookingStatus.Accepted]: t`Accepted`,
+      [BookingStatus.Rejected]: t`Rejected`,
+      [BookingStatus.Pending]: t`Pending`,
+      [BookingStatus.Canceled]: t`Canceled`
+    }[booking.status]);
+
+  const bookingColor = (booking: Booking) =>
+    ({
+      [BookingStatus.Accepted]: 'bg-green-100',
+      [BookingStatus.Rejected]: 'bg-red-100',
+      [BookingStatus.Pending]: 'bg-geekblue-100',
+      [BookingStatus.Canceled]: 'bg-orange-100'
+    }[booking.status]);
 
   const weeklyAvailability = days.map(day => {
     const weekday = getDay(day);
@@ -143,7 +180,7 @@ export function ResourceScheduler({
     const fromHour = min(
       hoursForDay.map(([start]) => setHours(day, Math.floor(start)))
     );
-    const toHour = min(
+    const toHour = max(
       hoursForDay.map(([, end]) => setHours(day, Math.ceil(end)))
     );
 
@@ -200,7 +237,11 @@ export function ResourceScheduler({
               <tr>
                 {globalWorkHours.map(({ hours }) =>
                   hours.map((hour, i) => (
-                    <HourHeading key={i} colSpan={2}>
+                    <HourHeading
+                      key={i}
+                      colSpan={2}
+                      lastHour={i === hours.length - 1}
+                    >
                       {format(hour, 'p', { locale: dateFnsLocale })}
                     </HourHeading>
                   ))
@@ -230,17 +271,28 @@ export function ResourceScheduler({
                             'x'} */}
                             {booking && (
                               <ResourceEvent
+                                tooltip={t`${bookingStatus(booking)}, ${
+                                  booking.name
+                                }`}
+                                className={bookingColor(booking)}
                                 rowHeight={ROW_HEIGHT}
                                 columnWidth={COLUMN_WIDTH}
                                 name={booking.name}
-                                time={{
-                                  start: booking.startDate,
-                                  end: booking.endDate
-                                }}
+                                time={[booking.startDate, booking.endDate]}
+                                onClick={() => onClickEvent(booking)}
+                              />
+                            )}
+                            {isWithinInterval(now, {
+                              start: startOfHour(hour),
+                              end: endOfHour(hour)
+                            }) && (
+                              <CurrentHourMarker
+                                rowHeight={ROW_HEIGHT}
+                                columnWidth={COLUMN_WIDTH}
                               />
                             )}
                           </HourStartCell>
-                          <HourEndCell />
+                          <HourEndCell lastHour={j === hours.length - 1} />
                         </React.Fragment>
                       );
                     });

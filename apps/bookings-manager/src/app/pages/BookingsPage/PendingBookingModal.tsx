@@ -27,9 +27,7 @@ export function PendingBookingModal({ setBookings, booking, onClose }: Props) {
   const handleAccept = async () => {
     const updatedBooking = await withLoading(api.acceptBooking(booking._id));
     setBookings(bookings =>
-      bookings.map(b =>
-        booking._id === updatedBooking._id ? updatedBooking : b
-      )
+      bookings.map(b => (b._id === updatedBooking._id ? updatedBooking : b))
     );
     onClose();
   };

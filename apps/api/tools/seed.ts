@@ -17,7 +17,7 @@ async function seed() {
   const user: UserInitFields = {
     fullName: 'vincas stonys',
     email: 'vincaslt@gmail.com',
-    password: await bcrypt.hash('vincux', 10)
+    password: await bcrypt.hash('123456', 10)
   };
 
   await UserModel.create(user);

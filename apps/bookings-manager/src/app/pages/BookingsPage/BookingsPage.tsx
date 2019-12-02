@@ -1,11 +1,17 @@
 import { RouteComponentProps } from '@reach/router';
 import { Spin, Button } from 'antd';
-import { endOfDay, startOfDay, addWeeks } from 'date-fns';
+import { endOfDay, startOfDay, addWeeks, subDays } from 'date-fns';
 import * as React from 'react';
 import { useLoading } from '@bookaquest/utilities';
-import { Booking, Organization, EscapeRoom } from '@bookaquest/interfaces';
+import {
+  Booking,
+  Organization,
+  EscapeRoom,
+  BookingStatus
+} from '@bookaquest/interfaces';
 import inc from 'ramda/es/inc';
 import dec from 'ramda/es/dec';
+import { Time } from '@bookaquest/components';
 import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
@@ -13,7 +19,6 @@ import { ResourceScheduler } from '../../shared/components/ResourceScheduler/Res
 import { PendingBookingModal } from './PendingBookingModal';
 
 export function BookingsPage(props: RouteComponentProps) {
-  const popupContainer = React.useRef<HTMLElement>();
   const { memberships } = useUser();
   const [loading, withLoading] = useLoading(true);
   const [bookings, setBookings] = React.useState<Booking[]>([]);
@@ -39,12 +44,19 @@ export function BookingsPage(props: RouteComponentProps) {
         })
       );
     }
-
-    popupContainer.current = document.createElement('div');
-    document.body.appendChild(popupContainer.current);
   }, [membership, withLoading]);
 
   const handleCloseModal = () => selectBooking(undefined);
+  const handleSelectBooking = (booking: Booking) => {
+    if (booking.status === BookingStatus.Pending) {
+      selectBooking(booking);
+    }
+  };
+
+  const range = {
+    start: startOfDay(addWeeks(today, weekOffset)),
+    end: endOfDay(subDays(addWeeks(today, weekOffset + 1), 1))
+  };
 
   return (
     <PageContent>
@@ -59,32 +71,37 @@ export function BookingsPage(props: RouteComponentProps) {
         <Spin />
       ) : (
         <>
-          <div className="flex justify-end">
+          <div className="flex justify-end items-center mb-2">
+            <div>
+              <Time type="date" date={[range.start, range.end]} />
+            </div>
             <Button
-              className="flex justify-center mb-2"
+              className="flex justify-center ml-2"
               shape="circle"
               icon="left"
               disabled={weekOffset === 0}
               onClick={() => setWeekOffset(dec)}
             />
             <Button
-              className="flex justify-center ml-2 mb-2"
+              className="flex justify-center ml-2"
               shape="circle"
               icon="right"
               onClick={() => setWeekOffset(inc)}
             />
           </div>
           <ResourceScheduler
-            range={{
-              start: startOfDay(addWeeks(today, weekOffset)),
-              end: endOfDay(addWeeks(today, weekOffset + 1))
-            }}
+            range={range}
+            onClickEvent={handleSelectBooking}
             baseAvailability={organization?.businessHours}
             resources={escapeRooms.map(escapeRoom => ({
               name: escapeRoom.name,
               availability: escapeRoom.businessHours,
               bookings: bookings.filter(
-                booking => booking.escapeRoom === escapeRoom._id
+                booking =>
+                  booking.escapeRoom === escapeRoom._id &&
+                  [BookingStatus.Accepted, BookingStatus.Pending].includes(
+                    booking.status
+                  )
               )
             }))}
           />
