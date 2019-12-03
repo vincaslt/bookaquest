@@ -14,7 +14,7 @@ import {
   OrganizationMembershipModel,
   OrganizationMembershipInitFields
 } from '../models/OrganizationMembership';
-import { BookingModel } from '../models/Booking';
+import { BookingModel, BookingStatus } from '../models/Booking';
 import {
   requireBelongsToOrganization,
   requireOwnerOfOrganization,
@@ -86,8 +86,7 @@ const updateOrganization: AugmentedRequestHandler = async (req, res) => {
   return organization;
 };
 
-// TODO: limit by to/from like escape room
-const listBookings: AugmentedRequestHandler = async (req, res) => {
+const listUpcomingBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { organizationId } = getParams(req, ['organizationId']);
 
@@ -99,6 +98,7 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
 
   const bookings = await BookingModel.find({
     escapeRoom: { $in: escapeRooms.map(({ id }) => id) },
+    status: { $in: [BookingStatus.Accepted, BookingStatus.Pending] },
     endDate: { $gt: new Date() }
   });
 
@@ -254,7 +254,7 @@ const declineOrganizationInvitation: AugmentedRequestHandler = async (
 export const organizationHandlers = [
   post('/organization', createOrganization),
   put('/organization/:organizationId', updateOrganization),
-  get('/organization/:organizationId/booking', listBookings),
+  get('/organization/:organizationId/booking', listUpcomingBookings),
   get('/organization/:organizationId/member', listMembers),
   post('/organization/:organizationId/member', createOrganizationInvitation),
   get('/organization/:organizationId', getOrganization), // TODO mark as public? no auth required

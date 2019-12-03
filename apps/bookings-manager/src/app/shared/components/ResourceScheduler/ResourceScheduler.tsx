@@ -10,8 +10,10 @@ import {
   isWithinInterval,
   startOfHour,
   Interval,
-  max
+  max,
+  getHours
 } from 'date-fns';
+import Paragraph from 'antd/lib/typography/Paragraph';
 import * as React from 'react';
 import times from 'ramda/es/times';
 import { BusinessHours, Booking, BookingStatus } from '@bookaquest/interfaces';
@@ -41,15 +43,13 @@ const DayHeading = styled.th`
   }
 `;
 
-const HourHeading = styled.th`
+const HourHeading = styled.th<{ lastHour: boolean }>`
   min-width: ${COLUMN_WIDTH}px;
   height: 36px;
   padding: 0.5em;
   border-bottom: 1px solid #d9d9d9;
   border-left: 1px solid #d9d9d9;
-  border-right: ${({ lastHour }: { lastHour: boolean }) =>
-      lastHour ? '2px' : '1px'}
-    solid #d9d9d9;
+  border-right: ${({ lastHour }) => (lastHour ? '2px' : '1px')} solid #d9d9d9;
   &:first-child {
     border-left: none;
   }
@@ -58,10 +58,10 @@ const HourHeading = styled.th`
   }
 `;
 
-const HourStartCell = styled.td`
+const HourStartCell = styled.td<{ isWorkHour: boolean }>`
   min-width: ${COLUMN_WIDTH / 2}px;
   height: ${ROW_HEIGHT}px;
-  background-color: #fafafa;
+  background-color: ${({ isWorkHour }) => (isWorkHour ? 'white' : '#f5f5f5')};
   border-bottom: 1px solid #d9d9d9;
   border-left: 1px solid #d9d9d9;
   border-right: 1px dashed #d9d9d9;
@@ -70,14 +70,12 @@ const HourStartCell = styled.td`
   }
 `;
 
-const HourEndCell = styled.td`
+const HourEndCell = styled.td<{ lastHour: boolean; isWorkHour: boolean }>`
   min-width: ${COLUMN_WIDTH / 2}px;
   height: ${ROW_HEIGHT}px;
-  background-color: #fafafa;
+  background-color: ${({ isWorkHour }) => (isWorkHour ? 'white' : '#f5f5f5')};
   border-bottom: 1px solid #d9d9d9;
-  border-right: ${({ lastHour }: { lastHour: boolean }) =>
-      lastHour ? '2px' : '1px'}
-    solid #d9d9d9;
+  border-right: ${({ lastHour }) => (lastHour ? '2px' : '1px')} solid #d9d9d9;
   &:last-child {
     border-right: none;
   }
@@ -85,6 +83,7 @@ const HourEndCell = styled.td`
 
 const ResourceNameCell = styled.td`
   height: ${ROW_HEIGHT}px;
+  max-width: ${COLUMN_WIDTH * 2}px;
   border: 1px solid #d9d9d9;
   border-left: none;
   padding: 0.5em;
@@ -119,6 +118,7 @@ interface Props {
   onClickEvent: (booking: Booking) => void;
 }
 
+// TODO: overlapping bookings support
 // TODO: resource name height dynamic based on row height
 // TODO: take timezone into account
 export function ResourceScheduler({
@@ -186,7 +186,7 @@ export function ResourceScheduler({
 
     const hours = times(
       i => addHours(fromHour, i),
-      differenceInHours(toHour, fromHour) + 1
+      differenceInHours(toHour, fromHour)
     );
 
     return {
@@ -214,7 +214,16 @@ export function ResourceScheduler({
           <tbody>
             {resources.map((resource, i) => (
               <tr key={i}>
-                <ResourceNameCell>{resource.name}</ResourceNameCell>
+                <ResourceNameCell>
+                  <Paragraph
+                    ellipsis={{ rows: 2 }}
+                    strong
+                    className="max-w-full"
+                    style={{ marginBottom: 0 }}
+                  >
+                    {resource.name}
+                  </Paragraph>
+                </ResourceNameCell>
               </tr>
             ))}
           </tbody>
@@ -252,25 +261,41 @@ export function ResourceScheduler({
               {resources.map((resource, i) => (
                 <tr key={i}>
                   {globalWorkHours.map(({ day, hours }) => {
-                    // const dayAvailability = resource.availability.find(
-                    //   availability => availability.weekday === getDay(day)
-                    // );
+                    const dayAvailability = resource.availability.find(
+                      availability => availability.weekday === getDay(day)
+                    );
                     return hours.map((hour, j) => {
-                      const booking = resource.bookings.find(({ startDate }) =>
-                        isWithinInterval(startDate, {
-                          start: startOfHour(hour),
-                          end: endOfHour(hour)
-                        })
+                      const bookingsAtHour = resource.bookings.filter(
+                        ({ startDate }) =>
+                          isWithinInterval(startDate, {
+                            start: startOfHour(hour),
+                            end: endOfHour(hour)
+                          })
                       );
+                      const booking = bookingsAtHour[0];
+                      const isStartWorkHour =
+                        !!dayAvailability &&
+                        getHours(hour) >= dayAvailability.hours[0] &&
+                        getHours(hour) < dayAvailability.hours[1];
+
+                      const isEndWorkHour =
+                        !!dayAvailability &&
+                        getHours(hour) + 0.5 >= dayAvailability.hours[0] &&
+                        getHours(hour) + 0.5 < dayAvailability.hours[1];
+
                       return (
                         <React.Fragment key={j}>
-                          <HourStartCell className="relative">
-                            {/* {dayAvailability &&
-                            getHours(hour) >= dayAvailability.hours[0] &&
-                            getHours(hour) <= dayAvailability.hours[1] &&
-                            'x'} */}
+                          <HourStartCell
+                            className="relative"
+                            isWorkHour={isStartWorkHour}
+                          >
                             {booking && (
                               <ResourceEvent
+                                overlappingCount={
+                                  bookingsAtHour.length > 1
+                                    ? bookingsAtHour.length
+                                    : 0
+                                }
                                 tooltip={t`${bookingStatus(booking)}, ${
                                   booking.name
                                 }`}
@@ -292,7 +317,10 @@ export function ResourceScheduler({
                               />
                             )}
                           </HourStartCell>
-                          <HourEndCell lastHour={j === hours.length - 1} />
+                          <HourEndCell
+                            isWorkHour={isEndWorkHour}
+                            lastHour={j === hours.length - 1}
+                          />
                         </React.Fragment>
                       );
                     });

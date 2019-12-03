@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { differenceInMinutes, startOfHour } from 'date-fns';
+import * as React from 'react';
 
 interface Props {
   columnWidth: number;

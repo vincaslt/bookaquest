@@ -1,30 +1,48 @@
 import { Button, Modal } from 'antd';
 import * as React from 'react';
-import { Booking, BookingStatus } from '@bookaquest/interfaces';
+import { Booking } from '@bookaquest/interfaces';
 import { useI18n, useLoading } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 
 interface Props {
-  booking: Booking;
+  visible: boolean;
+  selectedBooking?: Booking;
   setBookings: (bookings: (bookings: Booking[]) => Booking[]) => void;
   onClose: () => void;
 }
 
-export function PendingBookingModal({ setBookings, booking, onClose }: Props) {
+// TODO: if there are more than 1 booking on the same time when accepting, request to enter rejection message for other bookings and reject them in backend
+export function PendingBookingModal({
+  setBookings,
+  visible,
+  selectedBooking,
+  onClose
+}: Props) {
   const { t } = useI18n();
   const [loading, withLoading] = useLoading();
+  const [booking, setBooking] = React.useState(selectedBooking);
+
+  React.useEffect(() => {
+    if (selectedBooking) {
+      setBooking(selectedBooking);
+    }
+  }, [selectedBooking]);
 
   const handleReject = async () => {
+    if (!booking) {
+      return;
+    }
     const updatedBooking = await withLoading(api.rejectBooking(booking._id));
     setBookings(bookings =>
-      bookings.map(b =>
-        booking._id === updatedBooking._id ? updatedBooking : b
-      )
+      bookings.filter(({ _id }) => _id !== updatedBooking._id)
     );
     onClose();
   };
 
   const handleAccept = async () => {
+    if (!booking) {
+      return;
+    }
     const updatedBooking = await withLoading(api.acceptBooking(booking._id));
     setBookings(bookings =>
       bookings.map(b => (b._id === updatedBooking._id ? updatedBooking : b))
@@ -35,7 +53,7 @@ export function PendingBookingModal({ setBookings, booking, onClose }: Props) {
   return (
     <Modal
       onCancel={onClose}
-      visible={booking.status === BookingStatus.Pending}
+      visible={visible}
       footer={[
         <Button key="back" onClick={onClose}>{t`Back`}</Button>,
         <Button
@@ -51,8 +69,12 @@ export function PendingBookingModal({ setBookings, booking, onClose }: Props) {
         </Button>
       ]}
     >
-      <div>{booking.name}</div>
-      <div>{booking.email}</div>
+      {booking && (
+        <>
+          <div>{booking.name}</div>
+          <div>{booking.email}</div>
+        </>
+      )}
     </Modal>
   );
 }

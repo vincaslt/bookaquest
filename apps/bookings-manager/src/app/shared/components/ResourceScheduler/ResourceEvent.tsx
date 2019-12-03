@@ -1,6 +1,7 @@
 import { differenceInMinutes } from 'date-fns/esm';
 import { startOfHour } from 'date-fns';
 import Text from 'antd/lib/typography/Text';
+import { Badge } from 'antd';
 import * as React from 'react';
 import { Time } from '@bookaquest/components';
 import { classNames } from '@bookaquest/utilities';
@@ -13,6 +14,7 @@ interface Props {
   onClick: () => void;
   tooltip: string;
   className: string;
+  overlappingCount: number;
 }
 
 export function ResourceEvent({
@@ -22,7 +24,8 @@ export function ResourceEvent({
   onClick,
   columnWidth,
   rowHeight,
-  className
+  className,
+  overlappingCount
 }: Props) {
   const width = (differenceInMinutes(end, start) * columnWidth) / 60;
   const left =
@@ -43,16 +46,24 @@ export function ResourceEvent({
       )}
       onClick={onClick}
     >
-      <div>
-        <Text className="max-w-full" strong ellipsis>
-          {name}
-        </Text>
-      </div>
-      <div>
-        <Text className="max-w-full" ellipsis>
-          <Time date={[start, end]} />
-        </Text>
-      </div>
+      <Badge
+        count={overlappingCount}
+        overflowCount={100}
+        className="max-w-full"
+        offset={[3, -3]}
+        style={{ backgroundColor: 'rgba(0,0,0,0.75)', color: 'white' }}
+      >
+        <div>
+          <Text className="max-w-full" strong ellipsis>
+            {name}
+          </Text>
+        </div>
+        <div>
+          <Text className="max-w-full" ellipsis>
+            <Time date={[start, end]} />
+          </Text>
+        </div>
+      </Badge>
     </div>
   );
 }

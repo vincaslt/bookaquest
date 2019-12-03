@@ -2,7 +2,7 @@ import { RouteComponentProps } from '@reach/router';
 import { Spin, Button } from 'antd';
 import { endOfDay, startOfDay, addWeeks, subDays } from 'date-fns';
 import * as React from 'react';
-import { useLoading } from '@bookaquest/utilities';
+import { useLoading, useI18n } from '@bookaquest/utilities';
 import {
   Booking,
   Organization,
@@ -19,6 +19,7 @@ import { ResourceScheduler } from '../../shared/components/ResourceScheduler/Res
 import { PendingBookingModal } from './PendingBookingModal';
 
 export function BookingsPage(props: RouteComponentProps) {
+  const { t } = useI18n();
   const { memberships } = useUser();
   const [loading, withLoading] = useLoading(true);
   const [bookings, setBookings] = React.useState<Booking[]>([]);
@@ -58,36 +59,42 @@ export function BookingsPage(props: RouteComponentProps) {
     end: endOfDay(subDays(addWeeks(today, weekOffset + 1), 1))
   };
 
+  const timezone =
+    organization?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   return (
     <PageContent>
-      {selectedBooking && (
-        <PendingBookingModal
-          setBookings={setBookings}
-          onClose={handleCloseModal}
-          booking={selectedBooking}
-        />
-      )}
+      <PendingBookingModal
+        visible={!!selectedBooking}
+        setBookings={setBookings}
+        onClose={handleCloseModal}
+        selectedBooking={selectedBooking}
+      />
       {loading ? (
         <Spin />
       ) : (
         <>
-          <div className="flex justify-end items-center mb-2">
-            <div>
-              <Time type="date" date={[range.start, range.end]} />
+          <div className="flex justify-between items-center mb-2">
+            <span>{t`Timezone: ${timezone}`}</span>
+            <div className="flex items-center">
+              <Button
+                className="flex justify-center mr-4"
+                shape="circle"
+                icon="left"
+                disabled={weekOffset === 0}
+                onClick={() => setWeekOffset(dec)}
+              />
+              <div>
+                <Time type="date" date={[range.start, range.end]} />
+              </div>
+
+              <Button
+                className="flex justify-center ml-4"
+                shape="circle"
+                icon="right"
+                onClick={() => setWeekOffset(inc)}
+              />
             </div>
-            <Button
-              className="flex justify-center ml-2"
-              shape="circle"
-              icon="left"
-              disabled={weekOffset === 0}
-              onClick={() => setWeekOffset(dec)}
-            />
-            <Button
-              className="flex justify-center ml-2"
-              shape="circle"
-              icon="right"
-              onClick={() => setWeekOffset(inc)}
-            />
           </div>
           <ResourceScheduler
             range={range}
@@ -97,11 +104,7 @@ export function BookingsPage(props: RouteComponentProps) {
               name: escapeRoom.name,
               availability: escapeRoom.businessHours,
               bookings: bookings.filter(
-                booking =>
-                  booking.escapeRoom === escapeRoom._id &&
-                  [BookingStatus.Accepted, BookingStatus.Pending].includes(
-                    booking.status
-                  )
+                booking => booking.escapeRoom === escapeRoom._id
               )
             }))}
           />
