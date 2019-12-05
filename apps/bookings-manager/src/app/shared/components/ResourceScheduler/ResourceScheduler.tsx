@@ -115,7 +115,7 @@ interface Props {
   range: Interval;
   resources: Resource[];
   baseAvailability?: BusinessHours[];
-  onClickEvent: (booking: Booking) => void;
+  onClickEvent: (booking: Booking[]) => void;
 }
 
 // TODO: overlapping bookings support
@@ -296,7 +296,7 @@ export function ResourceScheduler({
                                     ? bookingsAtHour.length
                                     : 0
                                 }
-                                tooltip={t`${bookingStatus(booking)}, ${
+                                tooltip={`${bookingStatus(booking)}, ${
                                   booking.name
                                 }`}
                                 className={bookingColor(booking)}
@@ -304,7 +304,7 @@ export function ResourceScheduler({
                                 columnWidth={COLUMN_WIDTH}
                                 name={booking.name}
                                 time={[booking.startDate, booking.endDate]}
-                                onClick={() => onClickEvent(booking)}
+                                onClick={() => onClickEvent(bookingsAtHour)}
                               />
                             )}
                             {isWithinInterval(now, {

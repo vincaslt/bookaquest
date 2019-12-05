@@ -45,9 +45,9 @@ const Footer = styled(Layout.Footer)`
 // TODO: footer link
 // TODO: load stripe keys from api (DB)
 function App() {
-  const { ready } = useI18n(undefined, { useSuspense: false });
+  const { i18n } = useI18n(undefined, { useSuspense: false });
 
-  if (!ready) {
+  if (!i18n.ready) {
     return (
       <AppSpinnerContainer>
         <Spin size="large" />

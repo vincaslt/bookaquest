@@ -1,0 +1,21 @@
+{
+  "Update failed, please try again": "Update failed, please try again",
+  "Logged in successfully": "Logged in successfully",
+  "Email {{test}}": "Email {{test}}",
+  "Organization has been created": "Organization has been created",
+  "Strip payment details": "Strip payment details",
+  "User has been created": "User has been created",
+  "Monday": "Monday",
+  "Tuesday": "Tuesday",
+  "Wednesday": "Wednesday",
+  "Thursday": "Thursday",
+  "Friday": "Friday",
+  "Saturday": "Saturday",
+  "Sunday": "Sunday",
+  "{{k_0}}, {{k_1}}": "{{k_0}}, {{k_1}}",
+  "Pending booking(s)": "Pending booking(s)",
+  "Pending booking(s) {{count}}": "Pending booking(s) {{count}}",
+  "Pending booking(s) {{count}}_plural_0": "Pending booking(s) {{count}}",
+  "Pending booking(s) {{count}}_plural_1": "Pending booking(s) {{count}}",
+  "Pending booking(s) {{count}}_plural_2": "Pending booking(s) {{count}}"
+}

@@ -25,7 +25,7 @@ export function BookingsPage(props: RouteComponentProps) {
   const [bookings, setBookings] = React.useState<Booking[]>([]);
   const [organization, setOrganization] = React.useState<Organization>();
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
-  const [selectedBooking, selectBooking] = React.useState<Booking>();
+  const [selectedBookings, selectBookings] = React.useState<Booking[]>([]);
   const [weekOffset, setWeekOffset] = React.useState(0);
 
   const today = new Date();
@@ -47,10 +47,10 @@ export function BookingsPage(props: RouteComponentProps) {
     }
   }, [membership, withLoading]);
 
-  const handleCloseModal = () => selectBooking(undefined);
-  const handleSelectBooking = (booking: Booking) => {
-    if (booking.status === BookingStatus.Pending) {
-      selectBooking(booking);
+  const handleCloseModal = () => selectBookings([]);
+  const handleSelectBooking = (bookings: Booking[]) => {
+    if (bookings.every(({ status }) => status === BookingStatus.Pending)) {
+      selectBookings(bookings);
     }
   };
 
@@ -65,10 +65,10 @@ export function BookingsPage(props: RouteComponentProps) {
   return (
     <PageContent>
       <PendingBookingModal
-        visible={!!selectedBooking}
+        visible={selectedBookings.length > 0}
         setBookings={setBookings}
         onClose={handleCloseModal}
-        selectedBooking={selectedBooking}
+        selectedBookings={selectedBookings}
       />
       {loading ? (
         <Spin />

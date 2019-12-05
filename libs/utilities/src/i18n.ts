@@ -24,6 +24,9 @@ export function initI18n() {
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
+      backend: {
+        loadPath: '/assets/locales/{{lng}}/{{ns}}.json'
+      },
       fallbackLng,
       load: 'languageOnly',
       keySeparator: false,
@@ -63,5 +66,5 @@ export const useI18n = (ns?: Namespace, options?: UseTranslationOptions) => {
     return tt(undefined)(parts, ...values);
   }
 
-  return { ...i18n, t, tt, dateFnsLocale };
+  return { i18n, t, tt, dateFnsLocale };
 };
