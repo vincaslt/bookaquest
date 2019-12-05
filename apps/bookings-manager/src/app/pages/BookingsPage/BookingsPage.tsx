@@ -25,7 +25,7 @@ export function BookingsPage(props: RouteComponentProps) {
   const [bookings, setBookings] = React.useState<Booking[]>([]);
   const [organization, setOrganization] = React.useState<Organization>();
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
-  const [selectedBookings, selectBookings] = React.useState<Booking[]>([]);
+  const [selectedBookings, setSelectedBookings] = React.useState<Booking[]>([]);
   const [weekOffset, setWeekOffset] = React.useState(0);
 
   const today = new Date();
@@ -47,10 +47,32 @@ export function BookingsPage(props: RouteComponentProps) {
     }
   }, [membership, withLoading]);
 
-  const handleCloseModal = () => selectBookings([]);
-  const handleSelectBooking = (bookings: Booking[]) => {
-    if (bookings.every(({ status }) => status === BookingStatus.Pending)) {
-      selectBookings(bookings);
+  const updateBookings = (updatedBookings: Booking[]) => {
+    const getUpdated = (booking: Booking) =>
+      updatedBookings.find(({ _id }) => _id === booking._id);
+
+    setBookings(prev =>
+      prev
+        .filter(
+          booking => getUpdated(booking)?.status !== BookingStatus.Rejected
+        )
+        .map(booking => {
+          const updated = getUpdated(booking);
+          return updated?.status === BookingStatus.Accepted ? updated : booking;
+        })
+    );
+
+    setSelectedBookings(prev =>
+      prev.filter(
+        booking => getUpdated(booking)?.status !== BookingStatus.Rejected
+      )
+    );
+  };
+
+  const handleCloseModal = () => setSelectedBookings([]);
+  const handleSelectBooking = (selected: Booking[]) => {
+    if (selected.every(({ status }) => status === BookingStatus.Pending)) {
+      setSelectedBookings(selected);
     }
   };
 
@@ -66,7 +88,7 @@ export function BookingsPage(props: RouteComponentProps) {
     <PageContent>
       <PendingBookingModal
         visible={selectedBookings.length > 0}
-        setBookings={setBookings}
+        updateBookings={updateBookings}
         onClose={handleCloseModal}
         selectedBookings={selectedBookings}
       />

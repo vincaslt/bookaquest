@@ -7,13 +7,14 @@ import * as api from '../../api/application';
 interface Props {
   visible: boolean;
   selectedBookings: Booking[];
-  setBookings: (bookings: (bookings: Booking[]) => Booking[]) => void;
+  updateBookings: (bookings: Booking[]) => void;
   onClose: () => void;
 }
 
-// TODO: if there are more than 1 booking on the same time when accepting, request to enter rejection message for other bookings and reject them in backend
+// TODO: if there are more than 1 booking on the same time when accepting, request to enter rejection message for other bookings
+// TODO: if multiple same start bookings' durations are different, represent them as a range (diff color min max end)
 export function PendingBookingModal({
-  setBookings,
+  updateBookings,
   visible,
   selectedBookings,
   onClose
@@ -29,21 +30,17 @@ export function PendingBookingModal({
   }, [selectedBookings]);
 
   const handleReject = async (booking: Booking) => {
-    const updatedBooking = await withLoading(api.rejectBooking(booking._id));
-    setBookings(prev => prev.filter(({ _id }) => _id !== updatedBooking._id));
-    if (bookings.length === 1) {
+    const updatedBookings = await withLoading(api.rejectBooking(booking._id));
+    updateBookings(updatedBookings);
+    if (selectedBookings.length === 1) {
       onClose();
     }
   };
 
   const handleAccept = async (booking: Booking) => {
-    const updatedBooking = await withLoading(api.acceptBooking(booking._id));
-    setBookings(prev =>
-      prev.map(b => (b._id === updatedBooking._id ? updatedBooking : b))
-    );
-    if (bookings.length === 1) {
-      onClose();
-    }
+    const updatedBookings = await withLoading(api.acceptBooking(booking._id));
+    updateBookings(updatedBookings);
+    onClose();
   };
 
   const isSingleBooking = bookings.length === 1;

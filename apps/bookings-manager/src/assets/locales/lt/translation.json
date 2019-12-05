@@ -1,8 +1,8 @@
 {
   "Timezone: {{k_0}}": "Timezone: {{k_0}}",
-  "Pending booking(s)_plural_0": "Pending booking(s)",
-  "Pending booking(s)_plural_1": "Pending booking(s)",
-  "Pending booking(s)_plural_2": "Pending booking(s)",
+  "Pending booking(s)": "Pending booking(s)",
+  "Pending booking(s)_1": "Pending booking",
+  "Pending booking(s)_2": "Pending bookings",
   "Back": "Back",
   "Reject": "Reject",
   "Accept": "Accept",
@@ -104,5 +104,6 @@
   "Logout": "Logout",
   "Dashboard": "Dashboard",
   "Escape rooms": "Escape rooms",
-  "Organization": "Organization"
+  "Organization": "Organization",
+  "Pending booking(s)_0": "Pending bookings"
 }

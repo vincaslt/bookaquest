@@ -34,7 +34,8 @@ export function initI18n() {
 
       interpolation: {
         escapeValue: false
-      }
+      },
+      debug: true
     });
 }
 

@@ -252,7 +252,7 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
 
   // TODO: send email
 
-  return savedBooking;
+  return [savedBooking];
 };
 
 const acceptBooking: AugmentedRequestHandler = async (req, res) => {
@@ -270,12 +270,25 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
     );
   }
 
+  const sameTimeBookings = await BookingModel.find({
+    _id: { $ne: booking.id },
+    status: BookingStatus.Pending,
+    startDate: booking.startDate
+  });
+
+  const updatedSameTimeBookings = await Promise.all(
+    sameTimeBookings.map(sameTimeBooking => {
+      sameTimeBooking.status = BookingStatus.Rejected;
+      return sameTimeBooking.save();
+    })
+  );
+
   booking.status = BookingStatus.Accepted;
   const savedBooking = await booking.save();
 
   // TODO: send email
 
-  return savedBooking;
+  return [savedBooking, ...updatedSameTimeBookings];
 };
 
 const cancelBooking: AugmentedRequestHandler = async (req, res) => {
@@ -298,7 +311,7 @@ const cancelBooking: AugmentedRequestHandler = async (req, res) => {
 
   // TODO: send email
 
-  return savedBooking;
+  return [savedBooking];
 };
 
 export const bookingHandlers = [
