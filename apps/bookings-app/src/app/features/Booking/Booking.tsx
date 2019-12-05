@@ -31,11 +31,11 @@ interface RouteParams extends DefaultParams {
   step: string;
 }
 
+// TODO: use getUrl to navigate to urls
 // TODO loading state (loading escape room)
-// TODO show availabilities, and escape room selection
 export function Booking() {
   const [, params] = useRoute<RouteParams>(
-    '/:organizationId/:escapeRoomId/:step?'
+    '/booking/:organizationId/:escapeRoomId/:step?'
   );
   const [, setLocation] = useLocation();
   const step = ((params && params.step) || BookingStep.TIMESLOT) as BookingStep;
@@ -51,7 +51,7 @@ export function Booking() {
   React.useEffect(() => {
     // Clears any manual step pre-selection on visit
     if (organizationId && escapeRoomId) {
-      setLocation(`/${organizationId}/${escapeRoomId}`);
+      setLocation(`booking/${organizationId}/${escapeRoomId}`, true);
     }
   }, [escapeRoomId, organizationId, setLocation]);
 
@@ -72,7 +72,7 @@ export function Booking() {
   }
 
   const goToStep = (nextStep: BookingStep) =>
-    setLocation(`/${organizationId}/${escapeRoomId}/${nextStep}`);
+    setLocation(`booking/${organizationId}/${escapeRoomId}/${nextStep}`);
 
   const handleSubmitBookingInfo = (info: BookingInfo) => {
     setBookingInfo(info);

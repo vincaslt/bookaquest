@@ -48,7 +48,7 @@ const DetailsContainer = styled.div`
 // TODO: use Detail component? Or Description whatever
 export function BookingItinerary() {
   const { t } = useI18n();
-  const [, params] = useRoute('/booking/:bookingId');
+  const [, params] = useRoute('/itinerary/:bookingId');
   const [booking, setBooking] = React.useState<BookingWithEscapeRoom>();
   const [organization, setOrganization] = React.useState<Organization>();
 

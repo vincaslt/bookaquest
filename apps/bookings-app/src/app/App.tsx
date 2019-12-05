@@ -59,12 +59,12 @@ function App() {
     <ContentContainer>
       <GlobalStyle />
       <Switch>
-        <Route path="/booking/:bookingId" component={BookingItinerary} />
+        <Route path="/itinerary/:bookingId" component={BookingItinerary} />
         <Route
-          path="/:organizationId/:escapeRoomId/:step?"
+          path="/booking/:organizationId/:escapeRoomId/:step?"
           component={Booking}
         />
-        <Route path="/:organizationId" component={EscapeRoomSelect} />
+        <Route path="/booking/:organizationId" component={EscapeRoomSelect} />
       </Switch>
       <Footer>
         Powered by <a href="https://bookaquest.com">BookaQuest</a>

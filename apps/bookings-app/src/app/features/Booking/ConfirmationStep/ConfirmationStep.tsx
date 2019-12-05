@@ -45,7 +45,7 @@ export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
     }
 
     const { _id } = await api.createBooking(options);
-    setLocation(`/booking/${_id}`);
+    setLocation(`/itinerary/${_id}`);
   };
 
   const isFlatPrice = escapeRoom.pricingType === PricingType.FLAT;
