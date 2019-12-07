@@ -114,6 +114,7 @@ interface Resource {
 interface Props {
   range: Interval;
   resources: Resource[];
+  timezone: string;
   baseAvailability?: BusinessHours[];
   onClickEvent: (booking: Booking[]) => void;
 }
@@ -124,6 +125,7 @@ interface Props {
 export function ResourceScheduler({
   range,
   resources,
+  timezone,
   baseAvailability,
   onClickEvent
 }: Props) {
