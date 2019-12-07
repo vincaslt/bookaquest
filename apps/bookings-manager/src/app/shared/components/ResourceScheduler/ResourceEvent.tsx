@@ -4,7 +4,7 @@ import Text from 'antd/lib/typography/Text';
 import { Badge } from 'antd';
 import * as React from 'react';
 import { Time } from '@bookaquest/components';
-import { classNames } from '@bookaquest/utilities';
+import { classNames, useI18n } from '@bookaquest/utilities';
 
 interface Props {
   columnWidth: number;
@@ -27,6 +27,7 @@ export function ResourceEvent({
   className,
   overlappingCount
 }: Props) {
+  const { t } = useI18n();
   const width = (differenceInMinutes(end, start) * columnWidth) / 60;
   const left =
     (differenceInMinutes(start, startOfHour(start)) * columnWidth) / 60;
@@ -41,7 +42,8 @@ export function ResourceEvent({
         height: rowHeight - 5
       }}
       className={classNames(
-        'p-1 absolute rounded-sm z-10 hover:shadow-md cursor-pointer',
+        'p-1 absolute rounded-sm hover:shadow-md cursor-pointer',
+        overlappingCount ? 'z-20' : 'z-10',
         className
       )}
       onClick={onClick}
@@ -49,20 +51,17 @@ export function ResourceEvent({
       <Badge
         count={overlappingCount}
         overflowCount={100}
-        className="max-w-full"
+        className="max-w-full flex flex-col"
         offset={[3, -3]}
         style={{ backgroundColor: 'rgba(0,0,0,0.75)', color: 'white' }}
+        title={t`${{ count: overlappingCount }} overlapping`}
       >
-        <div>
-          <Text className="max-w-full" strong ellipsis>
-            {name}
-          </Text>
-        </div>
-        <div>
-          <Text className="max-w-full" ellipsis>
-            <Time date={[start, end]} />
-          </Text>
-        </div>
+        <Text className="max-w-full" strong ellipsis>
+          {name}
+        </Text>
+        <Text className="max-w-full" ellipsis>
+          <Time date={[start, end]} />
+        </Text>
       </Badge>
     </div>
   );

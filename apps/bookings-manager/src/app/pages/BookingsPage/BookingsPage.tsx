@@ -122,9 +122,12 @@ export function BookingsPage(props: RouteComponentProps) {
             range={range}
             onClickEvent={handleSelectBooking}
             baseAvailability={organization?.businessHours}
+            timeZone={timezone}
             resources={escapeRooms.map(escapeRoom => ({
+              id: escapeRoom._id,
               name: escapeRoom.name,
               availability: escapeRoom.businessHours,
+              timeZone: escapeRoom.timezone,
               bookings: bookings.filter(
                 booking => booking.escapeRoom === escapeRoom._id
               )

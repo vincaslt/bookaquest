@@ -8,19 +8,30 @@ import {
   eachDayOfInterval,
   addHours,
   isWithinInterval,
-  startOfHour,
   Interval,
   max,
-  getHours
+  endOfDay,
+  startOfDay,
+  isSameDay,
+  addMinutes
 } from 'date-fns';
 import Paragraph from 'antd/lib/typography/Paragraph';
+import { convertToTimeZone } from 'date-fns-timezone';
+import { isBefore } from 'date-fns/esm';
 import * as React from 'react';
 import times from 'ramda/es/times';
 import { BusinessHours, Booking, BookingStatus } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 import styled from 'styled-components';
+import { isSameOrAfter, convertBetweenTimezones } from '../../../utils/date';
 import { ResourceEvent } from './ResourceEvent';
 import { CurrentHourMarker } from './CurrentHourMarker';
+import {
+  getAvailabilitiesInTimezone,
+  dateToHours,
+  getRangeIntersection,
+  containRanges
+} from './utils';
 
 const ROW_HEIGHT = 60;
 const COLUMN_WIDTH = 120;
@@ -103,10 +114,13 @@ const ResourceNamesTable = styled.table`
 const DayHeadingText = styled.span`
   position: sticky;
   left: 0.5em;
+  white-space: nowrap;
 `;
 
 interface Resource {
+  id: string;
   name: string;
+  timeZone: string;
   availability: BusinessHours[];
   bookings: Booking[];
 }
@@ -114,32 +128,43 @@ interface Resource {
 interface Props {
   range: Interval;
   resources: Resource[];
-  timezone: string;
+  timeZone: string;
   baseAvailability?: BusinessHours[];
   onClickEvent: (booking: Booking[]) => void;
 }
 
-// TODO: overlapping bookings support
+// TODO: overlapping bookings support (show combined min max with lighter shade color for difference)
 // TODO: resource name height dynamic based on row height
-// TODO: take timezone into account
+// TODO: don't let column width expand (e.g. when day is overflowing)
 export function ResourceScheduler({
   range,
   resources,
-  timezone,
+  timeZone,
   baseAvailability,
   onClickEvent
 }: Props) {
   const { dateFnsLocale, t } = useI18n();
-  const [now, setNow] = React.useState(new Date());
-  const days = eachDayOfInterval(range);
+  const [now, setNow] = React.useState(
+    convertToTimeZone(new Date(), { timeZone })
+  );
+
+  const days = eachDayOfInterval(range).map(day =>
+    convertToTimeZone(day, { timeZone })
+  );
+
+  const resourcesAvailabilities = getAvailabilitiesInTimezone(
+    range.start as Date,
+    resources,
+    timeZone
+  );
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setNow(new Date());
+      setNow(convertToTimeZone(new Date(), { timeZone }));
     }, 1000 * 60);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [timeZone]);
 
   const bookingStatus = (booking: Booking) =>
     ({
@@ -159,15 +184,34 @@ export function ResourceScheduler({
 
   const weeklyAvailability = days.map(day => {
     const weekday = getDay(day);
+
+    // If base availability exists, it's already in the correct timezone
     const baseAvailabilityForDay = baseAvailability?.find(
       availability => availability.weekday === weekday
     );
+
     const hoursForDay = resources.reduce(
       (acc, resource) => {
-        const availabilityForDay = resource.availability.find(
-          availability => availability.weekday === weekday
+        const availabilityForDay = resourcesAvailabilities[resource.id].filter(
+          ([start, end]) => weekday === getDay(start) || weekday === getDay(end)
         );
-        return availabilityForDay ? [...acc, availabilityForDay.hours] : acc;
+
+        if (availabilityForDay.length) {
+          return [
+            ...acc,
+            containRanges(
+              availabilityForDay.map(
+                availability =>
+                  getRangeIntersection(
+                    [startOfDay(day), endOfDay(day)],
+                    availability
+                  ).map(dateToHours) as [number, number]
+              )
+            )
+          ];
+        }
+
+        return acc;
       },
       baseAvailabilityForDay ? [baseAvailabilityForDay.hours] : []
     );
@@ -260,75 +304,114 @@ export function ResourceScheduler({
               </tr>
             </thead>
             <tbody>
-              {resources.map((resource, i) => (
-                <tr key={i}>
-                  {globalWorkHours.map(({ day, hours }) => {
-                    const dayAvailability = resource.availability.find(
-                      availability => availability.weekday === getDay(day)
-                    );
-                    return hours.map((hour, j) => {
-                      const bookingsAtHour = resource.bookings.filter(
-                        ({ startDate }) =>
-                          isWithinInterval(startDate, {
-                            start: startOfHour(hour),
-                            end: endOfHour(hour)
-                          })
-                      );
-                      const booking = bookingsAtHour[0];
-                      const isStartWorkHour =
-                        !!dayAvailability &&
-                        getHours(hour) >= dayAvailability.hours[0] &&
-                        getHours(hour) < dayAvailability.hours[1];
+              {resources.map((resource, i) => {
+                const bookings = resource.bookings.map(booking => ({
+                  ...booking,
+                  startDate: convertBetweenTimezones(
+                    booking.startDate,
+                    resource.timeZone,
+                    timeZone
+                  ),
+                  endDate: convertBetweenTimezones(
+                    booking.endDate,
+                    resource.timeZone,
+                    timeZone
+                  )
+                }));
 
-                      const isEndWorkHour =
-                        !!dayAvailability &&
-                        getHours(hour) + 0.5 >= dayAvailability.hours[0] &&
-                        getHours(hour) + 0.5 < dayAvailability.hours[1];
-
-                      return (
-                        <React.Fragment key={j}>
-                          <HourStartCell
-                            className="relative"
-                            isWorkHour={isStartWorkHour}
-                          >
-                            {booking && (
-                              <ResourceEvent
-                                overlappingCount={
-                                  bookingsAtHour.length > 1
-                                    ? bookingsAtHour.length
-                                    : 0
-                                }
-                                tooltip={`${bookingStatus(booking)}, ${
-                                  booking.name
-                                }`}
-                                className={bookingColor(booking)}
-                                rowHeight={ROW_HEIGHT}
-                                columnWidth={COLUMN_WIDTH}
-                                name={booking.name}
-                                time={[booking.startDate, booking.endDate]}
-                                onClick={() => onClickEvent(bookingsAtHour)}
-                              />
-                            )}
-                            {isWithinInterval(now, {
-                              start: startOfHour(hour),
-                              end: endOfHour(hour)
-                            }) && (
-                              <CurrentHourMarker
-                                rowHeight={ROW_HEIGHT}
-                                columnWidth={COLUMN_WIDTH}
-                              />
-                            )}
-                          </HourStartCell>
-                          <HourEndCell
-                            isWorkHour={isEndWorkHour}
-                            lastHour={j === hours.length - 1}
-                          />
-                        </React.Fragment>
+                return (
+                  <tr key={i}>
+                    {globalWorkHours.map(({ day, hours }) => {
+                      const availabilityForDay = resourcesAvailabilities[
+                        resource.id
+                      ].filter(
+                        ([start, end]) =>
+                          isSameDay(day, start) || isSameDay(day, end)
                       );
-                    });
-                  })}
-                </tr>
-              ))}
+
+                      return hours.map((hour, j) => {
+                        const bookingsAtHourStart = bookings.filter(
+                          ({ startDate }) =>
+                            isSameOrAfter(startDate, hour) &&
+                            isBefore(startDate, addMinutes(hour, 30))
+                        );
+                        const bookingsAtHourEnd = bookings.filter(
+                          ({ startDate }) =>
+                            isSameOrAfter(startDate, addMinutes(hour, 30)) &&
+                            isBefore(startDate, endOfHour(hour))
+                        );
+                        const bookingsAtHour = [
+                          bookingsAtHourStart,
+                          bookingsAtHourEnd
+                        ];
+                        const isStartWorkHour = availabilityForDay.some(
+                          ([start, end]) =>
+                            isSameOrAfter(hour, start) && isBefore(hour, end)
+                        );
+
+                        const isEndWorkHour = availabilityForDay.some(
+                          ([start, end]) =>
+                            isSameOrAfter(addMinutes(hour, 30), start) &&
+                            isBefore(addMinutes(hour, 30), end)
+                        );
+
+                        return (
+                          <React.Fragment key={j}>
+                            <HourStartCell
+                              className="relative"
+                              isWorkHour={isStartWorkHour}
+                            >
+                              {bookingsAtHour.map(periodBookings => {
+                                const booking = periodBookings[0];
+                                return (
+                                  booking && (
+                                    <ResourceEvent
+                                      key={booking._id}
+                                      overlappingCount={
+                                        periodBookings.length > 1
+                                          ? periodBookings.length
+                                          : 0
+                                      }
+                                      tooltip={`${bookingStatus(booking)}, ${
+                                        booking.name
+                                      }`}
+                                      className={bookingColor(booking)}
+                                      rowHeight={ROW_HEIGHT}
+                                      columnWidth={COLUMN_WIDTH}
+                                      name={booking.name}
+                                      time={[
+                                        booking.startDate,
+                                        booking.endDate
+                                      ]}
+                                      onClick={() =>
+                                        onClickEvent(periodBookings)
+                                      }
+                                    />
+                                  )
+                                );
+                              })}
+                              {isWithinInterval(now, {
+                                start: hour,
+                                end: endOfHour(hour)
+                              }) && (
+                                <CurrentHourMarker
+                                  currentHour={now}
+                                  rowHeight={ROW_HEIGHT}
+                                  columnWidth={COLUMN_WIDTH}
+                                />
+                              )}
+                            </HourStartCell>
+                            <HourEndCell
+                              isWorkHour={isEndWorkHour}
+                              lastHour={j === hours.length - 1}
+                            />
+                          </React.Fragment>
+                        );
+                      });
+                    })}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </SchedulerContainer>

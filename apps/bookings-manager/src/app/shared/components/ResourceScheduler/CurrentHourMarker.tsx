@@ -4,12 +4,17 @@ import * as React from 'react';
 interface Props {
   columnWidth: number;
   rowHeight: number;
+  currentHour: Date;
 }
 
-// TODO: force rerender every minute
-export function CurrentHourMarker({ columnWidth, rowHeight }: Props) {
-  const now = new Date();
-  const left = (differenceInMinutes(now, startOfHour(now)) * columnWidth) / 60;
+export function CurrentHourMarker({
+  columnWidth,
+  rowHeight,
+  currentHour
+}: Props) {
+  const left =
+    (differenceInMinutes(currentHour, startOfHour(currentHour)) * columnWidth) /
+    60;
   return (
     <div
       style={{ left, top: 0, width: 2, height: rowHeight }}
