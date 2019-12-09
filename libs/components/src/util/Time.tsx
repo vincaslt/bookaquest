@@ -1,13 +1,16 @@
-import { format } from 'date-fns';
+import { utcToZonedTime, format } from 'date-fns-tz';
 import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
 
 interface Props {
   date: Date | [Date, Date];
   type?: 'date' | 'time' | { format: string };
+  timeZone?: string;
 }
 
-export function Time({ date, type = 'time' }: Props) {
+// TODO: use timezones where needed
+// TODO: use date-fns-tz for all conversions
+export function Time({ date, type = 'time', timeZone }: Props) {
   const { dateFnsLocale } = useI18n();
   const dateFormat =
     typeof type === 'string'
@@ -17,15 +20,20 @@ export function Time({ date, type = 'time' }: Props) {
         }[type]
       : type.format;
 
+  const formatWithTimezone = (utcDate: Date) =>
+    format(timeZone ? utcToZonedTime(utcDate, timeZone) : utcDate, dateFormat, {
+      locale: dateFnsLocale,
+      timeZone
+    });
   if (date instanceof Date) {
-    return <>{format(date, dateFormat, { locale: dateFnsLocale })}</>;
+    return <>{formatWithTimezone(date)}</>;
   }
 
   return (
     <>
-      {format(date[0], dateFormat, { locale: dateFnsLocale })}
+      {formatWithTimezone(date[0])}
       {' - '}
-      {format(date[1], dateFormat, { locale: dateFnsLocale })}
+      {formatWithTimezone(date[1])}
     </>
   );
 }

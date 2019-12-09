@@ -4,10 +4,11 @@ import {
   differenceInCalendarDays,
   differenceInMinutes,
   isAfter,
-  setMinutes,
   startOfDay,
-  getDay
+  getDay,
+  addMinutes
 } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 import { createError } from 'micro';
 import { get, post, put, AugmentedRequestHandler } from 'microrouter';
 import { times } from 'ramda';
@@ -32,7 +33,7 @@ import { requireEscapeRoom } from '../helpers/escapeRoom';
 import { getQuery } from '../lib/utils/getQuery';
 import { requireBooking } from '../helpers/booking';
 
-const MAX_DAYS_SELECT = 35;
+const MAX_DAYS_SELECT = 7 * 6;
 const PAGINATION_LIMIT = 500;
 
 const getBooking: AugmentedRequestHandler = async (req, res) => {
@@ -187,13 +188,14 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
   const activeBookings = await BookingModel.find({
     escapeRoom: escapeRoomId,
     endDate: { $gt: fromDay },
-    startDate: { $gt: toDay },
+    startDate: { $lt: toDay },
     status: BookingStatus.Accepted
   });
 
   const availability = times(day => {
     const date = addDays(fromDay, day);
     const dayOfweek = getDay(date);
+    const timeZone = escapeRoom.timezone;
     const businessHours = escapeRoom.businessHours.find(
       ({ weekday }) => weekday === dayOfweek
     );
@@ -204,11 +206,14 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
 
     const [startHour, endHour] = businessHours.hours;
 
-    // TODO: calculations may be using local timezone, should use escapeRoom's
     const timeslots = times(i => {
-      const start = setMinutes(date, startHour * 60 + i * escapeRoom.interval);
-      const end = setMinutes(
-        date,
+      const tzDate = utcToZonedTime(startOfDay(date), timeZone);
+      const start = addMinutes(
+        tzDate,
+        startHour * 60 + i * escapeRoom.interval
+      );
+      const end = addMinutes(
+        tzDate,
         startHour * 60 + (i + 1) * escapeRoom.interval
       );
       return { start, end };

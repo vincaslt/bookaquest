@@ -81,8 +81,8 @@ export function BookingsPage(props: RouteComponentProps) {
     end: endOfDay(subDays(addWeeks(today, weekOffset + 1), 1))
   };
 
-  const timezone =
-    organization?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timezone = organization?.timezone ?? localTimeZone;
 
   return (
     <PageContent>
@@ -96,8 +96,11 @@ export function BookingsPage(props: RouteComponentProps) {
         <Spin />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-2">
-            <span>{t`Timezone: ${timezone}`}</span>
+          <div className="flex justify-between items-center mb-4">
+            <span>
+              {timezone !== localTimeZone && t`Timezone: ${timezone}`}
+            </span>
+
             <div className="flex items-center">
               <Button
                 className="flex justify-center mr-4"

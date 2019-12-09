@@ -1,47 +1,56 @@
 import {
-  addDays,
   addMonths,
   getMonth,
   isSameDay,
   startOfMonth,
   startOfWeek,
-  subMonths
+  subMonths,
+  endOfMonth,
+  eachDayOfInterval
 } from 'date-fns';
+import { endOfWeek } from 'date-fns/esm';
 import splitEvery from 'ramda/es/splitEvery';
-import times from 'ramda/es/times';
 import { useI18n } from '@bookaquest/utilities';
 import * as React from 'react';
-import { BusinessHours, Timeslot, Availability } from '@bookaquest/interfaces';
+import { Timeslot, Availability } from '@bookaquest/interfaces';
 import { Day } from './Day';
 import { Header } from './Header';
 import { Timeslots } from './Timeslots';
 
 interface Props {
-  businessHours: BusinessHours[];
+  timeZone: string;
   onSelectTimeslot: (date: Timeslot) => void;
   onSelectDay: (date: Date) => void;
-  onMonthChange: (monthDate: Date) => void;
+  onMonthChange: (interval: { start: Date; end: Date }) => void;
   selectedDate?: Date;
   availability?: Availability;
 }
 
 export function TimeslotPicker({
+  timeZone,
   availability,
   onSelectDay,
   onSelectTimeslot,
   onMonthChange,
   selectedDate
 }: Props) {
-  const now = new Date();
   const { dateFnsLocale } = useI18n();
-  const [monthDate, setMonthDate] = React.useState(startOfMonth(now));
+  const [monthDate, setMonthDate] = React.useState(startOfMonth(new Date()));
 
-  const startDay = startOfWeek(monthDate, { locale: dateFnsLocale });
-
-  const weeks = splitEvery(
-    7,
-    times(i => addDays(startDay, i), 7 * 5)
+  const getMonthInterval = React.useCallback(
+    () => ({
+      start: startOfWeek(monthDate, { locale: dateFnsLocale }),
+      end: endOfWeek(endOfMonth(monthDate), { locale: dateFnsLocale })
+    }),
+    [dateFnsLocale, monthDate]
   );
+
+  React.useEffect(() => {
+    onMonthChange(getMonthInterval());
+  }, [getMonthInterval, onMonthChange]);
+
+  const weeks = splitEvery(7, eachDayOfInterval(getMonthInterval()));
+
   const isDayInWeek = (day: Date, week: Date[]) =>
     !!week.find(date => isSameDay(date, day));
 
@@ -52,12 +61,8 @@ export function TimeslotPicker({
     const dayAvailability = (availability || []).find(({ date }) =>
       isSameDay(date, day)
     );
-    return dayAvailability ? dayAvailability.availableTimeslots : [];
+    return dayAvailability?.availableTimeslots ?? [];
   };
-
-  React.useEffect(() => {
-    onMonthChange(monthDate);
-  }, [monthDate, onMonthChange]);
 
   return (
     <table className="mb-4 w-full">
@@ -79,6 +84,7 @@ export function TimeslotPicker({
             </tr>
             {selectedDate && isDayInWeek(selectedDate, days) && (
               <Timeslots
+                timeZone={timeZone}
                 loading={!availability}
                 timeslots={getTimeslotsFor(selectedDate)}
                 onSelect={onSelectTimeslot}

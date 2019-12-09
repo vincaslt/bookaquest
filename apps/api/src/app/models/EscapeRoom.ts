@@ -53,7 +53,7 @@ export class EscapeRoom {
   organization: Ref<Organization>;
 
   @prop()
-  timezone?: string;
+  timezone: string;
 
   @prop({ required: true })
   interval: number; // in minutes

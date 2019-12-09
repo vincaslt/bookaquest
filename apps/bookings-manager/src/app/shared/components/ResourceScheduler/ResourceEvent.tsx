@@ -7,6 +7,7 @@ import { Time } from '@bookaquest/components';
 import { classNames, useI18n } from '@bookaquest/utilities';
 
 interface Props {
+  timeZone: string;
   columnWidth: number;
   rowHeight: number;
   name: string;
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function ResourceEvent({
+  timeZone,
   tooltip,
   time: [start, end],
   name,
@@ -60,7 +62,7 @@ export function ResourceEvent({
           {name}
         </Text>
         <Text className="max-w-full" ellipsis>
-          <Time date={[start, end]} />
+          <Time date={[start, end]} timeZone={timeZone} />
         </Text>
       </Badge>
     </div>

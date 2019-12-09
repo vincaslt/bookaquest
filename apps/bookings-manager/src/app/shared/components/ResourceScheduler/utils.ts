@@ -10,10 +10,10 @@ import {
   setMinutes
 } from 'date-fns';
 import { BusinessHours } from '@bookaquest/interfaces';
-import { convertBetweenTimezones } from '../../../utils/date';
+import { convertBetweenTimezones } from '@bookaquest/utilities';
 
 function setDayUpcoming(date: Date, weekday: number) {
-  return weekday > getDay(date)
+  return weekday >= getDay(date)
     ? addDays(date, weekday - getDay(date))
     : addDays(date, 7 - getDay(date) + weekday);
 }

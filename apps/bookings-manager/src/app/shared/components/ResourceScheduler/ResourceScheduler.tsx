@@ -16,14 +16,17 @@ import {
   addMinutes
 } from 'date-fns';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import { convertToTimeZone } from 'date-fns-timezone';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { isBefore } from 'date-fns/esm';
 import * as React from 'react';
 import times from 'ramda/es/times';
 import { BusinessHours, Booking, BookingStatus } from '@bookaquest/interfaces';
-import { useI18n } from '@bookaquest/utilities';
+import {
+  isSameOrAfter,
+  convertBetweenTimezones,
+  useI18n
+} from '@bookaquest/utilities';
 import styled from 'styled-components';
-import { isSameOrAfter, convertBetweenTimezones } from '../../../utils/date';
 import { ResourceEvent } from './ResourceEvent';
 import { CurrentHourMarker } from './CurrentHourMarker';
 import {
@@ -144,12 +147,10 @@ export function ResourceScheduler({
   onClickEvent
 }: Props) {
   const { dateFnsLocale, t } = useI18n();
-  const [now, setNow] = React.useState(
-    convertToTimeZone(new Date(), { timeZone })
-  );
+  const [now, setNow] = React.useState(utcToZonedTime(new Date(), timeZone));
 
   const days = eachDayOfInterval(range).map(day =>
-    convertToTimeZone(day, { timeZone })
+    utcToZonedTime(day, timeZone)
   );
 
   const resourcesAvailabilities = getAvailabilitiesInTimezone(
@@ -160,7 +161,7 @@ export function ResourceScheduler({
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setNow(convertToTimeZone(new Date(), { timeZone }));
+      setNow(utcToZonedTime(new Date(), timeZone));
     }, 1000 * 60);
 
     return () => clearInterval(interval);
@@ -330,15 +331,16 @@ export function ResourceScheduler({
                       );
 
                       return hours.map((hour, j) => {
+                        const utcHour = zonedTimeToUtc(hour, timeZone);
                         const bookingsAtHourStart = bookings.filter(
                           ({ startDate }) =>
-                            isSameOrAfter(startDate, hour) &&
-                            isBefore(startDate, addMinutes(hour, 30))
+                            isSameOrAfter(startDate, utcHour) &&
+                            isBefore(startDate, addMinutes(utcHour, 30))
                         );
                         const bookingsAtHourEnd = bookings.filter(
                           ({ startDate }) =>
-                            isSameOrAfter(startDate, addMinutes(hour, 30)) &&
-                            isBefore(startDate, endOfHour(hour))
+                            isSameOrAfter(startDate, addMinutes(utcHour, 30)) &&
+                            isBefore(startDate, endOfHour(utcHour))
                         );
                         const bookingsAtHour = [
                           bookingsAtHourStart,
@@ -367,6 +369,7 @@ export function ResourceScheduler({
                                   booking && (
                                     <ResourceEvent
                                       key={booking._id}
+                                      timeZone={timeZone}
                                       overlappingCount={
                                         periodBookings.length > 1
                                           ? periodBookings.length
