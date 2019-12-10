@@ -1,6 +1,7 @@
 import { RouteComponentProps } from '@reach/router';
 import { Spin, Button } from 'antd';
 import { endOfDay, startOfDay, addWeeks, subDays } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import * as React from 'react';
 import { useLoading, useI18n } from '@bookaquest/utilities';
 import {
@@ -28,7 +29,6 @@ export function BookingsPage(props: RouteComponentProps) {
   const [selectedBookings, setSelectedBookings] = React.useState<Booking[]>([]);
   const [weekOffset, setWeekOffset] = React.useState(0);
 
-  const today = new Date();
   const membership = memberships?.[0]; // TODO: use selected, instead of first one
 
   React.useEffect(() => {
@@ -76,13 +76,17 @@ export function BookingsPage(props: RouteComponentProps) {
     }
   };
 
-  const range = {
-    start: startOfDay(addWeeks(today, weekOffset)),
-    end: endOfDay(subDays(addWeeks(today, weekOffset + 1), 1))
-  };
-
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const timezone = organization?.timezone ?? localTimeZone;
+
+  const today = new Date();
+  const range = {
+    start: zonedTimeToUtc(startOfDay(addWeeks(today, weekOffset)), timezone),
+    end: zonedTimeToUtc(
+      endOfDay(subDays(addWeeks(today, weekOffset + 1), 1)),
+      timezone
+    )
+  };
 
   return (
     <PageContent>
@@ -110,7 +114,11 @@ export function BookingsPage(props: RouteComponentProps) {
                 onClick={() => setWeekOffset(dec)}
               />
               <div>
-                <Time type="date" date={[range.start, range.end]} />
+                <Time
+                  type="date"
+                  date={[range.start, range.end]}
+                  timeZone={timezone}
+                />
               </div>
 
               <Button

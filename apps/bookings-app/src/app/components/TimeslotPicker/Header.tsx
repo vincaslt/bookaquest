@@ -29,8 +29,8 @@ export function Header({ month, onPrev, onNext }: Props) {
             >
               <Icon type="arrow-left" />
             </button>
-            <span className="p-2">
-              <Time date={month} type="date" />
+            <span className="p-2 capitalize">
+              <Time date={month} type={{ format: 'LLLL yyyy ' }} />
             </span>
             <button
               className="w-16 items-center justify-center flex"

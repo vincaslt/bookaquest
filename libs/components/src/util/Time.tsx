@@ -8,8 +8,6 @@ interface Props {
   timeZone?: string;
 }
 
-// TODO: use timezones where needed
-// TODO: use date-fns-tz for all conversions
 export function Time({ date, type = 'time', timeZone }: Props) {
   const { dateFnsLocale } = useI18n();
   const dateFormat =
@@ -25,6 +23,7 @@ export function Time({ date, type = 'time', timeZone }: Props) {
       locale: dateFnsLocale,
       timeZone
     });
+
   if (date instanceof Date) {
     return <>{formatWithTimezone(date)}</>;
   }

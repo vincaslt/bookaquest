@@ -245,6 +245,7 @@ export function BookingItinerary() {
                         <Time
                           date={booking.startDate}
                           type={{ format: 'PPPp' }}
+                          timeZone={escapeRoom.timezone}
                         />
                       </Trans>
                     }

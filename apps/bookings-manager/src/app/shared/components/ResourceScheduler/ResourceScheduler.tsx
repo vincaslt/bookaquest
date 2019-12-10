@@ -139,6 +139,7 @@ interface Props {
 // TODO: overlapping bookings support (show combined min max with lighter shade color for difference)
 // TODO: resource name height dynamic based on row height
 // TODO: don't let column width expand (e.g. when day is overflowing)
+// TODO: focus current time on opening
 export function ResourceScheduler({
   range,
   resources,
@@ -150,7 +151,7 @@ export function ResourceScheduler({
   const [now, setNow] = React.useState(utcToZonedTime(new Date(), timeZone));
 
   const days = eachDayOfInterval(range).map(day =>
-    utcToZonedTime(day, timeZone)
+    zonedTimeToUtc(day, timeZone)
   );
 
   const resourcesAvailabilities = getAvailabilitiesInTimezone(
