@@ -168,16 +168,16 @@ export const getOrganizationMembers = withAuth(
 
 export const rejectBooking = withAuth(headers => (bookingId: string) =>
   api
-    .put<BookingDTO>(`/booking/${bookingId}/reject`, undefined, { headers })
+    .put<BookingDTO[]>(`/booking/${bookingId}/reject`, undefined, { headers })
     .then(res => res.data)
-    .then(fromBookingDTO)
+    .then(map(fromBookingDTO))
 );
 
 export const acceptBooking = withAuth(headers => (bookingId: string) =>
   api
-    .put<BookingDTO>(`/booking/${bookingId}/accept`, undefined, { headers })
+    .put<BookingDTO[]>(`/booking/${bookingId}/accept`, undefined, { headers })
     .then(res => res.data)
-    .then(fromBookingDTO)
+    .then(map(fromBookingDTO))
 );
 
 export const getOrganization = (organizationId: string) =>

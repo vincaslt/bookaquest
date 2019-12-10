@@ -21,7 +21,7 @@ export function Header({ month, onPrev, onNext }: Props) {
   return (
     <thead className="bg-red-600 text-white">
       <tr className="text-center">
-        <th colSpan={7}>
+        <th colSpan={7} className="border border-red-600">
           <div className="flex flex-1 justify-between">
             <button
               className="w-16 items-center justify-center flex"
@@ -29,8 +29,8 @@ export function Header({ month, onPrev, onNext }: Props) {
             >
               <Icon type="arrow-left" />
             </button>
-            <span className="p-2">
-              <Time date={month} type="date" />
+            <span className="p-2 capitalize">
+              <Time date={month} type={{ format: 'LLLL yyyy ' }} />
             </span>
             <button
               className="w-16 items-center justify-center flex"
@@ -43,7 +43,10 @@ export function Header({ month, onPrev, onNext }: Props) {
       </tr>
       <tr>
         {listWeekdays(dateFnsLocale).map(weekday => (
-          <DayHeading className="p-2 text-center" key={getDay(weekday)}>
+          <DayHeading
+            className="p-2 text-center border border-red-600"
+            key={getDay(weekday)}
+          >
             <Time date={weekday} type={{ format: 'ccc' }} />
           </DayHeading>
         ))}

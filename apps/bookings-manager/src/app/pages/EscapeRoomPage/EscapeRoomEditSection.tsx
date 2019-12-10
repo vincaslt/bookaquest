@@ -192,6 +192,10 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
           </div>
           <div className="mb-8">
             <SectionTitle>{t`Business hours`}</SectionTitle>
+            <div className="mb-4">
+              <span className="font-medium mr-2">{t`Timezone:`}</span>
+              {escapeRoom.timezone}
+            </div>
             <WorkHours businessHours={escapeRoom.businessHours} />
           </div>
           <div className="flex justify-end">

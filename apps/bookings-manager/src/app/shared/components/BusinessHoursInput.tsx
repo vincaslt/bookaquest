@@ -59,7 +59,7 @@ export function BusinessHoursInput({ value, onChange }: Props) {
               <>
                 <Col span={8}>
                   <TimePicker
-                    minuteStep={15}
+                    minuteStep={30}
                     format="HH:mm"
                     onChange={handleChangeHours(weekday, 0)}
                     value={moment()
@@ -69,7 +69,7 @@ export function BusinessHoursInput({ value, onChange }: Props) {
                 </Col>
                 <Col span={8}>
                   <TimePicker
-                    minuteStep={15}
+                    minuteStep={30}
                     format="HH:mm"
                     onChange={handleChangeHours(weekday, 1)}
                     value={moment()

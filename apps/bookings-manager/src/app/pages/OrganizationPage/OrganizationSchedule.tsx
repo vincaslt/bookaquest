@@ -1,4 +1,4 @@
-import { AutoComplete, Form, FormItem, SubmitButton } from 'formik-antd';
+import { Select, Form, FormItem, SubmitButton } from 'formik-antd';
 import { Button, notification, Spin } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import { useToggle } from 'react-use';
@@ -94,7 +94,8 @@ export function OrganizationSchedule({
 
   const initialValues: CreateSchedule = {
     businessHours: (organization && organization.businessHours) || [],
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    timezone:
+      organization?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
   };
 
   return (
@@ -109,11 +110,11 @@ export function OrganizationSchedule({
         {({ values, setFieldValue }) => (
           <Form layout="vertical">
             <FormItem name="timezone" hasFeedback label={t`Timezone`}>
-              <AutoComplete
-                name="timezone"
-                dataSource={timezoneOptions}
-                filterOption
-              />
+              <Select name="timezone" showSearch optionFilterProp="children">
+                {timezoneOptions.map(option => (
+                  <Select.Option value={option}>{option}</Select.Option>
+                ))}
+              </Select>
             </FormItem>
             <BusinessHoursInput
               value={values.businessHours}

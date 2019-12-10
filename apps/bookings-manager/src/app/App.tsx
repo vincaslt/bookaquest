@@ -28,9 +28,9 @@ const PageWithSidebarContainer = styled(Layout)`
 
 export const App = withUserProvider(() => {
   const { isLoading, userInfo, memberships } = useUser();
-  const { ready } = useI18n(undefined, { useSuspense: false });
+  const { i18n } = useI18n(undefined, { useSuspense: false });
 
-  if (isLoading || !ready) {
+  if (isLoading || !i18n.ready) {
     return (
       <AppSpinnerContainer>
         <Spin size="large" />

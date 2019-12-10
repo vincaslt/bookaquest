@@ -6,7 +6,9 @@ import { EscapeRoomCard } from '@bookaquest/components';
 import * as api from '../../api/application';
 
 export function EscapeRoomSelect() {
-  const [, params] = useRoute<{ organizationId: string }>('/:organizationId');
+  const [, params] = useRoute<{ organizationId: string }>(
+    '/booking/:organizationId'
+  );
   const [, setLocation] = useLocation();
   const [loading, setLoading] = React.useState(true);
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
@@ -26,7 +28,7 @@ export function EscapeRoomSelect() {
   }, [organizationId]);
 
   const handleSelectEscapeRoom = (room: EscapeRoom) =>
-    setLocation(`/${organizationId}/${room._id}`);
+    setLocation(`booking/${organizationId}/${room._id}`);
 
   return (
     <List

@@ -21,11 +21,18 @@ export function ReservationInfo({ timeslot, escapeRoom, className }: Props) {
       </div>
       <div>
         <Text strong className="mr-2">{t`Date:`}</Text>
-        <Time date={timeslot.start} type="date" />
+        <Time
+          date={timeslot.start}
+          type="date"
+          timeZone={escapeRoom.timezone}
+        />
       </div>
       <div>
         <Text strong className="mr-2">{t`Time:`}</Text>
-        <Time date={[timeslot.start, timeslot.end]} />
+        <Time
+          date={[timeslot.start, timeslot.end]}
+          timeZone={escapeRoom.timezone}
+        />
       </div>
     </div>
   );

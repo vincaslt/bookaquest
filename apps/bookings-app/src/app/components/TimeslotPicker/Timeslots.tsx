@@ -5,12 +5,18 @@ import { Timeslot } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 
 interface Props {
+  timeZone: string;
   onSelect: (timeslot: Timeslot) => void;
   loading?: boolean;
   timeslots?: Timeslot[];
 }
 
-export function Timeslots({ loading, onSelect, timeslots = [] }: Props) {
+export function Timeslots({
+  loading,
+  timeZone,
+  onSelect,
+  timeslots = []
+}: Props) {
   const { t } = useI18n();
 
   const handleSelect = (timeslot: Timeslot) => () => onSelect(timeslot);
@@ -28,7 +34,10 @@ export function Timeslots({ loading, onSelect, timeslots = [] }: Props) {
             <List.Item className="flex justify-between">
               <div className="flex text-base items-center font-bold">
                 <Icon type="clock-circle" className="mr-2" />
-                <Time date={[timeslot.start, timeslot.end]} />
+                <Time
+                  date={[timeslot.start, timeslot.end]}
+                  timeZone={timeZone}
+                />
               </div>
 
               <Button

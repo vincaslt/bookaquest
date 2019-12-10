@@ -1,7 +1,8 @@
-import { addDays, isSameDay } from 'date-fns';
+import { isSameDay } from 'date-fns';
 import dropRepeatsWith from 'ramda/es/dropRepeatsWith';
 import * as React from 'react';
 import { EscapeRoom, Timeslot, Availability } from '@bookaquest/interfaces';
+import { useI18n } from '@bookaquest/utilities';
 import * as api from '../../../api/application';
 import { TimeslotPicker } from '../../../components/TimeslotPicker/TimeslotPicker';
 
@@ -10,15 +11,17 @@ interface Props {
   onSelect: (timeslot: Timeslot) => void;
 }
 
+// TODO: convert dates into escape room's timezone, currently they are in local
 export function TimeslotStep({ room, onSelect }: Props) {
+  const { t } = useI18n();
   const [availability, setAvailability] = React.useState<Availability>([]);
   const [selectedDay, setSelectedDay] = React.useState<Date>();
 
   // TODO: cancel prev request or aggregate them
   const handleMonthChange = React.useCallback(
-    (monthDate: Date) => {
+    (interval: { start: Date; end: Date }) => {
       api
-        .getAvailability(room._id, monthDate, addDays(monthDate, 34))
+        .getAvailability(room._id, interval.start, interval.end)
         .then(results =>
           setAvailability(prev =>
             dropRepeatsWith((a, b) => isSameDay(a.date, b.date), [
@@ -36,14 +39,21 @@ export function TimeslotStep({ room, onSelect }: Props) {
       !selected || !isSameDay(selected, day) ? day : undefined
     );
 
+  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   return (
-    <TimeslotPicker
-      businessHours={room.businessHours}
-      onSelectTimeslot={onSelect}
-      onSelectDay={toggleSelect}
-      onMonthChange={handleMonthChange}
-      selectedDate={selectedDay}
-      availability={availability}
-    />
+    <>
+      {room.timezone !== localTimeZone && (
+        <div className="mb-2">{t`Timezone: ${room.timezone}`}</div>
+      )}
+      <TimeslotPicker
+        timeZone={room.timezone}
+        onSelectTimeslot={onSelect}
+        onSelectDay={toggleSelect}
+        onMonthChange={handleMonthChange}
+        selectedDate={selectedDay}
+        availability={availability}
+      />
+    </>
   );
 }

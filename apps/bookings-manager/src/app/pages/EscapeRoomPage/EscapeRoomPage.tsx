@@ -41,7 +41,7 @@ export function EscapeRoomPage({
             title={escapeRoom.name}
             extra={
               <Link
-                href={`http://localhost:3000/${escapeRoom.organization}/${escapeRoom._id}`}
+                href={`http://localhost:3000/booking/${escapeRoom.organization}/${escapeRoom._id}`}
                 newTab
               >
                 <Button type="link">{t`Go to booking page`}</Button>

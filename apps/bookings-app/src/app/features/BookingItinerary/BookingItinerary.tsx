@@ -43,12 +43,11 @@ const DetailsContainer = styled.div`
   justify-content: space-between;
 `;
 
-// TODO: booking confirmed status based on booking state
 // TODO: add "link to this page"
 // TODO: use Detail component? Or Description whatever
 export function BookingItinerary() {
   const { t } = useI18n();
-  const [, params] = useRoute('/booking/:bookingId');
+  const [, params] = useRoute('/itinerary/:bookingId');
   const [booking, setBooking] = React.useState<BookingWithEscapeRoom>();
   const [organization, setOrganization] = React.useState<Organization>();
 
@@ -121,6 +120,8 @@ export function BookingItinerary() {
       : ''
   }[booking.status];
 
+  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const successIcon = (
     <Icon
       className="mr-2"
@@ -151,11 +152,18 @@ export function BookingItinerary() {
                 <DetailsContainer>
                   <Paragraph>
                     <Title level={4}>{t`Booking`}</Title>
+                    {escapeRoom.timezone !== localTimeZone && (
+                      <div>
+                        <Text strong className="mr-2">{t`Timezone:`}</Text>
+                        {escapeRoom.timezone}
+                      </div>
+                    )}
                     <div>
                       <Text strong className="mr-2">{t`Date:`}</Text>
                       <Time
                         date={booking.startDate}
                         type={{ format: 'PPPp' }}
+                        timeZone={escapeRoom.timezone}
                       />
                     </div>
                     <div>
@@ -237,6 +245,7 @@ export function BookingItinerary() {
                         <Time
                           date={booking.startDate}
                           type={{ format: 'PPPp' }}
+                          timeZone={escapeRoom.timezone}
                         />
                       </Trans>
                     }
