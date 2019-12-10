@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Booking, BookingStatus } from '@bookaquest/interfaces';
+import { Booking } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { Section } from '../../shared/layout/Section';
@@ -8,17 +8,11 @@ import { BookingsList } from '../../shared/components/BookingsList';
 const BOOKINGS_PER_PAGE = 10;
 
 interface Props {
-  escapeRoomId: string;
-  status?: BookingStatus;
+  organizationId: string;
   timeZone?: string;
 }
 
-// TODO: loading state for long load times when using pagination? Promise race with delay in useLoading?
-export function EscapeRoomBookingsList({
-  escapeRoomId,
-  status,
-  timeZone
-}: Props) {
+export function BookingsSection({ organizationId, timeZone }: Props) {
   const { t } = useI18n();
   const [bookings, setBookings] = React.useState<Booking[]>();
   const [total, setTotal] = React.useState();
@@ -27,23 +21,17 @@ export function EscapeRoomBookingsList({
   React.useEffect(() => {
     let isCancelled = false;
 
-    api
-      .getEscapeRoomBookings(escapeRoomId, {
-        offset: (page - 1) * BOOKINGS_PER_PAGE,
-        take: BOOKINGS_PER_PAGE,
-        status
-      })
-      .then(result => {
-        if (!isCancelled) {
-          setTotal(result.total);
-          setBookings(result.bookings);
-        }
-      });
+    api.getOrganizationBookings(organizationId).then(result => {
+      if (!isCancelled) {
+        setTotal(result.length);
+        setBookings(result);
+      }
+    });
 
     return () => {
       isCancelled = true;
     };
-  }, [page, escapeRoomId, status]);
+  }, [organizationId, status]);
 
   return (
     <Section title={t`Bookings`}>

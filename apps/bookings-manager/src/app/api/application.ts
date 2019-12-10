@@ -13,7 +13,8 @@ import {
   OrganizationMemberDTO,
   InviteOrganizationMemberDTO,
   MemberInvitationDTO,
-  OrganizationInvitationDTO
+  OrganizationInvitationDTO,
+  BookingStatus
 } from '@bookaquest/interfaces';
 import map from 'ramda/es/map';
 import { SignIn } from '../interfaces/auth';
@@ -129,6 +130,7 @@ export const getEscapeRoomBookings = withAuth(
   headers => (
     escapeRoomId: string,
     params: {
+      status?: BookingStatus;
       from?: Date;
       to?: Date;
       offset?: number;

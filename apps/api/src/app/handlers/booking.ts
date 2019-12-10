@@ -51,7 +51,8 @@ const getBooking: AugmentedRequestHandler = async (req, res) => {
 const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
-  const { from, to, offset, take } = getQuery(req, undefined, [
+  const { from, to, offset, take, status } = getQuery(req, undefined, [
+    'status',
     'from',
     'to',
     'offset',
@@ -77,7 +78,8 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
 
   const query = {
     escapeRoom: escapeRoomId,
-    endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate }
+    endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate },
+    ...(status ? { status } : {})
   };
   const [bookings, total] = await Promise.all([
     BookingModel.find(query, null, {
