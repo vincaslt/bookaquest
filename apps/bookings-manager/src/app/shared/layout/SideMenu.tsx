@@ -42,35 +42,33 @@ export function SideMenu() {
     >
       <Location>
         {({ location }) => (
-          <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]}>
-            <MenuLink
-              key={PrivateRoutes.Dashboard}
-              to={PrivateRoutes.Dashboard}
-              text={t`Dashboard`}
-              icon="dashboard"
-            />
-
-            <MenuLink
-              key={PrivateRoutes.Bookings}
-              to={PrivateRoutes.Bookings}
-              text={t`Bookings`}
-              icon="schedule"
-            />
-
-            <MenuLink
-              key={PrivateRoutes.EscapeRooms}
-              to={PrivateRoutes.EscapeRooms}
-              text={t`Escape rooms`}
-              icon="appstore"
-            />
-
-            <MenuLink
-              key={PrivateRoutes.Organization}
-              to={PrivateRoutes.Organization}
-              text={t`Organization`}
-              icon="apartment"
-            />
-          </Menu>
+          <>
+            <div className="px-8 pb-8 pt-4">
+              <Link to={PrivateRoutes.Bookings}>
+                <img src="/assets/logo.svg" alt="BookaQuest logo" />
+              </Link>
+            </div>
+            <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]}>
+              <MenuLink
+                key={PrivateRoutes.Bookings}
+                to={PrivateRoutes.Bookings}
+                text={t`Bookings`}
+                icon="schedule"
+              />
+              <MenuLink
+                key={PrivateRoutes.EscapeRooms}
+                to={PrivateRoutes.EscapeRooms}
+                text={t`Escape rooms`}
+                icon="appstore"
+              />
+              <MenuLink
+                key={PrivateRoutes.Organization}
+                to={PrivateRoutes.Organization}
+                text={t`Organization`}
+                icon="apartment"
+              />
+            </Menu>
+          </>
         )}
       </Location>
     </SiderWithShadow>

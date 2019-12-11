@@ -31,7 +31,7 @@ export function BookingsSection({ organizationId, timeZone }: Props) {
     return () => {
       isCancelled = true;
     };
-  }, [organizationId, status]);
+  }, [organizationId]);
 
   return (
     <Section title={t`Bookings`}>

@@ -91,71 +91,73 @@ export function BookingsPage(props: RouteComponentProps) {
   };
 
   return (
-    membership?.organization && (
-      <PageContent noBackground>
-        <PendingBookingModal
-          visible={selectedBookings.length > 0}
-          updateBookings={updateBookings}
-          onClose={handleCloseModal}
-          selectedBookings={selectedBookings}
-        />
-        <Section>
-          {loading ? (
-            <Spin />
-          ) : (
-            <>
-              <div className="flex justify-between items-center mb-4">
-                <span>
-                  {timezone !== localTimeZone && t`Timezone: ${timezone}`}
-                </span>
+    <>
+      {membership?.organization && (
+        <PageContent noBackground>
+          <PendingBookingModal
+            visible={selectedBookings.length > 0}
+            updateBookings={updateBookings}
+            onClose={handleCloseModal}
+            selectedBookings={selectedBookings}
+          />
+          <Section>
+            {loading ? (
+              <Spin />
+            ) : (
+              <>
+                <div className="flex justify-between items-center mb-4">
+                  <span>
+                    {timezone !== localTimeZone && t`Timezone: ${timezone}`}
+                  </span>
 
-                <div className="flex items-center">
-                  <Button
-                    className="flex justify-center mr-4"
-                    shape="circle"
-                    icon="left"
-                    disabled={weekOffset === 0}
-                    onClick={() => setWeekOffset(dec)}
-                  />
-                  <div>
-                    <Time
-                      type="date"
-                      date={[range.start, range.end]}
-                      timeZone={timezone}
+                  <div className="flex items-center">
+                    <Button
+                      className="flex justify-center mr-4"
+                      shape="circle"
+                      icon="left"
+                      disabled={weekOffset === 0}
+                      onClick={() => setWeekOffset(dec)}
+                    />
+                    <div>
+                      <Time
+                        type="date"
+                        date={[range.start, range.end]}
+                        timeZone={timezone}
+                      />
+                    </div>
+
+                    <Button
+                      className="flex justify-center ml-4"
+                      shape="circle"
+                      icon="right"
+                      onClick={() => setWeekOffset(inc)}
                     />
                   </div>
-
-                  <Button
-                    className="flex justify-center ml-4"
-                    shape="circle"
-                    icon="right"
-                    onClick={() => setWeekOffset(inc)}
-                  />
                 </div>
-              </div>
-              <ResourceScheduler
-                range={range}
-                onClickEvent={handleSelectBooking}
-                baseAvailability={organization?.businessHours}
-                timeZone={timezone}
-                resources={escapeRooms.map(escapeRoom => ({
-                  id: escapeRoom._id,
-                  name: escapeRoom.name,
-                  availability: escapeRoom.businessHours,
-                  timeZone: escapeRoom.timezone,
-                  bookings: bookings.filter(
-                    booking => booking.escapeRoom === escapeRoom._id
-                  )
-                }))}
-              />
-            </>
-          )}
-        </Section>
-        <BookingsSection
-          organizationId={membership.organization}
-          timeZone={organization?.timezone}
-        />
-      </PageContent>
-    )
+                <ResourceScheduler
+                  range={range}
+                  onClickEvent={handleSelectBooking}
+                  baseAvailability={organization?.businessHours}
+                  timeZone={timezone}
+                  resources={escapeRooms.map(escapeRoom => ({
+                    id: escapeRoom._id,
+                    name: escapeRoom.name,
+                    availability: escapeRoom.businessHours,
+                    timeZone: escapeRoom.timezone,
+                    bookings: bookings.filter(
+                      booking => booking.escapeRoom === escapeRoom._id
+                    )
+                  }))}
+                />
+              </>
+            )}
+          </Section>
+          <BookingsSection
+            organizationId={membership.organization}
+            timeZone={organization?.timezone}
+          />
+        </PageContent>
+      )}
+    </>
   );
 }

@@ -2,7 +2,6 @@ import { Router, Redirect } from '@reach/router';
 import * as React from 'react';
 import { PrivateRoutes as Routes } from './constants/routes';
 import { BookingsPage } from './pages/BookingsPage/BookingsPage';
-import { DashboardPage } from './pages/DashboardPage/DashboardPage';
 import { EscapeRoomPage } from './pages/EscapeRoomPage/EscapeRoomPage';
 import { EscapeRoomsPage } from './pages/EscapeRoomsPage/EscapeRoomsPage';
 import { OrganizationPage } from './pages/OrganizationPage/OrganizationPage';
@@ -17,14 +16,16 @@ const RequireOrganization = ({
   component: React.ReactType<{ path: string }>;
   path: string;
 }) => {
-  const { memberships } = useUser();
+  const { memberships, isLoading } = useUser();
+
+  console.log(memberships, isLoading);
 
   const Route = component;
 
   return memberships?.[0] ? (
     <Route path={path} {...rest} />
   ) : (
-    <Redirect noThrow from={path} to={Routes.Organization} />
+    <Redirect noThrow replace from={path} to={Routes.Organization} />
   );
 };
 
@@ -32,7 +33,6 @@ export function PrivateRoutes() {
   return (
     <Router>
       <OrganizationPage path={Routes.Organization} />
-      <RequireOrganization component={DashboardPage} path={Routes.Dashboard} />
       <RequireOrganization component={BookingsPage} path={Routes.Bookings} />
       <RequireOrganization
         component={EscapeRoomPage}
