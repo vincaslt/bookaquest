@@ -51,10 +51,12 @@ export function EscapeRoomBookingsList({
         timeZone={timeZone}
         bookings={bookings}
         loading={!bookings}
-        page={page}
-        setPage={setPage}
-        total={total}
-        bookingsPerPage={BOOKINGS_PER_PAGE}
+        pagination={{
+          onChange: setPage,
+          pageSize: BOOKINGS_PER_PAGE,
+          current: page,
+          total
+        }}
       />
     </Section>
   );

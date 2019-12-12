@@ -1,23 +1,26 @@
-import { Button, Modal, List } from 'antd';
+import { Button, Modal } from 'antd';
 import * as React from 'react';
 import { Booking } from '@bookaquest/interfaces';
 import { useI18n, useLoading } from '@bookaquest/utilities';
-import * as api from '../../api/application';
+import * as api from '../../../api/application';
+import { BookingDetails } from './BookingDetails';
+import { BookingsList } from '../../../shared/components/BookingsList';
 
 interface Props {
   visible: boolean;
   selectedBookings: Booking[];
   updateBookings: (bookings: Booking[]) => void;
   onClose: () => void;
+  timeZone?: string;
 }
 
 // TODO: if there are more than 1 booking on the same time when accepting, request to enter rejection message for other bookings
-// TODO: if multiple same start bookings' durations are different, represent them as a range (diff color min max end)
-export function PendingBookingModal({
+export function BookingModal({
   updateBookings,
   visible,
   selectedBookings,
-  onClose
+  onClose,
+  timeZone
 }: Props) {
   const { i18n, t } = useI18n(); // TODO: extend parser to support tt syntax: tt({ count })`Something n`
   const [loading, withLoading] = useLoading();
@@ -73,39 +76,17 @@ export function PendingBookingModal({
         )
       ]}
     >
-      <List>
-        {bookings.map(booking => (
-          <List.Item
-            key={booking._id}
-            actions={
-              !isSingleBooking
-                ? [
-                    <Button
-                      key="reject"
-                      loading={loading}
-                      type="danger"
-                      onClick={() => handleReject(booking)}
-                    >
-                      {t`Reject`}
-                    </Button>,
-                    <Button
-                      key="accept"
-                      type="primary"
-                      onClick={() => handleAccept(booking)}
-                    >
-                      {t`Accept`}
-                    </Button>
-                  ]
-                : []
-            }
-          >
-            <List.Item.Meta title={booking.name} description={booking.email} />
-            <div>
-              {booking.participants} - {booking.price}
-            </div>
-          </List.Item>
-        ))}
-      </List>
+      {isSingleBooking ? (
+        <BookingDetails />
+      ) : (
+        <BookingsList
+          pagination={false}
+          timeZone={timeZone}
+          bookings={bookings}
+          loading={loading}
+          updateBookings={updateBookings}
+        />
+      )}
     </Modal>
   );
 }

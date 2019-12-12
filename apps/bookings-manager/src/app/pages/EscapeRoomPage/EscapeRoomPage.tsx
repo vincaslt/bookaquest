@@ -7,7 +7,6 @@ import * as api from '../../api/application';
 import { Link } from '../../shared/components/Link';
 import { PageContent } from '../../shared/layout/PageContent';
 import { PrivateRoutes } from '../../constants/routes';
-import { Section } from '../../shared/layout/Section';
 import { EscapeRoomEditSection } from './EscapeRoomEditSection';
 import { EarningsSection } from './EarningsSection/EarningsSection';
 import { EscapeRoomBookingsList } from './BookingsSection';
@@ -63,12 +62,10 @@ export function EscapeRoomPage({
         </Col>
         <Col span={8}>
           <EarningsSection escapeRoomId={escapeRoomId} />
-          <Section title={t`Bookings`}>
-            <EscapeRoomBookingsList
-              escapeRoomId={escapeRoomId}
-              timeZone={escapeRoom?.timezone}
-            />
-          </Section>
+          <EscapeRoomBookingsList
+            escapeRoomId={escapeRoomId}
+            timeZone={escapeRoom?.timezone}
+          />
         </Col>
       </Row>
     </PageContent>

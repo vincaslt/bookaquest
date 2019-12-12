@@ -18,8 +18,8 @@ import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
 import { ResourceScheduler } from '../../shared/components/ResourceScheduler/ResourceScheduler';
 import { Section } from '../../shared/layout/Section';
-import { PendingBookingModal } from './PendingBookingModal';
-import { BookingsSection } from './BookingsSection';
+import { BookingModal } from './BookingModal/BookingModal';
+import { BookingsSection } from './BookingsSection/BookingsSection';
 
 export function BookingsPage(props: RouteComponentProps) {
   const { t } = useI18n();
@@ -94,11 +94,12 @@ export function BookingsPage(props: RouteComponentProps) {
     <>
       {membership?.organization && (
         <PageContent noBackground>
-          <PendingBookingModal
+          <BookingModal
             visible={selectedBookings.length > 0}
             updateBookings={updateBookings}
             onClose={handleCloseModal}
             selectedBookings={selectedBookings}
+            timeZone={timezone}
           />
           <Section>
             {loading ? (
@@ -153,7 +154,9 @@ export function BookingsPage(props: RouteComponentProps) {
             )}
           </Section>
           <BookingsSection
-            organizationId={membership.organization}
+            loading={loading}
+            bookings={bookings}
+            updateBookings={updateBookings}
             timeZone={organization?.timezone}
           />
         </PageContent>
