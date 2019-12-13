@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Booking, BookingStatus } from '@bookaquest/interfaces';
+import { Booking, BookingStatus, EscapeRoom } from '@bookaquest/interfaces';
 import { BookingsList } from '../../../shared/components/BookingsList';
 
 interface Props {
   loading: boolean;
+  escapeRooms: EscapeRoom[];
   bookings?: Booking[];
   timeZone?: string;
   updateBookings?: (bookings: Booking[]) => void;
@@ -13,7 +14,8 @@ export function UpcomingBookings({
   bookings = [],
   loading,
   timeZone,
-  updateBookings
+  updateBookings,
+  escapeRooms
 }: Props) {
   const upcomingBookings = bookings.filter(
     ({ status }) => status === BookingStatus.Accepted
@@ -21,6 +23,7 @@ export function UpcomingBookings({
 
   return (
     <BookingsList
+      escapeRooms={escapeRooms}
       timeZone={timeZone}
       bookings={upcomingBookings}
       loading={loading}

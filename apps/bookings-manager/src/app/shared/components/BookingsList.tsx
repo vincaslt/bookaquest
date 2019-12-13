@@ -3,10 +3,11 @@ import { green, blue, red, orange } from '@ant-design/colors';
 import Text from 'antd/lib/typography/Text';
 import { PaginationConfig } from 'antd/lib/table';
 import * as React from 'react';
-import { Booking, BookingStatus } from '@bookaquest/interfaces';
+import { Booking, BookingStatus, EscapeRoom } from '@bookaquest/interfaces';
 import { Time } from '@bookaquest/components';
 import { useLoading, useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
+import { IconText } from './IconText';
 
 const BOOKINGS_PER_PAGE = 10;
 
@@ -18,6 +19,7 @@ interface Props {
   onRejectDone?: () => void;
   timeZone?: string;
   pagination?: PaginationConfig | false;
+  escapeRooms?: EscapeRoom[];
 }
 
 export function BookingsList({
@@ -25,6 +27,7 @@ export function BookingsList({
   timeZone,
   loading,
   pagination,
+  escapeRooms = [],
   updateBookings = () => undefined,
   onAcceptDone = () => undefined,
   onRejectDone = () => undefined
@@ -51,7 +54,7 @@ export function BookingsList({
   const icons = {
     [BookingStatus.Accepted]: (
       <Icon
-        className="mr-4 text-4xl"
+        className="mr-4 mt-1 text-4xl"
         title={t`Accepted`}
         type="check-circle"
         theme="twoTone"
@@ -60,7 +63,7 @@ export function BookingsList({
     ),
     [BookingStatus.Pending]: (
       <Icon
-        className="mr-4 text-4xl"
+        className="mr-4 mt-1 text-4xl"
         title={t`Pending`}
         type="question-circle"
         theme="twoTone"
@@ -69,7 +72,7 @@ export function BookingsList({
     ),
     [BookingStatus.Rejected]: (
       <Icon
-        className="mr-4 text-4xl"
+        className="mr-4 mt-1 text-4xl"
         title={t`Rejected`}
         type="close-circle"
         theme="twoTone"
@@ -78,7 +81,7 @@ export function BookingsList({
     ),
     [BookingStatus.Canceled]: (
       <Icon
-        className="mr-4 text-4xl"
+        className="mr-4 mt-1 text-4xl"
         title={t`Canceled`}
         type="minus-circle"
         theme="twoTone"
@@ -87,6 +90,9 @@ export function BookingsList({
     )
   };
 
+  const getEscapeRoom = (id: string) =>
+    escapeRooms.find(({ _id }) => _id === id);
+
   return (
     <>
       <List
@@ -94,57 +100,84 @@ export function BookingsList({
         itemLayout="horizontal"
         dataSource={bookings}
         pagination={
-          pagination ?? {
-            pageSize: BOOKINGS_PER_PAGE
-          }
+          pagination ??
+          (!!bookings &&
+            bookings?.length > BOOKINGS_PER_PAGE && {
+              pageSize: BOOKINGS_PER_PAGE
+            })
         }
-        renderItem={booking => (
-          <List.Item
-            actions={
-              booking.status === BookingStatus.Pending
-                ? [
-                    <Button
-                      key="reject"
-                      loading={loadingUpdate}
-                      type="danger"
-                      onClick={() => handleReject(booking)}
-                    >
-                      {t`Reject`}
-                    </Button>,
-                    <Button
-                      loading={loadingUpdate}
-                      key="accept"
-                      type="primary"
-                      onClick={() => handleAccept(booking)}
-                    >
-                      {t`Accept`}
-                    </Button>
-                  ]
-                : []
-            }
-          >
-            <div className="flex items-center">
-              {icons[booking.status]}
-              <List.Item.Meta
-                title={<Text strong>{booking.name}</Text>}
-                description={
-                  <>
-                    <Time
-                      date={booking.startDate}
-                      type="date"
-                      timeZone={timeZone}
-                    />{' '}
-                    <Time
-                      date={[booking.startDate, booking.endDate]}
-                      timeZone={timeZone}
-                    />{' '}
-                    {booking.status}
-                  </>
-                }
-              />
-            </div>
-          </List.Item>
-        )}
+        renderItem={booking => {
+          const escapeRoom = getEscapeRoom(booking.escapeRoom);
+          return (
+            <List.Item
+              actions={
+                booking.status === BookingStatus.Pending
+                  ? [
+                      <Button
+                        key="reject"
+                        loading={loadingUpdate}
+                        type="danger"
+                        onClick={() => handleReject(booking)}
+                      >
+                        {t`Reject`}
+                      </Button>,
+                      <Button
+                        loading={loadingUpdate}
+                        key="accept"
+                        type="primary"
+                        onClick={() => handleAccept(booking)}
+                      >
+                        {t`Accept`}
+                      </Button>
+                    ]
+                  : []
+              }
+            >
+              <div className="flex">
+                {icons[booking.status]}
+                <div>
+                  <List.Item.Meta
+                    title={
+                      escapeRoom ? (
+                        <Text strong>
+                          <Time
+                            date={[booking.startDate, booking.endDate]}
+                            timeZone={timeZone}
+                          />
+                          {' | '}
+                          {escapeRoom.name} | {booking.name}
+                        </Text>
+                      ) : (
+                        <Text strong>{booking.name}</Text>
+                      )
+                    }
+                    description={
+                      <Time
+                        date={booking.startDate}
+                        type="date"
+                        timeZone={timeZone}
+                      />
+                    }
+                  />
+                  <div className="flex mt-2">
+                    <IconText
+                      className="mr-4"
+                      title={t`Price`}
+                      text={booking.price}
+                      icon="dollar"
+                    />
+                    <IconText
+                      title={t`Participants`}
+                      text={booking.participants}
+                      icon="team"
+                    />
+                    <Button type="link">{t`More details`}</Button>
+                  </div>
+                </div>
+              </div>
+            </List.Item>
+          );
+        }}
       />
     </>
   );

@@ -1,6 +1,6 @@
 import { Row, Col } from 'antd';
 import * as React from 'react';
-import { Booking } from '@bookaquest/interfaces';
+import { Booking, EscapeRoom } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 import { Section } from '../../../shared/layout/Section';
 import { PendingBookings } from './PendingBookings';
@@ -9,6 +9,7 @@ import { UpcomingBookings } from './UpcomingBookings';
 interface Props {
   bookings: Booking[];
   loading: boolean;
+  escapeRooms: EscapeRoom[];
   updateBookings?: (bookings: Booking[]) => void;
   timeZone?: string;
 }
@@ -17,7 +18,8 @@ export function BookingsSection({
   bookings,
   loading,
   updateBookings,
-  timeZone
+  timeZone,
+  escapeRooms
 }: Props) {
   const { t } = useI18n();
 
@@ -30,6 +32,7 @@ export function BookingsSection({
             loading={loading}
             timeZone={timeZone}
             updateBookings={updateBookings}
+            escapeRooms={escapeRooms}
           />
         </Section>
       </Col>
@@ -40,6 +43,7 @@ export function BookingsSection({
             loading={loading}
             timeZone={timeZone}
             updateBookings={updateBookings}
+            escapeRooms={escapeRooms}
           />
         </Section>
       </Col>

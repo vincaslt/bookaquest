@@ -16,9 +16,7 @@ const RequireOrganization = ({
   component: React.ReactType<{ path: string }>;
   path: string;
 }) => {
-  const { memberships, isLoading } = useUser();
-
-  console.log(memberships, isLoading);
+  const { memberships } = useUser();
 
   const Route = component;
 
