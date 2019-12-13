@@ -133,7 +133,7 @@ export function BookingsList({
                   : []
               }
             >
-              <div className="flex">
+              <div className="flex flex-grow">
                 {icons[booking.status]}
                 <div>
                   <List.Item.Meta
