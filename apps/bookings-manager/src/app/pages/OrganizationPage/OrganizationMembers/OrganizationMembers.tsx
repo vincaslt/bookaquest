@@ -1,5 +1,6 @@
-import { List, Button, Divider } from 'antd';
+import { List, Button, Divider, Popconfirm, Icon, message } from 'antd';
 import { format } from 'date-fns';
+import { red } from '@ant-design/colors';
 import * as React from 'react';
 import { useLoading, useI18n } from '@bookaquest/utilities';
 import * as api from '../../../api/application';
@@ -8,8 +9,8 @@ import {
   MemberInvitation,
   InvitationStatus
 } from '../../../interfaces/organizationMember';
-import { Link } from '../../../shared/components/Link';
 import { Section } from '../../../shared/layout/Section';
+import { useUser } from '../../../shared/hooks/useUser';
 import { MemberInviteModal } from './MemberInviteModal';
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 export function OrganizationMembers({ organizationId }: Props) {
   const { t, dateFnsLocale } = useI18n();
   const [loading, withLoading] = useLoading(true);
+  const { userInfo } = useUser();
   const [invitations, setInvitations] = React.useState<MemberInvitation[]>([]);
   const [memberships, setMemberships] = React.useState<OrganizationMember[]>(
     []
@@ -36,9 +38,20 @@ export function OrganizationMembers({ organizationId }: Props) {
   }, [organizationId, withLoading]);
 
   const handleInviteClick = () => setInviteModalVisible(true);
+  const handleDeleteClick = (membership: OrganizationMember) => async () => {
+    setMemberships(_memberships =>
+      _memberships.filter(({ _id }) => _id !== membership._id)
+    );
+    await api.deleteOrganizationMember(organizationId, membership._id);
+    message.success(t`Removed ${membership.user.fullName} from organization`);
+  };
 
   const pendingInvitations = invitations.filter(
     invitation => invitation.status === InvitationStatus.PENDING
+  );
+
+  const isUserOwner = memberships.some(
+    ({ isOwner, user }) => user._id === userInfo?._id && isOwner
   );
 
   return (
@@ -58,18 +71,40 @@ export function OrganizationMembers({ organizationId }: Props) {
         {memberships.map(membership => (
           <List.Item
             key={membership._id}
-            actions={[
-              !membership.isOwner && <Link key="remove-user">{t`remove`}</Link>
-            ]}
+            actions={
+              isUserOwner
+                ? [
+                    <Popconfirm
+                      disabled={membership.isOwner}
+                      title={t`Are you sure?`}
+                      onConfirm={handleDeleteClick(membership)}
+                      okText={t`Yes`}
+                      cancelText={t`Cancel`}
+                      icon={
+                        <Icon
+                          type="question-circle-o"
+                          style={{ color: red[5] }}
+                        />
+                      }
+                    >
+                      <Button
+                        type="link"
+                        key="remove-user"
+                        disabled={membership.isOwner}
+                      >{t`remove`}</Button>
+                    </Popconfirm>
+                  ]
+                : undefined
+            }
           >
             <List.Item.Meta
               title={membership.user.fullName}
               description={membership.user.email}
             />
             {membership.isOwner ? (
-              <strong>{t`Owner`}</strong>
+              <strong className="px-2">{t`Owner`}</strong>
             ) : (
-              <div>{t`Member`}</div>
+              <div className="px-2">{t`Member`}</div>
             )}
           </List.Item>
         ))}

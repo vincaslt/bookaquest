@@ -1,5 +1,5 @@
 import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
-import { notification } from 'antd';
+import { message } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import { navigate } from '@reach/router';
 import * as React from 'react';
@@ -36,11 +36,7 @@ export function RegistrationForm() {
       .register(values)
       .then(() => navigate(PublicRoutes.SignIn)) // TODO: auto login after registration
       .catch(() => {
-        notification.open({
-          message: t`Error`,
-          type: 'error',
-          description: t`Please try again in a moment`
-        });
+        message.error(t`Please try again in a moment`);
       })
       .finally(() => actions.setSubmitting(false));
   };

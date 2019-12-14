@@ -4,7 +4,7 @@ import { useI18n } from '@bookaquest/utilities';
 import { DetailsItem } from '../../../shared/components/DetailsList/DetailsItem';
 import { DetailsList } from '../../../shared/components/DetailsList/DetailsList';
 import { Link } from '../../../shared/components/Link';
-import { SectionTitle } from '../../../shared/components/SectionTitle';
+import { Section } from '../../../shared/layout/Section';
 import { PaymentDetailsForm } from './PaymentDetailsForm';
 
 interface Props {
@@ -27,16 +27,14 @@ export function Payments({ organization, setOrganization }: Props) {
   };
 
   return isEditing && organization ? (
-    <>
-      <SectionTitle>{t`Stripe payment details`}</SectionTitle>
+    <Section title={t`Stripe payment details`}>
       <PaymentDetailsForm
         organizationId={organization._id}
         onUpdateDone={handleUpdateDone}
       />
-    </>
+    </Section>
   ) : (
-    <DetailsList
-      loading={!organization}
+    <Section
       title={t`Stripe payment details`}
       extra={
         <Link onClick={handleToggleEditing}>
@@ -44,10 +42,12 @@ export function Payments({ organization, setOrganization }: Props) {
         </Link>
       }
     >
-      <DetailsItem label={t`Client key:`}>
-        {details && details.paymentClientKey}
-      </DetailsItem>
-      <DetailsItem label={t`Secret key:`}>'*********'</DetailsItem>
-    </DetailsList>
+      <DetailsList loading={!organization}>
+        <DetailsItem label={t`Client key:`}>
+          {details && details.paymentClientKey}
+        </DetailsItem>
+        <DetailsItem label={t`Secret key:`}>'*********'</DetailsItem>
+      </DetailsList>
+    </Section>
   );
 }

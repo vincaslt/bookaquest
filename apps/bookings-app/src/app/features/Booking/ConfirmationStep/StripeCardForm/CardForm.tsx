@@ -1,4 +1,4 @@
-import { Alert, Button, Input, notification } from 'antd';
+import { Alert, Button, Input, message } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 import * as React from 'react';
 import {
@@ -28,13 +28,8 @@ export const CardForm = injectStripe(({ onSubmit, loading, stripe }: Props) => {
 
     const { token } = await stripe.createToken({ name });
 
-    // TODO: use Message instead of notifications
     if (!token) {
-      notification.open({
-        message: t`Error`,
-        type: 'error',
-        description: t`This card cannot be used, try a different one`
-      });
+      message.error(t`This card cannot be used, try a different one`);
       return;
     }
     onSubmit(token);

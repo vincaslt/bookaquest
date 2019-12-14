@@ -190,6 +190,13 @@ export const deleteEscapeRoom = withAuth(headers => (escapeRoomId: string) =>
   api.delete(`/escape-room/${escapeRoomId}`, { headers })
 );
 
+export const deleteOrganizationMember = withAuth(
+  headers => (organizationId: string, membershipId: string) =>
+    api.delete(`/organization/${organizationId}/member/${membershipId}`, {
+      headers
+    })
+);
+
 export const createOrganizationInvitation = withAuth(
   headers => (organizationId: string, dto: InviteOrganizationMemberDTO) =>
     api

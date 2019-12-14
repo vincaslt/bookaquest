@@ -1,12 +1,11 @@
 import { RouteComponentProps } from '@reach/router';
-import { Col, Row } from 'antd';
+import { Col, Row, message } from 'antd';
 import * as React from 'react';
 import { Organization } from '@bookaquest/interfaces';
-import { useLoading } from '@bookaquest/utilities';
+import { useLoading, useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
-import { Section } from '../../shared/layout/Section';
 import { environment } from '../../../environments/environment';
 import { CreateOrganization } from './CreateOrganization/CreateOrganization';
 import { OrganizationDetails } from './OrganizationDetails';
@@ -16,6 +15,7 @@ import { Payments } from './Payments/Payments';
 
 // TODO: let user pick organizations / multiple organizations support
 export function OrganizationPage(props: RouteComponentProps) {
+  const { t } = useI18n();
   const { memberships } = useUser();
 
   const membership = memberships?.[0];
@@ -30,40 +30,38 @@ export function OrganizationPage(props: RouteComponentProps) {
     }
   }, [organizationId, withLoading]);
 
+  const handleOrganizationUpdate = (organization: Organization) => {
+    message.success(t`Organization details updated`);
+    setOrganization(organization);
+  };
+
   return (
     <PageContent noBackground>
       {membership ? (
         <Row gutter={24}>
-          <Col span={8}>
-            <Section>
-              <OrganizationDetails
-                loading={loading}
+          <Col xxl={8} xl={12}>
+            <OrganizationDetails
+              loading={loading}
+              organization={organization}
+              onUpdateOrganization={handleOrganizationUpdate}
+            />
+            {environment.paymentEnabled && (
+              <Payments
                 organization={organization}
-                onUpdateOrganization={setOrganization}
-              />
-            </Section>
-
-            <Section>
-              <OrganizationSchedule
-                organization={organization}
-                loading={loading}
                 setOrganization={setOrganization}
               />
-            </Section>
+            )}
           </Col>
-          <Col span={8}>
+          <Col xxl={8} xl={12}>
             <OrganizationMembers organizationId={membership.organization} />
           </Col>
-          {environment.paymentEnabled && (
-            <Col span={8}>
-              <Section>
-                <Payments
-                  organization={organization}
-                  setOrganization={setOrganization}
-                />
-              </Section>
-            </Col>
-          )}
+          <Col xxl={8} xl={12}>
+            <OrganizationSchedule
+              organization={organization}
+              loading={loading}
+              setOrganization={setOrganization}
+            />
+          </Col>
         </Row>
       ) : (
         <CreateOrganization />

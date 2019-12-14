@@ -1,5 +1,5 @@
 import Axios, { AxiosError } from 'axios';
-import { notification } from 'antd';
+import { message } from 'antd';
 import { config } from '@bookaquest/utilities';
 import {
   RequestRefreshTokenDTO,
@@ -19,9 +19,7 @@ api.interceptors.response.use(
       err.response.data?.message || "Something's wrong, try again later"
     );
     if (err.response.status !== 401) {
-      notification.error({
-        message: error.message
-      });
+      message.error(error.message);
     }
     return Promise.reject(err);
   }
