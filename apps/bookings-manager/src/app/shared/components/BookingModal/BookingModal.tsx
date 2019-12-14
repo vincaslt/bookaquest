@@ -1,15 +1,17 @@
 import { Button, Modal } from 'antd';
 import * as React from 'react';
-import { Booking } from '@bookaquest/interfaces';
+import { Booking, EscapeRoom } from '@bookaquest/interfaces';
 import { useI18n, useLoading } from '@bookaquest/utilities';
 import * as api from '../../../api/application';
+import { BookingsList } from '../BookingsList';
+import { BookingStatusIcon } from '../BookingStatusIcon';
 import { BookingDetails } from './BookingDetails';
-import { BookingsList } from '../../../shared/components/BookingsList';
 
 interface Props {
   visible: boolean;
   selectedBookings: Booking[];
   updateBookings: (bookings: Booking[]) => void;
+  escapeRooms: EscapeRoom[];
   onClose: () => void;
   timeZone?: string;
 }
@@ -20,24 +22,23 @@ export function BookingModal({
   visible,
   selectedBookings,
   onClose,
-  timeZone
+  timeZone,
+  escapeRooms
 }: Props) {
-  const { i18n, t } = useI18n(); // TODO: extend parser to support tt syntax: tt({ count })`Something n`
+  const { t } = useI18n(); // TODO: extend parser to support tt syntax: tt({ count })`Something n`
   const [loading, withLoading] = useLoading();
-  const [bookings, setSelectedBookings] = React.useState(selectedBookings);
+  const [bookings, setBookings] = React.useState(selectedBookings);
 
   React.useEffect(() => {
     if (selectedBookings.length > 0) {
-      setSelectedBookings(selectedBookings);
+      setBookings(selectedBookings);
     }
   }, [selectedBookings]);
 
   const handleReject = async (booking: Booking) => {
     const updatedBookings = await withLoading(api.rejectBooking(booking._id));
     updateBookings(updatedBookings);
-    if (selectedBookings.length === 1) {
-      onClose();
-    }
+    onClose();
   };
 
   const handleAccept = async (booking: Booking) => {
@@ -47,14 +48,35 @@ export function BookingModal({
   };
 
   const isSingleBooking = bookings.length === 1;
+  const firstBooking = bookings[0];
+  const escapeRoom =
+    firstBooking &&
+    escapeRooms.find(({ _id }) => _id === firstBooking.escapeRoom);
 
   return (
     <Modal
-      title={i18n.t('Pending booking(s)', { count: bookings.length })}
+      title={
+        isSingleBooking ? (
+          <div className="flex items-center">
+            <BookingStatusIcon
+              className="text-xl mr-2"
+              status={firstBooking.status}
+            />
+            {firstBooking.name}
+          </div>
+        ) : (
+          t`Bookings`
+        )
+      }
+      width={630}
       onCancel={onClose}
       visible={visible}
       footer={[
-        <Button key="back" onClick={onClose}>{t`Back`}</Button>,
+        <Button
+          disabled={loading}
+          key="back"
+          onClick={onClose}
+        >{t`Back`}</Button>,
         isSingleBooking && (
           <Button
             key="reject"
@@ -68,6 +90,7 @@ export function BookingModal({
         isSingleBooking && (
           <Button
             key="accept"
+            loading={loading}
             type="primary"
             onClick={() => handleAccept(bookings[0])}
           >
@@ -76,15 +99,21 @@ export function BookingModal({
         )
       ]}
     >
-      {isSingleBooking ? (
-        <BookingDetails />
+      {isSingleBooking && escapeRoom && firstBooking ? (
+        <BookingDetails
+          booking={firstBooking}
+          escapeRoom={escapeRoom}
+          timeZone={timeZone}
+        />
       ) : (
         <BookingsList
           pagination={false}
+          hasMoreDetails={false}
           timeZone={timeZone}
           bookings={bookings}
           loading={loading}
           updateBookings={updateBookings}
+          escapeRooms={escapeRooms}
         />
       )}
     </Modal>

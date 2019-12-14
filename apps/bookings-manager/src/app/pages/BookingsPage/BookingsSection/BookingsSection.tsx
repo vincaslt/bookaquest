@@ -11,6 +11,7 @@ interface Props {
   loading: boolean;
   escapeRooms: EscapeRoom[];
   updateBookings?: (bookings: Booking[]) => void;
+  onMoreDetails: (booking: Booking) => void;
   timeZone?: string;
 }
 
@@ -19,7 +20,8 @@ export function BookingsSection({
   loading,
   updateBookings,
   timeZone,
-  escapeRooms
+  escapeRooms,
+  onMoreDetails
 }: Props) {
   const { t } = useI18n();
 
@@ -33,6 +35,7 @@ export function BookingsSection({
             timeZone={timeZone}
             updateBookings={updateBookings}
             escapeRooms={escapeRooms}
+            onMoreDetails={onMoreDetails}
           />
         </Section>
       </Col>
@@ -44,6 +47,7 @@ export function BookingsSection({
             timeZone={timeZone}
             updateBookings={updateBookings}
             escapeRooms={escapeRooms}
+            onMoreDetails={onMoreDetails}
           />
         </Section>
       </Col>

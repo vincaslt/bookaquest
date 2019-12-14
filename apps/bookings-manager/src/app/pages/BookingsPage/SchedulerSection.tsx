@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { Section } from '../../shared/layout/Section';
 import { Spin, Button } from 'antd';
+import { zonedTimeToUtc } from 'date-fns-tz';
+import { startOfDay, addWeeks, endOfDay, subDays } from 'date-fns';
 import { Booking, Organization, EscapeRoom } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 import { dec, inc } from 'ramda';
+import * as React from 'react';
 import { Time } from '@bookaquest/components';
-import { zonedTimeToUtc } from 'date-fns-tz';
-import { startOfDay, addWeeks, endOfDay, subDays } from 'date-fns';
+import { Section } from '../../shared/layout/Section';
 import { ResourceScheduler } from '../../shared/components/ResourceScheduler/ResourceScheduler';
 
 interface Props {

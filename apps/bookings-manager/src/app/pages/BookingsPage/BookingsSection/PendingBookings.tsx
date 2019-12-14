@@ -8,6 +8,7 @@ interface Props {
   bookings?: Booking[];
   timeZone?: string;
   updateBookings?: (bookings: Booking[]) => void;
+  onMoreDetails: (booking: Booking) => void;
 }
 
 export function PendingBookings({
@@ -15,7 +16,8 @@ export function PendingBookings({
   loading,
   timeZone,
   updateBookings,
-  escapeRooms
+  escapeRooms,
+  onMoreDetails
 }: Props) {
   const pendingBookings = bookings.filter(
     ({ status }) => status === BookingStatus.Pending
@@ -28,6 +30,7 @@ export function PendingBookings({
       loading={loading}
       updateBookings={updateBookings}
       escapeRooms={escapeRooms}
+      onMoreDetails={onMoreDetails}
     />
   );
 }

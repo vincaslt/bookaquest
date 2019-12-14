@@ -1,5 +1,4 @@
-import { List, Button, Icon } from 'antd';
-import { green, blue, red, orange } from '@ant-design/colors';
+import { List, Button } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import { PaginationConfig } from 'antd/lib/table';
 import * as React from 'react';
@@ -8,6 +7,7 @@ import { Time } from '@bookaquest/components';
 import { useLoading, useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { IconText } from './IconText';
+import { BookingStatusIcon } from './BookingStatusIcon';
 
 const BOOKINGS_PER_PAGE = 10;
 
@@ -20,6 +20,7 @@ interface Props {
   timeZone?: string;
   pagination?: PaginationConfig | false;
   escapeRooms?: EscapeRoom[];
+  onMoreDetails?: (booking: Booking) => void;
 }
 
 export function BookingsList({
@@ -27,6 +28,7 @@ export function BookingsList({
   timeZone,
   loading,
   pagination,
+  onMoreDetails,
   escapeRooms = [],
   updateBookings = () => undefined,
   onAcceptDone = () => undefined,
@@ -49,45 +51,6 @@ export function BookingsList({
     );
     updateBookings(updatedBookings);
     onAcceptDone();
-  };
-
-  const icons = {
-    [BookingStatus.Accepted]: (
-      <Icon
-        className="mr-4 mt-1 text-4xl"
-        title={t`Accepted`}
-        type="check-circle"
-        theme="twoTone"
-        twoToneColor={green[3]}
-      />
-    ),
-    [BookingStatus.Pending]: (
-      <Icon
-        className="mr-4 mt-1 text-4xl"
-        title={t`Pending`}
-        type="question-circle"
-        theme="twoTone"
-        twoToneColor={blue[3]}
-      />
-    ),
-    [BookingStatus.Rejected]: (
-      <Icon
-        className="mr-4 mt-1 text-4xl"
-        title={t`Rejected`}
-        type="close-circle"
-        theme="twoTone"
-        twoToneColor={red[3]}
-      />
-    ),
-    [BookingStatus.Canceled]: (
-      <Icon
-        className="mr-4 mt-1 text-4xl"
-        title={t`Canceled`}
-        type="minus-circle"
-        theme="twoTone"
-        twoToneColor={orange[3]}
-      />
-    )
   };
 
   const getEscapeRoom = (id: string) =>
@@ -134,7 +97,10 @@ export function BookingsList({
               }
             >
               <div className="flex flex-grow">
-                {icons[booking.status]}
+                <BookingStatusIcon
+                  status={booking.status}
+                  className="mr-4 mt-1 text-4xl"
+                />
                 <div>
                   <List.Item.Meta
                     title={
@@ -171,7 +137,12 @@ export function BookingsList({
                       text={booking.participants}
                       icon="team"
                     />
-                    <Button type="link">{t`More details`}</Button>
+                    {onMoreDetails && (
+                      <Button
+                        type="link"
+                        onClick={() => onMoreDetails(booking)}
+                      >{t`More details`}</Button>
+                    )}
                   </div>
                 </div>
               </div>

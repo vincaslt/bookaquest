@@ -10,7 +10,7 @@ import {
 import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
-import { BookingModal } from './BookingModal/BookingModal';
+import { BookingModal } from '../../shared/components/BookingModal/BookingModal';
 import { BookingsSection } from './BookingsSection/BookingsSection';
 import { SchedulerSection } from './SchedulerSection';
 
@@ -64,9 +64,7 @@ export function BookingsPage(props: RouteComponentProps) {
 
   const handleCloseModal = () => setSelectedBookings([]);
   const handleSelectBookings = (selected: Booking[]) => {
-    if (selected.every(({ status }) => status === BookingStatus.Pending)) {
-      setSelectedBookings(selected);
-    }
+    setSelectedBookings(selected);
   };
 
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -84,6 +82,7 @@ export function BookingsPage(props: RouteComponentProps) {
         onClose={handleCloseModal}
         selectedBookings={selectedBookings}
         timeZone={timezone}
+        escapeRooms={escapeRooms}
       />
       <SchedulerSection
         bookings={bookings}
@@ -98,6 +97,7 @@ export function BookingsPage(props: RouteComponentProps) {
         updateBookings={updateBookings}
         timeZone={organization?.timezone}
         escapeRooms={escapeRooms}
+        onMoreDetails={booking => handleSelectBookings([booking])}
       />
     </PageContent>
   );
