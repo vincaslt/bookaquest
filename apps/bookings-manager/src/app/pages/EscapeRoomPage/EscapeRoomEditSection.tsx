@@ -5,10 +5,10 @@ import {
   Icon,
   Radio,
   Switch,
-  notification,
   Spin,
   Button,
-  Popconfirm
+  Popconfirm,
+  message
 } from 'antd';
 import AspectRatio from 'react-aspect-ratio';
 import { navigate } from '@reach/router';
@@ -67,9 +67,7 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
     if (escapeRoom) {
       await api.deleteEscapeRoom(escapeRoom._id);
       navigate(PrivateRoutes.EscapeRooms);
-      notification.success({
-        message: t`Escape room has been deleted`
-      });
+      message.success(t`Escape room has been deleted`);
     }
   };
 
@@ -78,9 +76,7 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
       const dto = await validationSchema.validate(values);
       const updatedRoom = await api.updateEscapeRoom(escapeRoom._id, dto);
       setEscapeRoom(updatedRoom);
-      notification.success({
-        message: t`Escape room info has been updated`
-      });
+      message.success(t`Escape room info has been updated`);
     }
   };
 

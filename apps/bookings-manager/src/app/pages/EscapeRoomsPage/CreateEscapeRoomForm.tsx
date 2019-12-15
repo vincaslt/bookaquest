@@ -9,7 +9,7 @@ import {
   SubmitButton,
   Switch
 } from 'formik-antd';
-import { Col, Icon, notification, Row } from 'antd';
+import { Col, Icon, Row, message } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import * as React from 'react';
 import styled from 'styled-components';
@@ -112,20 +112,12 @@ export function CreateEscapeRoomForm({
     api
       .createEscapeRoom(organization._id, values)
       .then(escapeRoom => {
-        notification.open({
-          message: t`Success`,
-          type: 'success',
-          description: t`Escape room has been created`
-        });
+        message.success(t`Escape room has been created`);
         onCreateDone(escapeRoom);
       })
       .catch(() => {
         actions.setSubmitting(false);
-        notification.open({
-          message: t`Error`,
-          type: 'error',
-          description: t`Please try again in a moment`
-        });
+        message.success(t`Please try again in a moment`);
       });
   };
 

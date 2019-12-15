@@ -1,5 +1,5 @@
 import { createError } from 'micro';
-import { get, post, put, AugmentedRequestHandler } from 'microrouter';
+import { get, post, put, AugmentedRequestHandler, del } from 'microrouter';
 import { omit } from 'ramda';
 import { Types } from 'mongoose';
 import { CreateOrganizationDTO } from '../dto/CreateOrganizationDTO';
@@ -169,7 +169,7 @@ const createOrganizationInvitation: AugmentedRequestHandler = async (
   const isAlreadyInvited = await OrganizationInvitationModel.exists({
     user: user.id,
     organization: organizationId,
-    status: { $in: [InvitationStatus.ACCEPTED, InvitationStatus.PENDING] }
+    status: InvitationStatus.PENDING
   });
 
   if (isAlreadyInvited) {
@@ -251,12 +251,37 @@ const declineOrganizationInvitation: AugmentedRequestHandler = async (
   return await findUserInvitations(userId);
 };
 
+const deleteOrganizationMember: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+  const { organizationId, membershipId } = getParams(req, [
+    'organizationId',
+    'membershipId'
+  ]);
+
+  await requireOwnerOfOrganization(organizationId, userId);
+
+  const membership = await OrganizationMembershipModel.findById(membershipId);
+
+  if (membership?.isOwner) {
+    throw createError(
+      STATUS_ERROR.BAD_REQUEST,
+      'Cannot delete organization owner'
+    );
+  }
+
+  await membership?.remove();
+};
+
 export const organizationHandlers = [
   post('/organization', createOrganization),
   put('/organization/:organizationId', updateOrganization),
   get('/organization/:organizationId/booking', listUpcomingBookings),
   get('/organization/:organizationId/member', listMembers),
   post('/organization/:organizationId/member', createOrganizationInvitation),
+  del(
+    '/organization/:organizationId/member/:membershipId',
+    deleteOrganizationMember
+  ),
   get('/organization/:organizationId', getOrganization), // TODO mark as public? no auth required
   post('/invitation/:invitationId/accept', acceptOrganizationInvitation),
   post('/invitation/:invitationId/decline', declineOrganizationInvitation)

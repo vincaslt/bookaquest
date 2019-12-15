@@ -1,6 +1,6 @@
 import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
-import { notification } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
+import { message } from 'antd';
 import * as React from 'react';
 import * as Yup from 'yup';
 import { useI18n } from '@bookaquest/utilities';
@@ -29,11 +29,7 @@ export function LoginForm() {
   ) => {
     await login(values)
       .catch(() => {
-        notification.open({
-          message: t`Error`,
-          type: 'error',
-          description: t`Invalid credentials`
-        });
+        message.error(t`Invalid credentials`);
       })
       .finally(() => {
         actions.setSubmitting(false);

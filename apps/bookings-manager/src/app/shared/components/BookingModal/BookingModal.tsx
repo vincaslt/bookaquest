@@ -108,7 +108,6 @@ export function BookingModal({
       ) : (
         <BookingsList
           pagination={false}
-          hasMoreDetails={false}
           timeZone={timeZone}
           bookings={bookings}
           loading={loading}

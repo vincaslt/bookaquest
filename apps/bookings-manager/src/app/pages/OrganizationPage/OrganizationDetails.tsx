@@ -6,6 +6,7 @@ import * as api from '../../api/application';
 import { DetailsItem } from '../../shared/components/DetailsList/DetailsItem';
 import { DetailsList } from '../../shared/components/DetailsList/DetailsList';
 import { EditableText } from '../../shared/components/EditableText';
+import { Section } from '../../shared/layout/Section';
 
 const { Text } = Typography;
 
@@ -31,28 +32,30 @@ export function OrganizationDetails({
       .then(onUpdateOrganization);
 
   return (
-    <DetailsList title={t`Organization details`} loading={loading}>
-      <DetailsItem label={t`ID:`}>
-        <Text copyable>{organization?._id}</Text>
-      </DetailsItem>
-      <DetailsItem label={t`Name:`}>
-        <EditableText
-          className="inline-flex items-center"
-          onChange={handleChange('name')}
-        >
-          {organization?.name}
-        </EditableText>
-      </DetailsItem>
-      <DetailsItem label={t`Website:`}>
-        <EditableText onChange={handleChange('website')}>
-          {organization?.website}
-        </EditableText>
-      </DetailsItem>
-      <DetailsItem label={t`Location:`}>
-        <EditableText onChange={handleChange('location')}>
-          {organization?.location}
-        </EditableText>
-      </DetailsItem>
-    </DetailsList>
+    <Section title={t`Organization details`}>
+      <DetailsList loading={loading}>
+        <DetailsItem label={t`ID:`}>
+          <Text copyable>{organization?._id}</Text>
+        </DetailsItem>
+        <DetailsItem label={t`Name:`}>
+          <EditableText
+            className="inline-flex items-center"
+            onChange={handleChange('name')}
+          >
+            {organization?.name}
+          </EditableText>
+        </DetailsItem>
+        <DetailsItem label={t`Website:`}>
+          <EditableText onChange={handleChange('website')}>
+            {organization?.website}
+          </EditableText>
+        </DetailsItem>
+        <DetailsItem label={t`Location:`}>
+          <EditableText onChange={handleChange('location')}>
+            {organization?.location}
+          </EditableText>
+        </DetailsItem>
+      </DetailsList>
+    </Section>
   );
 }

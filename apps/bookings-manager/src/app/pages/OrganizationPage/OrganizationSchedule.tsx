@@ -1,5 +1,5 @@
 import { Select, Form, FormItem, SubmitButton } from 'formik-antd';
-import { Button, notification, Spin } from 'antd';
+import { Button, Spin, message } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import { useToggle } from 'react-use';
 import { listTimeZones } from 'timezone-support';
@@ -8,9 +8,8 @@ import { BusinessHours, Organization } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
 import { WorkHours } from '@bookaquest/components';
 import * as api from '../../api/application';
-import { SectionTitle } from '../../shared/components/SectionTitle';
 import { BusinessHoursInput } from '../../shared/components/BusinessHoursInput';
-import { Link } from '../../shared/components/Link';
+import { Section } from '../../shared/layout/Section';
 
 interface CreateSchedule {
   businessHours: BusinessHours[];
@@ -48,31 +47,24 @@ export function OrganizationSchedule({
         schedule
       );
       setOrganization(updatedOrg);
-      notification.open({
-        message: t`Success`,
-        type: 'success',
-        description: t`Organization business hours have been updated`
-      });
+      message.success(t`Organization business hours have been updated`);
       toggleEditing(false);
     } catch (e) {
-      notification.open({
-        message: t`Success`,
-        type: 'error',
-        description: t`Failed to update business hours, try again later`
-      });
+      message.success(t`Failed to update business hours, try again later`);
     }
     actions.setSubmitting(false);
   };
 
   if (!editing) {
     return (
-      <>
-        <div className="flex justify-between">
-          <SectionTitle>{t`Business hours`}</SectionTitle>
-          {organization && (
+      <Section
+        title={t`Business hours`}
+        extra={
+          organization && (
             <Button type="link" onClick={toggleEditing}>{t`Edit`}</Button>
-          )}
-        </div>
+          )
+        }
+      >
         {organization && (
           <div className="mb-4">
             <span className="font-medium mr-2">{t`Timezone:`}</span>
@@ -88,7 +80,7 @@ export function OrganizationSchedule({
             <WorkHours businessHours={organization.businessHours} />
           )
         )}
-      </>
+      </Section>
     );
   }
 
@@ -99,20 +91,23 @@ export function OrganizationSchedule({
   };
 
   return (
-    <>
-      <div className="flex justify-between">
-        <SectionTitle>{t`Business hours`}</SectionTitle>
-        <div>
-          <Link onClick={toggleEditing}>{t`Cancel`}</Link>
-        </div>
-      </div>
+    <Section
+      title={t`Business hours`}
+      extra={
+        organization && (
+          <Button type="link" onClick={toggleEditing}>{t`Cancel`}</Button>
+        )
+      }
+    >
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {({ values, setFieldValue }) => (
           <Form layout="vertical">
             <FormItem name="timezone" hasFeedback label={t`Timezone`}>
               <Select name="timezone" showSearch optionFilterProp="children">
                 {timezoneOptions.map(option => (
-                  <Select.Option value={option}>{option}</Select.Option>
+                  <Select.Option key={option} value={option}>
+                    {option}
+                  </Select.Option>
                 ))}
               </Select>
             </FormItem>
@@ -126,6 +121,6 @@ export function OrganizationSchedule({
           </Form>
         )}
       </Formik>
-    </>
+    </Section>
   );
 }
