@@ -81,7 +81,9 @@ export function EscapeRoomBookingsList({ escapeRoom }: Props) {
   return (
     <Section title={t`Booking history`} extra={renderRangeText()}>
       {!escapeRoom || !bookings ? (
-        <Spin />
+        <div className="m-4 text-center">
+          <Spin />
+        </div>
       ) : (
         <div className="flex items-center">
           <Button

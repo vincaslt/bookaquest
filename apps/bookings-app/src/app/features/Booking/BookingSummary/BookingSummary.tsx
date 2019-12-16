@@ -17,6 +17,7 @@ interface Props {
   selectedRoom?: EscapeRoom;
 }
 
+// ! TODO: show currency and allow selection in manager app
 export function BookingSummary({ selectedRoom }: Props) {
   const { t } = useI18n();
 

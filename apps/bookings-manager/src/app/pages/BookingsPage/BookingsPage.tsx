@@ -17,7 +17,7 @@ import { SchedulerSection } from './SchedulerSection';
 export function BookingsPage(props: RouteComponentProps) {
   const { memberships } = useUser();
   const [loading, withLoading] = useLoading(true);
-  const [bookings, setBookings] = React.useState<Booking[]>([]);
+  const [upcomingBookings, setUpcomingBookings] = React.useState<Booking[]>([]);
   const [organization, setOrganization] = React.useState<Organization>();
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
   const [selectedBookings, setSelectedBookings] = React.useState<Booking[]>([]);
@@ -28,11 +28,13 @@ export function BookingsPage(props: RouteComponentProps) {
     if (membership) {
       withLoading(
         Promise.all([
-          api.getOrganizationBookings(membership.organization),
+          api.getOrganizationBookings(membership.organization, {
+            select: 'upcoming'
+          }),
           api.getOrganization(membership.organization),
           api.getEscapeRooms(membership.organization)
-        ]).then(([bkgs, org, esc]) => {
-          setBookings(bkgs);
+        ]).then(([bookings, org, esc]) => {
+          setUpcomingBookings(bookings);
           setOrganization(org);
           setEscapeRooms(esc);
         })
@@ -44,7 +46,8 @@ export function BookingsPage(props: RouteComponentProps) {
     const getUpdated = (booking: Booking) =>
       updatedBookings.find(({ _id }) => _id === booking._id);
 
-    setBookings(prev =>
+    // TODO: update booking history
+    setUpcomingBookings(prev =>
       prev
         .filter(
           booking => getUpdated(booking)?.status !== BookingStatus.Rejected
@@ -85,17 +88,17 @@ export function BookingsPage(props: RouteComponentProps) {
         escapeRooms={escapeRooms}
       />
       <SchedulerSection
-        bookings={bookings}
+        bookings={upcomingBookings}
         escapeRooms={escapeRooms}
         loading={loading}
         organization={organization}
         onSelectBookings={handleSelectBookings}
       />
       <BookingsSection
+        organization={organization}
         loading={loading}
-        bookings={bookings}
+        bookings={upcomingBookings}
         updateBookings={updateBookings}
-        timeZone={organization?.timezone}
         escapeRooms={escapeRooms}
         onMoreDetails={booking => handleSelectBookings([booking])}
       />
