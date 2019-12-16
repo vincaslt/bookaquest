@@ -51,8 +51,7 @@ const getBooking: AugmentedRequestHandler = async (req, res) => {
 const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
-  const { from, to, offset, take, status } = getQuery(req, undefined, [
-    'status',
+  const { from, to, offset, take } = getQuery(req, undefined, [
     'from',
     'to',
     'offset',
@@ -78,8 +77,7 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
 
   const query = {
     escapeRoom: escapeRoomId,
-    endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate },
-    ...(status ? { status } : {})
+    endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate }
   };
   const [bookings, total] = await Promise.all([
     BookingModel.find(query, null, {
@@ -247,6 +245,8 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
+  // TODO: check if booking is not outdated
+
   if (booking.status !== BookingStatus.Pending) {
     throw createError(
       STATUS_ERROR.BAD_REQUEST,
@@ -269,6 +269,8 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   const booking = await requireBooking(bookingId);
   const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
+
+  // TODO: check if booking is not outdated
 
   if (booking.status !== BookingStatus.Pending) {
     throw createError(

@@ -12,7 +12,7 @@ import { BookingStatusIcon } from './BookingStatusIcon';
 const BOOKINGS_PER_PAGE = 10;
 
 interface Props {
-  loading: boolean;
+  loading?: boolean;
   bookings?: Booking[];
   updateBookings?: (bookings: Booking[]) => void;
   onAcceptDone?: () => void;
@@ -59,6 +59,7 @@ export function BookingsList({
   return (
     <>
       <List
+        className="w-full"
         loading={loading}
         itemLayout="horizontal"
         dataSource={bookings}
@@ -74,7 +75,8 @@ export function BookingsList({
           return (
             <List.Item
               actions={
-                booking.status === BookingStatus.Pending
+                booking.status === BookingStatus.Pending &&
+                booking.startDate > new Date()
                   ? [
                       <Button
                         key="reject"

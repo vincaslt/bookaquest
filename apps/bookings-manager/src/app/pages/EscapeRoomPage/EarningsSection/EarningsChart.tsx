@@ -1,6 +1,7 @@
-import { format, isToday } from 'date-fns';
+import { isToday } from 'date-fns';
 import { green, blue, orange } from '@ant-design/colors';
 import AspectRatio from 'react-aspect-ratio';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import * as React from 'react';
 import { Booking } from '@bookaquest/interfaces';
 import { listWeekdays, useI18n } from '@bookaquest/utilities';
@@ -12,17 +13,19 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from 'recharts';
+import { Time } from '@bookaquest/components';
 import { completedEarnings, projectedEarnings, pendingEarnings } from './utils';
 
 interface Props {
   weeklyBookings: Booking[];
   week: Date;
+  timeZone: string;
 }
 
-export function EarningsChart({ weeklyBookings, week }: Props) {
+export function EarningsChart({ weeklyBookings, week, timeZone }: Props) {
   const { t, dateFnsLocale } = useI18n();
 
-  const weekdays = listWeekdays(dateFnsLocale, week);
+  const weekdays = listWeekdays(dateFnsLocale, week, timeZone);
 
   const chartData = weekdays.map(weekdayDate => {
     return {
@@ -45,9 +48,13 @@ export function EarningsChart({ weeklyBookings, week }: Props) {
         <AreaChart margin={{ left: 20, right: 20 }} data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
-            labelFormatter={day =>
-              format(new Date(day), 'cccc', { locale: dateFnsLocale })
-            }
+            labelFormatter={day => (
+              <Time
+                type={{ format: 'cccc' }}
+                date={zonedTimeToUtc(new Date(day), timeZone)}
+                timeZone={timeZone}
+              />
+            )}
             formatter={(value, key, { payload }) =>
               key === 'pending'
                 ? [payload.pending - payload.projected, axisNames[key]]
@@ -59,9 +66,6 @@ export function EarningsChart({ weeklyBookings, week }: Props) {
             dataKey="day"
             tick={({ payload, x, y }) => {
               const date = new Date(payload.value);
-              const formattedDate = format(date, 'MM-dd', {
-                locale: dateFnsLocale
-              });
               return (
                 <text
                   x={x}
@@ -70,7 +74,11 @@ export function EarningsChart({ weeklyBookings, week }: Props) {
                   dy="0.7em"
                   className={isToday(date) ? 'font-bold' : undefined}
                 >
-                  {formattedDate}
+                  <Time
+                    type={{ format: 'MM-dd' }}
+                    date={zonedTimeToUtc(new Date(payload.value), timeZone)}
+                    timeZone={timeZone}
+                  />
                 </text>
               );
             }}

@@ -54,18 +54,15 @@ export function EscapeRoomPage({
       loading={!escapeRoom}
     >
       <Row gutter={16}>
-        <Col span={16}>
+        <Col span={14}>
           <EscapeRoomEditSection
             escapeRoom={escapeRoom}
             setEscapeRoom={setEscapeRoom}
           />
         </Col>
-        <Col span={8}>
-          <EarningsSection escapeRoomId={escapeRoomId} />
-          <EscapeRoomBookingsList
-            escapeRoomId={escapeRoomId}
-            timeZone={escapeRoom?.timezone}
-          />
+        <Col span={10}>
+          <EarningsSection escapeRoom={escapeRoom} />
+          <EscapeRoomBookingsList escapeRoom={escapeRoom} />
         </Col>
       </Row>
     </PageContent>

@@ -1,6 +1,7 @@
 import { green, blue, orange } from '@ant-design/colors';
-import { format, startOfWeek, endOfWeek } from 'date-fns';
+import { startOfWeek, endOfWeek } from 'date-fns';
 import { Statistic } from 'antd';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import * as React from 'react';
 import { Booking } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
@@ -9,6 +10,7 @@ import prop from 'ramda/es/prop';
 import sum from 'ramda/es/sum';
 import map from 'ramda/es/map';
 import filter from 'ramda/es/filter';
+import { Time } from '@bookaquest/components';
 import {
   isBookingCompleted,
   isBookingAccepted,
@@ -19,9 +21,15 @@ interface Props {
   todaysBookings: Booking[];
   weeklyBookings: Booking[];
   week: Date;
+  timeZone: string;
 }
 
-export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
+export function EarningsStats({
+  todaysBookings,
+  weeklyBookings,
+  week,
+  timeZone
+}: Props) {
   const { t, dateFnsLocale } = useI18n();
 
   const calculateEarnings = (f: (booking: Booking) => boolean) =>
@@ -34,9 +42,6 @@ export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
   const earningsWeekly = calculateEarnings(isBookingCompleted)(weeklyBookings);
   const pendingWeekly = calculateEarnings(isBookingPending)(weeklyBookings);
   const projectedWeekly = calculateEarnings(isBookingAccepted)(weeklyBookings);
-
-  const start = format(startOfWeek(week), 'MMM d', { locale: dateFnsLocale });
-  const end = format(endOfWeek(week), 'MMM d', { locale: dateFnsLocale });
 
   return (
     <div className="pl-4 w-full">
@@ -67,7 +72,19 @@ export function EarningsStats({ todaysBookings, weeklyBookings, week }: Props) {
           suffix="$"
         />
       </div>
-      <h3 className="mb-2 font-semibold">{`${start} - ${end}`}</h3>
+      <h3 className="mb-2 font-semibold">
+        <Time
+          type={{ format: 'MMM d' }}
+          date={[
+            zonedTimeToUtc(
+              startOfWeek(week, { locale: dateFnsLocale }),
+              timeZone
+            ),
+            zonedTimeToUtc(endOfWeek(week, { locale: dateFnsLocale }), timeZone)
+          ]}
+          timeZone={timeZone}
+        />
+      </h3>
       <div className="flex justify-between">
         <Statistic
           className="mr-4"

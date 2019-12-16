@@ -19,9 +19,13 @@ export function isSameOrAfter(date: Date, dateToCompare: Date) {
   return isAfter(date, dateToCompare) || isEqual(date, dateToCompare);
 }
 
-export function listWeekdays(locale: Locale, day = new Date()) {
+export function listWeekdays(
+  locale: Locale,
+  day = new Date(),
+  timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+) {
   return eachDayOfInterval({
-    start: startOfWeek(day, { locale }),
-    end: endOfWeek(day, { locale })
+    start: zonedTimeToUtc(startOfWeek(day, { locale }), timeZone),
+    end: zonedTimeToUtc(endOfWeek(day, { locale }), timeZone)
   });
 }
