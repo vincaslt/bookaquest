@@ -86,19 +86,7 @@ export function BookingsSection({
 
   return (
     <Row gutter={16}>
-      <Col xl={14}>
-        <Section title={t`Pending Bookings`}>
-          <PendingBookings
-            bookings={bookings}
-            loading={loading}
-            timeZone={timeZone}
-            updateBookings={updateBookings}
-            escapeRooms={escapeRooms}
-            onMoreDetails={onMoreDetails}
-          />
-        </Section>
-      </Col>
-      <Col xl={10}>
+      <Col xl={10} xxl={12}>
         <Section title={t`Upcoming Bookings`}>
           <UpcomingBookings
             bookings={bookings}
@@ -110,7 +98,20 @@ export function BookingsSection({
           />
         </Section>
       </Col>
-      <Col xl={18} xxl={14}>
+      <Col xl={14} xxl={12}>
+        <Section title={t`Pending Bookings`}>
+          <PendingBookings
+            bookings={bookings}
+            loading={loading}
+            timeZone={timeZone}
+            updateBookings={updateBookings}
+            escapeRooms={escapeRooms}
+            onMoreDetails={onMoreDetails}
+          />
+        </Section>
+      </Col>
+
+      <Col xl={{ span: 16, offset: 0 }} xxl={{ span: 14, offset: 0 }}>
         <Section title={t`Booking history`} extra={renderRangeText()}>
           {!allBookings ? (
             <div className="m-4 text-center">
