@@ -1,4 +1,5 @@
 import { utcToZonedTime, format } from 'date-fns-tz';
+import { isSameDay } from 'date-fns';
 import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
 
@@ -18,11 +19,15 @@ export function Time({ date, type = 'time', timeZone }: Props) {
         }[type]
       : type.format;
 
-  const formatWithTimezone = (utcDate: Date) =>
-    format(timeZone ? utcToZonedTime(utcDate, timeZone) : utcDate, dateFormat, {
-      locale: dateFnsLocale,
-      timeZone
-    });
+  const formatWithTimezone = (utcDate: Date, _dateFormat = dateFormat) =>
+    format(
+      timeZone ? utcToZonedTime(utcDate, timeZone) : utcDate,
+      _dateFormat,
+      {
+        locale: dateFnsLocale,
+        timeZone
+      }
+    );
 
   if (date instanceof Date) {
     return <>{formatWithTimezone(date)}</>;
@@ -32,7 +37,10 @@ export function Time({ date, type = 'time', timeZone }: Props) {
     <>
       {formatWithTimezone(date[0])}
       {' - '}
-      {formatWithTimezone(date[1])}
+      {formatWithTimezone(
+        date[1],
+        isSameDay(date[0], date[1]) ? 'p' : undefined
+      )}
     </>
   );
 }

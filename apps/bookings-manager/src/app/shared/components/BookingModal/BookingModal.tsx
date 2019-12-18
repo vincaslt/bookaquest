@@ -1,6 +1,6 @@
 import { Button, Modal } from 'antd';
 import * as React from 'react';
-import { Booking, EscapeRoom } from '@bookaquest/interfaces';
+import { Booking, EscapeRoom, BookingStatus } from '@bookaquest/interfaces';
 import { useI18n, useLoading } from '@bookaquest/utilities';
 import * as api from '../../../api/application';
 import { BookingsList } from '../BookingsList';
@@ -47,6 +47,9 @@ export function BookingModal({
     onClose();
   };
 
+  const isPending = bookings.some(
+    ({ status }) => status === BookingStatus.Pending
+  );
   const isSingleBooking = bookings.length === 1;
   const firstBooking = bookings[0];
   const escapeRoom =
@@ -77,7 +80,7 @@ export function BookingModal({
           key="back"
           onClick={onClose}
         >{t`Back`}</Button>,
-        isSingleBooking && (
+        isSingleBooking && isPending && (
           <Button
             key="reject"
             loading={loading}
@@ -87,7 +90,7 @@ export function BookingModal({
             {t`Reject`}
           </Button>
         ),
-        isSingleBooking && (
+        isSingleBooking && isPending && (
           <Button
             key="accept"
             loading={loading}
