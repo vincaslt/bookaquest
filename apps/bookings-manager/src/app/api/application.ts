@@ -118,9 +118,19 @@ export const updateOrganization = withAuth(
 );
 
 export const getOrganizationBookings = withAuth(
-  headers => (organizationId: string) =>
+  headers => (
+    organizationId: string,
+    params: {
+      from?: Date;
+      to?: Date;
+      select?: 'upcoming';
+    }
+  ) =>
     api
-      .get<BookingDTO[]>(`/organization/${organizationId}/booking`, { headers })
+      .get<BookingDTO[]>(`/organization/${organizationId}/booking`, {
+        headers,
+        params
+      })
       .then(res => res.data)
       .then(map(fromBookingDTO))
 );

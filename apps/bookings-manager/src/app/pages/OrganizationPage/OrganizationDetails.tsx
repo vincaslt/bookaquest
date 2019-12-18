@@ -16,6 +16,9 @@ interface Props {
   onUpdateOrganization: (organization: Organization) => void;
 }
 
+// TODO: add licence to repo
+// TODO: add organization booking page link to app
+// TODO: add support for URL slugs (based on name, for esc. room and organization)
 export function OrganizationDetails({
   loading,
   organization,

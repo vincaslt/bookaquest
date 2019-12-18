@@ -1,8 +1,7 @@
 import * as pathToRegexp from 'path-to-regexp';
 
 export enum PrivateRoutes {
-  Dashboard = '/',
-  Bookings = '/bookings',
+  Bookings = '/',
   Organization = '/organization',
   EscapeRooms = '/escape-rooms',
   EscapeRoom = '/escape-rooms/:escapeRoomId'

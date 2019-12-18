@@ -1,3 +1,4 @@
+import { differenceInCalendarDays } from 'date-fns';
 import { createError } from 'micro';
 import { get, post, put, AugmentedRequestHandler, del } from 'microrouter';
 import { omit } from 'ramda';
@@ -32,6 +33,10 @@ import {
   InvitationStatus
 } from '../models/OrganizationInvitation';
 import { UserModel } from '../models/User';
+import { getQuery } from '../lib/utils/getQuery';
+
+const MAX_DAYS_SELECT = 7 * 6;
+const PAGINATION_LIMIT = 500;
 
 const createOrganization: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
@@ -86,9 +91,14 @@ const updateOrganization: AugmentedRequestHandler = async (req, res) => {
   return organization;
 };
 
-const listUpcomingBookings: AugmentedRequestHandler = async (req, res) => {
+const listBookings: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const { organizationId } = getParams(req, ['organizationId']);
+  const { from, to, select } = getQuery(req, undefined, [
+    'from',
+    'to',
+    'select'
+  ]);
 
   await requireBelongsToOrganization(organizationId, userId);
 
@@ -96,11 +106,24 @@ const listUpcomingBookings: AugmentedRequestHandler = async (req, res) => {
     organization: organizationId
   });
 
-  const bookings = await BookingModel.find({
-    escapeRoom: { $in: escapeRooms.map(({ id }) => id) },
-    status: { $in: [BookingStatus.Accepted, BookingStatus.Pending] },
-    endDate: { $gt: new Date() }
-  });
+  const fromDate = from ? new Date(from) : new Date();
+  const toDate = to && new Date(to);
+
+  if (toDate && differenceInCalendarDays(toDate, fromDate) > MAX_DAYS_SELECT) {
+    throw createError(STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
+  }
+
+  const bookings = await BookingModel.find(
+    {
+      escapeRoom: { $in: escapeRooms.map(({ id }) => id) },
+      endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate },
+      ...(select === 'upcoming'
+        ? { status: { $in: [BookingStatus.Accepted, BookingStatus.Pending] } }
+        : {})
+    },
+    null,
+    { limit: PAGINATION_LIMIT, sort: { endDate: -1 } }
+  );
 
   return bookings;
 };
@@ -275,7 +298,7 @@ const deleteOrganizationMember: AugmentedRequestHandler = async (req, res) => {
 export const organizationHandlers = [
   post('/organization', createOrganization),
   put('/organization/:organizationId', updateOrganization),
-  get('/organization/:organizationId/booking', listUpcomingBookings),
+  get('/organization/:organizationId/booking', listBookings),
   get('/organization/:organizationId/member', listMembers),
   post('/organization/:organizationId/member', createOrganizationInvitation),
   del(

@@ -30,9 +30,9 @@ export function OrganizationPage(props: RouteComponentProps) {
     }
   }, [organizationId, withLoading]);
 
-  const handleOrganizationUpdate = (organization: Organization) => {
+  const handleOrganizationUpdate = (org: Organization) => {
     message.success(t`Organization details updated`);
-    setOrganization(organization);
+    setOrganization(org);
   };
 
   return (

@@ -10,5 +10,6 @@ export function initCommons() {
 
 export * from './app/EscapeRoomCard';
 export * from './app/WorkHours';
+export * from './app/DifficultyIndicator';
 
 export * from './util/Time';

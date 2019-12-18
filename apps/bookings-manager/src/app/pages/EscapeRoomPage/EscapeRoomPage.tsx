@@ -9,7 +9,7 @@ import { PageContent } from '../../shared/layout/PageContent';
 import { PrivateRoutes } from '../../constants/routes';
 import { EscapeRoomEditSection } from './EscapeRoomEditSection';
 import { EarningsSection } from './EarningsSection/EarningsSection';
-import { BookingsSection } from './BookingsSection';
+import { EscapeRoomBookingsList } from './BookingsSection';
 
 interface UrlParams {
   escapeRoomId: string;
@@ -54,15 +54,15 @@ export function EscapeRoomPage({
       loading={!escapeRoom}
     >
       <Row gutter={16}>
-        <Col span={16}>
+        <Col span={14}>
           <EscapeRoomEditSection
             escapeRoom={escapeRoom}
             setEscapeRoom={setEscapeRoom}
           />
         </Col>
-        <Col span={8}>
-          <EarningsSection escapeRoomId={escapeRoomId} />
-          <BookingsSection escapeRoomId={escapeRoomId} />
+        <Col span={10}>
+          <EarningsSection escapeRoom={escapeRoom} />
+          <EscapeRoomBookingsList escapeRoom={escapeRoom} />
         </Col>
       </Row>
     </PageContent>

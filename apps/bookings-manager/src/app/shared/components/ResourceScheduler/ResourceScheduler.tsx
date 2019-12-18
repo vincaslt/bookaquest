@@ -16,7 +16,7 @@ import {
   addMinutes
 } from 'date-fns';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { utcToZonedTime } from 'date-fns-tz';
 import { isBefore } from 'date-fns/esm';
 import * as React from 'react';
 import times from 'ramda/es/times';
@@ -139,7 +139,7 @@ interface Props {
 // TODO: overlapping bookings support (show combined min max with lighter shade color for difference)
 // TODO: resource name height dynamic based on row height
 // TODO: don't let column width expand (e.g. when day is overflowing)
-// TODO: focus current time on opening
+// TODO: focus current time or earliest booking on opening
 export function ResourceScheduler({
   range,
   resources,
@@ -151,7 +151,7 @@ export function ResourceScheduler({
   const [now, setNow] = React.useState(utcToZonedTime(new Date(), timeZone));
 
   const days = eachDayOfInterval(range).map(day =>
-    zonedTimeToUtc(day, timeZone)
+    utcToZonedTime(day, timeZone)
   );
 
   const resourcesAvailabilities = getAvailabilitiesInTimezone(
@@ -307,20 +307,6 @@ export function ResourceScheduler({
             </thead>
             <tbody>
               {resources.map((resource, i) => {
-                const bookings = resource.bookings.map(booking => ({
-                  ...booking,
-                  startDate: convertBetweenTimezones(
-                    booking.startDate,
-                    resource.timeZone,
-                    timeZone
-                  ),
-                  endDate: convertBetweenTimezones(
-                    booking.endDate,
-                    resource.timeZone,
-                    timeZone
-                  )
-                }));
-
                 return (
                   <tr key={i}>
                     {globalWorkHours.map(({ day, hours }) => {
@@ -332,21 +318,37 @@ export function ResourceScheduler({
                       );
 
                       return hours.map((hour, j) => {
-                        const utcHour = zonedTimeToUtc(hour, timeZone);
-                        const bookingsAtHourStart = bookings.filter(
-                          ({ startDate }) =>
-                            isSameOrAfter(startDate, utcHour) &&
-                            isBefore(startDate, addMinutes(utcHour, 30))
+                        const bookingsAtHourStart = resource.bookings.filter(
+                          ({ startDate }) => {
+                            const date = convertBetweenTimezones(
+                              startDate,
+                              resource.timeZone,
+                              timeZone
+                            );
+                            return (
+                              isSameOrAfter(date, hour) &&
+                              isBefore(date, addMinutes(hour, 30))
+                            );
+                          }
                         );
-                        const bookingsAtHourEnd = bookings.filter(
-                          ({ startDate }) =>
-                            isSameOrAfter(startDate, addMinutes(utcHour, 30)) &&
-                            isBefore(startDate, endOfHour(utcHour))
+                        const bookingsAtHourEnd = resource.bookings.filter(
+                          ({ startDate }) => {
+                            const date = convertBetweenTimezones(
+                              startDate,
+                              resource.timeZone,
+                              timeZone
+                            );
+                            return (
+                              isSameOrAfter(date, addMinutes(hour, 30)) &&
+                              isBefore(date, endOfHour(hour))
+                            );
+                          }
                         );
                         const bookingsAtHour = [
                           bookingsAtHourStart,
                           bookingsAtHourEnd
                         ];
+
                         const isStartWorkHour = availabilityForDay.some(
                           ([start, end]) =>
                             isSameOrAfter(hour, start) && isBefore(hour, end)

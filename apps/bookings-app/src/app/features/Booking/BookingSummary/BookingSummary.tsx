@@ -2,11 +2,11 @@ import { Card, Divider, Icon } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import AspectRatio from 'react-aspect-ratio';
-import times from 'ramda/es/times';
 import * as React from 'react';
 import styled from 'styled-components';
 import { EscapeRoom } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
+import { DifficultyIndicator } from '@bookaquest/components';
 
 const StyledCard = styled(Card)`
   min-width: 40%;
@@ -17,6 +17,7 @@ interface Props {
   selectedRoom?: EscapeRoom;
 }
 
+// ! TODO: show currency and allow selection in manager app
 export function BookingSummary({ selectedRoom }: Props) {
   const { t } = useI18n();
 
@@ -32,32 +33,22 @@ export function BookingSummary({ selectedRoom }: Props) {
         <div>
           <Title level={3}>{selectedRoom.name}</Title>
           <div className="flex flex-wrap font-semibold">
-            <div className="mb-4 flex items-baseline">
+            <div className="mb-4 flex items-center">
               <Icon type="team" className="flex mr-1" />
               {t`${minParticipants}-${maxParticipants} players`}
               <Divider type="vertical" />
             </div>
-            <div className="mb-4 flex items-baseline">
+            <div className="mb-4 flex items-center">
               <Icon type="clock-circle" className="flex mr-1" />
               {t`${selectedRoom.interval} min`}
               <Divider type="vertical" />
             </div>
             <div className="mb-4 flex items-center">
               {t`Difficulty`}
-              <div className="ml-2 flex items-center">
-                {times(
-                  i => (
-                    <Icon key={i} type="lock" theme="filled" />
-                  ),
-                  selectedRoom.difficulty
-                )}
-                {times(
-                  i => (
-                    <Icon key={i} type="lock" />
-                  ),
-                  5 - selectedRoom.difficulty
-                )}
-              </div>
+              <DifficultyIndicator
+                className="ml-2"
+                difficulty={selectedRoom.difficulty}
+              />
             </div>
           </div>
           <Paragraph>{selectedRoom.description}</Paragraph>

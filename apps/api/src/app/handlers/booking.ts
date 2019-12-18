@@ -245,6 +245,8 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
+  // TODO: check if booking is not outdated
+
   if (booking.status !== BookingStatus.Pending) {
     throw createError(
       STATUS_ERROR.BAD_REQUEST,
@@ -267,6 +269,8 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   const booking = await requireBooking(bookingId);
   const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
+
+  // TODO: check if booking is not outdated
 
   if (booking.status !== BookingStatus.Pending) {
     throw createError(

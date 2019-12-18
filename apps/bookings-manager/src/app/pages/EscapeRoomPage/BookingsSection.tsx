@@ -1,67 +1,107 @@
-import { List, Pagination } from 'antd';
+import { Button, Spin } from 'antd';
+import { startOfWeek, endOfWeek, addWeeks } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import * as React from 'react';
+import { Booking, EscapeRoom } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
-import { Booking } from '@bookaquest/interfaces';
-import { Section } from '../../shared/layout/Section';
+import { dec, inc } from 'ramda';
+import { Time } from '@bookaquest/components';
 import * as api from '../../api/application';
-
-const BOOKINGS_PER_PAGE = 10;
+import { Section } from '../../shared/layout/Section';
+import { BookingsList } from '../../shared/components/BookingsList';
 
 interface Props {
-  escapeRoomId: string;
+  escapeRoom?: EscapeRoom;
 }
 
-// TODO: loading state for long load times? Promise race with delay in useLoading?
-export function BookingsSection({ escapeRoomId }: Props) {
-  const { t } = useI18n();
+// TODO: loading state for long load times when using pagination? Promise race with delay in useLoading?
+export function EscapeRoomBookingsList({ escapeRoom }: Props) {
+  const { t, dateFnsLocale } = useI18n();
   const [bookings, setBookings] = React.useState<Booking[]>();
-  const [total, setTotal] = React.useState();
-  const [page, setPage] = React.useState(1);
+  const [weekOffset, setWeekOffset] = React.useState(0);
 
   React.useEffect(() => {
+    if (!escapeRoom) {
+      return;
+    }
+
+    const now = zonedTimeToUtc(new Date(), escapeRoom.timezone);
+    const week = addWeeks(now, weekOffset);
+
     let isCancelled = false;
 
-    if (escapeRoomId) {
-      api
-        .getEscapeRoomBookings(escapeRoomId, {
-          offset: (page - 1) * BOOKINGS_PER_PAGE,
-          take: BOOKINGS_PER_PAGE
-        })
-        .then(result => {
-          if (!isCancelled) {
-            setTotal(result.total);
-            setBookings(result.bookings);
-          }
-        });
+    api
+      .getEscapeRoomBookings(escapeRoom._id, {
+        from: zonedTimeToUtc(
+          startOfWeek(week, { locale: dateFnsLocale }),
+          escapeRoom.timezone
+        ),
+        to: zonedTimeToUtc(
+          endOfWeek(week, { locale: dateFnsLocale }),
+          escapeRoom.timezone
+        )
+      })
+      .then(result => {
+        if (!isCancelled) {
+          setBookings(result.bookings);
+        }
+      });
 
-      return () => {
-        isCancelled = true;
-      };
+    return () => {
+      isCancelled = true;
+    };
+  }, [escapeRoom, weekOffset, dateFnsLocale]);
+
+  const renderRangeText = () => {
+    if (!escapeRoom) {
+      return null;
     }
-  }, [page, escapeRoomId]);
+
+    const now = zonedTimeToUtc(new Date(), escapeRoom.timezone);
+    const week = addWeeks(now, weekOffset);
+
+    return (
+      <Time
+        type="date"
+        date={[
+          zonedTimeToUtc(
+            startOfWeek(week, { locale: dateFnsLocale }),
+            escapeRoom.timezone
+          ),
+          zonedTimeToUtc(
+            endOfWeek(week, { locale: dateFnsLocale }),
+            escapeRoom.timezone
+          )
+        ]}
+        timeZone={escapeRoom.timezone}
+      />
+    );
+  };
 
   return (
-    <Section title={t`Bookings`}>
-      <List
-        loading={!bookings}
-        itemLayout="horizontal"
-        dataSource={bookings}
-        renderItem={booking => (
-          <List.Item>
-            <List.Item.Meta
-              title={booking.name}
-              description={booking.startDate.toLocaleString()}
-            />
-          </List.Item>
-        )}
-      />
-      {total > BOOKINGS_PER_PAGE && (
-        <Pagination
-          defaultCurrent={page}
-          total={total}
-          pageSize={BOOKINGS_PER_PAGE}
-          onChange={setPage}
-        />
+    <Section title={t`Booking history`} extra={renderRangeText()}>
+      {!escapeRoom || !bookings ? (
+        <div className="m-4 text-center">
+          <Spin />
+        </div>
+      ) : (
+        <div className="flex items-center">
+          <Button
+            className="flex justify-center mr-4"
+            shape="circle"
+            icon="left"
+            onClick={() => setWeekOffset(dec)}
+          />
+          <div className="flex flex-grow px-4">
+            <BookingsList timeZone={escapeRoom.timezone} bookings={bookings} />
+          </div>
+          <Button
+            className="flex justify-center ml-4"
+            shape="circle"
+            icon="right"
+            onClick={() => setWeekOffset(inc)}
+          />
+        </div>
       )}
     </Section>
   );

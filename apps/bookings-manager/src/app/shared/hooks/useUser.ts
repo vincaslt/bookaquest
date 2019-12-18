@@ -25,11 +25,11 @@ export function useUser() {
           memberships,
           invitations
         }) => {
-          userState.setUserInfo(user);
-          userState.setMemberships(memberships);
-          userState.setInvitations(invitations);
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
+          userState.setMemberships(memberships);
+          userState.setInvitations(invitations);
+          userState.setUserInfo(user);
         }
       );
 

@@ -15,7 +15,7 @@ export function PageNotFound(props: RouteComponentProps) {
         title={t`Not found`}
         subTitle={t`Sorry, the page you visited does not exist.`}
         extra={
-          <Link to={PrivateRoutes.Dashboard}>
+          <Link to={PrivateRoutes.Bookings}>
             <Button type="primary">{t`Go to dashboard`}</Button>
           </Link>
         }
