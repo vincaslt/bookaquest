@@ -46,7 +46,6 @@ export function BookingsPage(props: RouteComponentProps) {
     const getUpdated = (booking: Booking) =>
       updatedBookings.find(({ _id }) => _id === booking._id);
 
-    // TODO: update booking history
     setUpcomingBookings(prev =>
       prev
         .filter(

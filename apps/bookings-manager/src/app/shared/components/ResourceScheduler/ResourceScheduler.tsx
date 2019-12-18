@@ -153,7 +153,7 @@ export function ResourceScheduler({
   const days = eachDayOfInterval(range).map(day =>
     utcToZonedTime(day, timeZone)
   );
-  
+
   const resourcesAvailabilities = getAvailabilitiesInTimezone(
     range.start as Date,
     resources,
