@@ -15,7 +15,7 @@ interface Props {
   onSubmit: (info: BookingInfo) => void;
 }
 
-// TODO: form validation
+// ! TODO: form validation
 export function BookingInfoStep({ onSubmit, room }: Props) {
   const { t } = useI18n();
 

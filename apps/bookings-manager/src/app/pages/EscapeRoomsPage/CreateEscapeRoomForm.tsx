@@ -38,8 +38,8 @@ interface Props {
 }
 
 // TODO: image upload, validation
-// TODO: location same as organization location
 // TODO: translated validation messages for forms
+// ! TODO: timezone and business hours may NOT exist, add input fields for those
 export function CreateEscapeRoomForm({
   organization,
   onCreateDone,
@@ -56,7 +56,7 @@ export function CreateEscapeRoomForm({
     interval: 60,
     participants: [],
     timezone:
-      organization.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, // TODO: timezone and business hours may NOT exist, add input fields for those
+      organization.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     businessHours: organization.businessHours ?? [],
     difficulty: 1,
     paymentEnabled: false,
@@ -121,7 +121,7 @@ export function CreateEscapeRoomForm({
       });
   };
 
-  // TODO: show error / disallow, when organization has no working hours (or show a working hours picker), same with timezone
+  // ! TODO: show hours/timezone picker when with default values from organization
   // TODO: validate accept payments in backend - to have payment codes first
   return (
     <Formik

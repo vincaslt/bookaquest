@@ -5,8 +5,7 @@ import { CreateOrganizationSplash } from './CreateOrganizationSplash';
 import { CreateOrganizationForm } from './CreateOrganizationForm';
 import { Invitation } from './Invitation';
 
-// TODO: shold be able to view more invitations than one
-// TODO: to create organization you must pay
+// ! TODO: to create organization you must pay
 export function CreateOrganization() {
   const { setMemberships, invitations, setInvitations } = useUser();
 

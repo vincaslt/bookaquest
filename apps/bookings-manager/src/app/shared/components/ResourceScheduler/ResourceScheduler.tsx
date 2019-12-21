@@ -139,7 +139,7 @@ interface Props {
 // TODO: overlapping bookings support (show combined min max with lighter shade color for difference)
 // TODO: resource name height dynamic based on row height
 // TODO: don't let column width expand (e.g. when day is overflowing)
-// TODO: focus current time or earliest booking on opening
+// ! TODO: focus current time or earliest booking on opening
 export function ResourceScheduler({
   range,
   resources,

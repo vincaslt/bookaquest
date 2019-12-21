@@ -11,13 +11,12 @@ interface Props {
   onSelect: (timeslot: Timeslot) => void;
 }
 
-// TODO: convert dates into escape room's timezone, currently they are in local
 export function TimeslotStep({ room, onSelect }: Props) {
   const { t } = useI18n();
   const [availability, setAvailability] = React.useState<Availability>([]);
   const [selectedDay, setSelectedDay] = React.useState<Date>();
 
-  // TODO: cancel prev request or aggregate them
+  // ! TODO: cancel prev request or aggregate them
   const handleMonthChange = React.useCallback(
     (interval: { start: Date; end: Date }) => {
       api

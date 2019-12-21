@@ -32,7 +32,7 @@ export function EscapeRoomPage({
   }
 
   // TODO: generate lots of test data for escape room bookings
-  // TODO: proper URL for booking page
+  // ! TODO: proper URL for booking page
   return (
     <PageContent
       header={

@@ -2,13 +2,11 @@ import {
   addDays,
   areIntervalsOverlapping,
   differenceInCalendarDays,
-  differenceInMinutes,
   isAfter,
   startOfDay,
-  getDay,
-  addMinutes
+  isEqual,
+  isBefore
 } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
 import { createError } from 'micro';
 import { get, post, put, AugmentedRequestHandler } from 'microrouter';
 import { times } from 'ramda';
@@ -31,7 +29,7 @@ import { getAuth } from '../lib/utils/getAuth';
 import { getBody } from '../lib/utils/getBody';
 import { requireEscapeRoom } from '../helpers/escapeRoom';
 import { getQuery } from '../lib/utils/getQuery';
-import { requireBooking } from '../helpers/booking';
+import { requireBooking, generateTimeslots } from '../helpers/booking';
 
 const MAX_DAYS_SELECT = 7 * 6;
 const PAGINATION_LIMIT = 500;
@@ -96,20 +94,22 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
   const dto = await getBody(req, CreateBookingDTO);
 
   const escapeRoom = await requireEscapeRoom(escapeRoomId);
+  const timeslots = generateTimeslots(dto.startDate, escapeRoom);
 
-  const invalidInterval =
-    differenceInMinutes(dto.endDate, dto.startDate) !== escapeRoom.interval;
   const invalidParticipants = !isBetween(
     dto.participants,
     escapeRoom.participants
   );
+  const invalidTimeslot = timeslots.every(
+    timeslot =>
+      !isEqual(timeslot.start, dto.startDate) ||
+      !isEqual(timeslot.end, dto.endDate)
+  );
 
-  // TODO: validate if timeslot is within business hours
-  // TODO: validate if starts at timeslot start
-  if (invalidInterval || invalidParticipants) {
+  if (invalidTimeslot || invalidParticipants) {
     throw createError(
       STATUS_ERROR.BAD_REQUEST,
-      'Booking has invalid interval or participants'
+      'Booking has invalid timeslot or participants'
     );
   }
 
@@ -159,17 +159,15 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
     await stripe.charges.create({
       amount: price * 100,
-      currency: 'eur',
-      description: 'Example charge', // TODO: give proper name
+      currency: 'eur', // TODO: dynamic currency
+      description: dto. `Payment to book ${escapeRoom.name}`,
       source: dto.paymentToken
     });
 
     bookingFields.status = BookingStatus.Accepted;
   }
 
-  const booking = await BookingModel.create(bookingFields);
-
-  return booking;
+  return await BookingModel.create(bookingFields);
 };
 
 const getAvailability: AugmentedRequestHandler = async (req, res) => {
@@ -194,30 +192,12 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
 
   const availability = times(day => {
     const date = addDays(fromDay, day);
-    const dayOfweek = getDay(date);
-    const timeZone = escapeRoom.timezone;
-    const businessHours = escapeRoom.businessHours.find(
-      ({ weekday }) => weekday === dayOfweek
-    );
 
-    if (date < startOfDay(dateNow) || !businessHours) {
-      return null;
+    if (date < startOfDay(new Date())) {
+      return [];
     }
 
-    const [startHour, endHour] = businessHours.hours;
-
-    const timeslots = times(i => {
-      const tzDate = utcToZonedTime(startOfDay(date), timeZone);
-      const start = addMinutes(
-        tzDate,
-        startHour * 60 + i * escapeRoom.interval
-      );
-      const end = addMinutes(
-        tzDate,
-        startHour * 60 + (i + 1) * escapeRoom.interval
-      );
-      return { start, end };
-    }, ((endHour - startHour) * 60) / escapeRoom.interval);
+    const timeslots = generateTimeslots(date, escapeRoom);
 
     const availableTimeslots = timeslots.filter(
       ({ start, end }) =>
@@ -245,9 +225,9 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
-  // TODO: check if booking is not outdated
+  const isOutdated = isAfter(new Date(), booking.startDate)
 
-  if (booking.status !== BookingStatus.Pending) {
+  if (booking.status !== BookingStatus.Pending || isOutdated) {
     throw createError(
       STATUS_ERROR.BAD_REQUEST,
       'Only pending booking can be rejected'
@@ -270,9 +250,9 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
-  // TODO: check if booking is not outdated
+  const isOutdated = isAfter(new Date(), booking.startDate)
 
-  if (booking.status !== BookingStatus.Pending) {
+  if (booking.status !== BookingStatus.Pending || isOutdated) {
     throw createError(
       STATUS_ERROR.BAD_REQUEST,
       'Only pending booking can be accepted'

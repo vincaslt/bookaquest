@@ -26,6 +26,7 @@ interface Props {
   availability?: Availability;
 }
 
+// ! TODO: convert month interval to timezone
 export function TimeslotPicker({
   timeZone,
   availability,

@@ -34,7 +34,7 @@ export function RegistrationForm() {
   ) => {
     api
       .register(values)
-      .then(() => navigate(PublicRoutes.SignIn)) // TODO: auto login after registration
+      .then(() => navigate(PublicRoutes.SignIn)) // ! TODO: auto login after registration
       .catch(() => {
         message.error(t`Please try again in a moment`);
       })

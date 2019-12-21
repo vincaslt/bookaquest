@@ -17,7 +17,6 @@ interface Props {
   organizationId: string;
 }
 
-// TODO: invitations request should return only pending?
 export function OrganizationMembers({ organizationId }: Props) {
   const { t, dateFnsLocale } = useI18n();
   const [loading, withLoading] = useLoading(true);

@@ -43,7 +43,6 @@ const Footer = styled(Layout.Footer)`
 `;
 
 // TODO: footer link
-// TODO: load stripe keys from api (DB)
 function App() {
   const { i18n } = useI18n(undefined, { useSuspense: false });
 

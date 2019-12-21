@@ -90,7 +90,7 @@ export function Booking() {
     [BookingStep.CONFIRMATION]: 2
   }[step];
 
-  // TODO: Add participants count to timeslot step to immediatelly calculate prices (on the calendar)
+  // ! TODO: Add participants count to timeslot step to immediatelly calculate prices (on the calendar)
   // TODO: show Payment as step if booking room has payments
   return (
     <Row>
