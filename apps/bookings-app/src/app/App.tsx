@@ -42,7 +42,8 @@ const Footer = styled(Layout.Footer)`
   }
 `;
 
-// TODO: footer link
+// ! TODO: responsive design
+// ! TODO: footer link
 function App() {
   const { i18n } = useI18n(undefined, { useSuspense: false });
 

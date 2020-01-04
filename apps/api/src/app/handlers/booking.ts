@@ -4,8 +4,7 @@ import {
   differenceInCalendarDays,
   isAfter,
   startOfDay,
-  isEqual,
-  isBefore
+  isEqual
 } from 'date-fns';
 import { createError } from 'micro';
 import { get, post, put, AugmentedRequestHandler } from 'microrouter';
@@ -159,8 +158,8 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
     await stripe.charges.create({
       amount: price * 100,
-      currency: 'eur', // TODO: dynamic currency
-      description: dto. `Payment to book ${escapeRoom.name}`,
+      currency: 'eur', // ! TODO: dynamic currency
+      description: `Payment to book ${escapeRoom.name}`,
       source: dto.paymentToken
     });
 
@@ -194,7 +193,7 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
     const date = addDays(fromDay, day);
 
     if (date < startOfDay(new Date())) {
-      return [];
+      return { date, availableTimeslots: [] };
     }
 
     const timeslots = generateTimeslots(date, escapeRoom);
@@ -225,7 +224,7 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
-  const isOutdated = isAfter(new Date(), booking.startDate)
+  const isOutdated = isAfter(new Date(), booking.startDate);
 
   if (booking.status !== BookingStatus.Pending || isOutdated) {
     throw createError(
@@ -237,7 +236,7 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   booking.status = BookingStatus.Rejected;
   const savedBooking = await booking.save();
 
-  // TODO: send email
+  // ! TODO: send email
 
   return [savedBooking];
 };
@@ -250,7 +249,7 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   const escapeRoom = await requireEscapeRoom(booking.escapeRoom);
   await requireBelongsToOrganization(escapeRoom.organization, userId);
 
-  const isOutdated = isAfter(new Date(), booking.startDate)
+  const isOutdated = isAfter(new Date(), booking.startDate);
 
   if (booking.status !== BookingStatus.Pending || isOutdated) {
     throw createError(
@@ -275,7 +274,7 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   booking.status = BookingStatus.Accepted;
   const savedBooking = await booking.save();
 
-  // TODO: send email
+  // ! TODO: send email
 
   return [savedBooking, ...updatedSameTimeBookings];
 };

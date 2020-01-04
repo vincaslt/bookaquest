@@ -25,7 +25,8 @@ interface Props {
 export function EarningsChart({ weeklyBookings, week, timeZone }: Props) {
   const { t, dateFnsLocale } = useI18n();
 
-  const weekdays = listWeekdays(dateFnsLocale, week, timeZone);
+  // No need to convert weekdays to timezone, because it's only for labels and they represent timezone already
+  const weekdays = listWeekdays(dateFnsLocale, week);
 
   const chartData = weekdays.map(weekdayDate => {
     return {
@@ -65,7 +66,7 @@ export function EarningsChart({ weeklyBookings, week, timeZone }: Props) {
             interval={0}
             dataKey="day"
             tick={({ payload, x, y }) => {
-              const date = new Date(payload.value);
+              const date = zonedTimeToUtc(new Date(payload.value), timeZone);
               return (
                 <text
                   x={x}
@@ -74,11 +75,7 @@ export function EarningsChart({ weeklyBookings, week, timeZone }: Props) {
                   dy="0.7em"
                   className={isToday(date) ? 'font-bold' : undefined}
                 >
-                  <Time
-                    type={{ format: 'MM-dd' }}
-                    date={zonedTimeToUtc(new Date(payload.value), timeZone)}
-                    timeZone={timeZone}
-                  />
+                  <Time type={{ format: 'MM-dd' }} date={date} />
                 </text>
               );
             }}

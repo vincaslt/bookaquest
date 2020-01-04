@@ -47,9 +47,9 @@ export function BookingModal({
     onClose();
   };
 
-  const isPending = bookings.some(
-    ({ status }) => status === BookingStatus.Pending
-  );
+  const isPending =
+    bookings.some(({ status }) => status === BookingStatus.Pending) &&
+    bookings.every(({ startDate }) => startDate > new Date());
   const isSingleBooking = bookings.length === 1;
   const firstBooking = bookings[0];
   const escapeRoom =

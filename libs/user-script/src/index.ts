@@ -1,6 +1,6 @@
 // 1. Script that creates a cript tag to a CDN version of a script
 // 2. CDN version will create an iframe (zoid)
-// 3. Booking app will live there (preact)
+// 3. Booking app will live there
 
 import zoid from 'zoid';
 
@@ -11,6 +11,7 @@ interface BookingWindow extends Window {
 
 const w = (window as any) as BookingWindow;
 
+// TODO: proper url
 const CrossSiteBookingComponent = zoid.create({
   tag: 'booking-component',
   url: `http://localhost:1234/booking/${w.BookaQuestID}`

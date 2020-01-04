@@ -1,6 +1,6 @@
 import { Button, Spin } from 'antd';
 import { startOfWeek, endOfWeek, addWeeks } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 import * as React from 'react';
 import { Booking, EscapeRoom } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
@@ -57,7 +57,7 @@ export function EscapeRoomBookingsList({ escapeRoom }: Props) {
       return null;
     }
 
-    const now = zonedTimeToUtc(new Date(), escapeRoom.timezone);
+    const now = utcToZonedTime(new Date(), escapeRoom.timezone);
     const week = addWeeks(now, weekOffset);
 
     return (
