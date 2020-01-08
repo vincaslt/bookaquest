@@ -1,4 +1,4 @@
-import { utcToZonedTime } from 'date-fns-tz';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { startOfDay, getDay, addMinutes } from 'date-fns';
 import { createError } from 'micro';
 import { times } from 'ramda';
@@ -21,7 +21,7 @@ export function generateTimeslots(date: Date, escapeRoom: EscapeRoom) {
   const [startHour, endHour] = businessHours.hours;
 
   const timeslots = times(i => {
-    const tzDate = utcToZonedTime(startOfDay(date), timeZone);
+    const tzDate = zonedTimeToUtc(startOfDay(date), timeZone);
     const start = addMinutes(tzDate, startHour * 60 + i * escapeRoom.interval);
     const end = addMinutes(
       tzDate,

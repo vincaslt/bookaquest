@@ -1,7 +1,6 @@
 import { green, blue, orange } from '@ant-design/colors';
 import { startOfWeek, endOfWeek } from 'date-fns';
 import { Statistic } from 'antd';
-import { zonedTimeToUtc } from 'date-fns-tz';
 import * as React from 'react';
 import { Booking } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
@@ -76,13 +75,9 @@ export function EarningsStats({
         <Time
           type={{ format: 'MMM d' }}
           date={[
-            zonedTimeToUtc(
-              startOfWeek(week, { locale: dateFnsLocale }),
-              timeZone
-            ),
-            zonedTimeToUtc(endOfWeek(week, { locale: dateFnsLocale }), timeZone)
+            startOfWeek(week, { locale: dateFnsLocale }),
+            endOfWeek(week, { locale: dateFnsLocale })
           ]}
-          timeZone={timeZone}
         />
       </h3>
       <div className="flex justify-between">

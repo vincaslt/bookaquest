@@ -29,6 +29,7 @@ import { getBody } from '../lib/utils/getBody';
 import { requireEscapeRoom } from '../helpers/escapeRoom';
 import { getQuery } from '../lib/utils/getQuery';
 import { requireBooking, generateTimeslots } from '../helpers/booking';
+import { sendBookingEmail } from '../helpers/email';
 
 const MAX_DAYS_SELECT = 7 * 6;
 const PAGINATION_LIMIT = 500;
@@ -166,7 +167,14 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
     bookingFields.status = BookingStatus.Accepted;
   }
 
-  return await BookingModel.create(bookingFields);
+  const booking = await BookingModel.create(bookingFields);
+
+  // TODO: send email for members of organization?
+  // TODO: send email with link for the player
+
+  await sendBookingEmail();
+
+  return booking;
 };
 
 const getAvailability: AugmentedRequestHandler = async (req, res) => {
