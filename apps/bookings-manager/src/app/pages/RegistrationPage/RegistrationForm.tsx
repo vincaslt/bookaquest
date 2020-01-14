@@ -7,7 +7,8 @@ import * as Yup from 'yup';
 import { useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { CreateUser } from '../../interfaces/user';
-import { PublicRoutes } from '../../constants/routes';
+import { useUser } from '../../shared/hooks/useUser';
+import { PrivateRoutes } from '../../constants/routes';
 
 const initialValues: CreateUser = {
   email: '',
@@ -17,6 +18,7 @@ const initialValues: CreateUser = {
 
 export function RegistrationForm() {
   const { t } = useI18n();
+  const { login } = useUser();
 
   const validationSchema = Yup.object().shape<CreateUser>({
     fullName: Yup.string().required(),
@@ -34,7 +36,8 @@ export function RegistrationForm() {
   ) => {
     api
       .register(values)
-      .then(() => navigate(PublicRoutes.SignIn)) // ! TODO: auto login after registration
+      .then(() => login({ email: values.email, password: values.password }))
+      .then(() => navigate(PrivateRoutes.Bookings))
       .catch(() => {
         message.error(t`Please try again in a moment`);
       })

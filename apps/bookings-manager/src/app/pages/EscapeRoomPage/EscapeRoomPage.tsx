@@ -7,6 +7,7 @@ import * as api from '../../api/application';
 import { Link } from '../../shared/components/Link';
 import { PageContent } from '../../shared/layout/PageContent';
 import { PrivateRoutes } from '../../constants/routes';
+import { environment } from '../../../environments/environment';
 import { EscapeRoomEditSection } from './EscapeRoomEditSection';
 import { EarningsSection } from './EarningsSection/EarningsSection';
 import { EscapeRoomBookingsList } from './BookingsSection';
@@ -32,7 +33,6 @@ export function EscapeRoomPage({
   }
 
   // TODO: generate lots of test data for escape room bookings
-  // ! TODO: proper URL for booking page
   return (
     <PageContent
       header={
@@ -41,7 +41,7 @@ export function EscapeRoomPage({
             title={escapeRoom.name}
             extra={
               <Link
-                href={`http://localhost:3000/booking/${escapeRoom.organization}/${escapeRoom._id}`}
+                href={`${environment.bookingAppUrl}/booking/${escapeRoom.organization}/${escapeRoom._id}`}
                 newTab
               >
                 <Button type="link">{t`Go to booking page`}</Button>

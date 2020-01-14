@@ -1,15 +1,15 @@
 import Axios, { AxiosError } from 'axios';
 import { message } from 'antd';
-import { config } from '@bookaquest/utilities';
 import {
   RequestRefreshTokenDTO,
   RefreshTokenDTO
 } from '@bookaquest/interfaces';
 import { PublicRoutes } from '../constants/routes';
 import { JwtPayload } from '../interfaces/auth';
+import { environment } from '../../environments/environment';
 
 export const api = Axios.create({
-  baseURL: config.backendUrl
+  baseURL: environment.backendUrl
 });
 
 api.interceptors.response.use(

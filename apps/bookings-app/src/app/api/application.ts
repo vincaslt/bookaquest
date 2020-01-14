@@ -13,9 +13,10 @@ import {
   AvailabilityDTO,
   fromAvailabilityDTO
 } from '@bookaquest/interfaces';
+import { environment } from '../../environments/environment';
 
 const api = Axios.create({
-  baseURL: 'http://localhost:3001'
+  baseURL: environment.backendUrl
 });
 
 export const getOrganization = (organizationId: string) =>

@@ -1,8 +1,10 @@
 import { Layout, Spin } from 'antd';
 import { Route, Switch } from 'wouter';
+import { Trans } from 'react-i18next';
 import * as React from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { useI18n } from '@bookaquest/utilities';
+import { environment } from '../environments/environment';
 import { BookingItinerary } from './features/BookingItinerary/BookingItinerary';
 import { Booking } from './features/Booking/Booking';
 import { EscapeRoomSelect } from './features/EscapeRoomSelect/EscapeRoomSelect';
@@ -43,7 +45,6 @@ const Footer = styled(Layout.Footer)`
 `;
 
 // ! TODO: responsive design
-// ! TODO: footer link
 function App() {
   const { i18n } = useI18n(undefined, { useSuspense: false });
 
@@ -67,7 +68,9 @@ function App() {
         <Route path="/booking/:organizationId" component={EscapeRoomSelect} />
       </Switch>
       <Footer>
-        Powered by <a href="https://bookaquest.com">BookaQuest</a>
+        <Trans>
+          Powered by <a href={environment.landingUrl}>BookaQuest</a>
+        </Trans>
       </Footer>
     </ContentContainer>
   );
