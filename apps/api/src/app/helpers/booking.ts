@@ -1,12 +1,16 @@
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { startOfDay, getDay, addMinutes } from 'date-fns';
+import { DocumentType } from '@typegoose/typegoose';
 import { createError } from 'micro';
 import { times } from 'ramda';
 import { BookingModel } from '../models/Booking';
 import { STATUS_ERROR } from '../lib/constants';
 import { EscapeRoom } from '../models/EscapeRoom';
 
-export function generateTimeslots(date: Date, escapeRoom: EscapeRoom) {
+export function generateTimeslots(
+  date: Date,
+  escapeRoom: DocumentType<EscapeRoom>
+) {
   const dayOfweek = getDay(date);
   const timeZone = escapeRoom.timezone;
 

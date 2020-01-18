@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  bookingAppUrl: 'http://localhost:3000'
 };

@@ -44,7 +44,6 @@ const Footer = styled(Layout.Footer)`
   }
 `;
 
-// ! TODO: favicon
 // ! TODO: responsive design
 function App() {
   const { i18n } = useI18n(undefined, { useSuspense: false });

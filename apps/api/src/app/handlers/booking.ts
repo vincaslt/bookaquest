@@ -170,9 +170,8 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
   const booking = await BookingModel.create(bookingFields);
 
   // TODO: send email for members of organization?
-  // TODO: send email with link for the player
 
-  await sendBookingEmail();
+  await sendBookingEmail(booking, escapeRoom);
 
   return booking;
 };

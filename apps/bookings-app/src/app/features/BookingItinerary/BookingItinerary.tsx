@@ -161,7 +161,7 @@ export function BookingItinerary() {
                     <div>
                       <Text strong className="mr-2">{t`Date:`}</Text>
                       <Time
-                        date={booking.startDate}
+                        date={[booking.startDate, booking.endDate]}
                         type={{ format: 'PPPp' }}
                         timeZone={escapeRoom.timezone}
                       />

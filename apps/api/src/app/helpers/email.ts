@@ -1,4 +1,14 @@
 import { send, setApiKey } from '@sendgrid/mail';
+import { format, utcToZonedTime } from 'date-fns-tz';
+import { isSameDay } from 'date-fns';
+import { DocumentType } from '@typegoose/typegoose';
+import { Booking } from '../models/Booking';
+import { EscapeRoom } from '../models/EscapeRoom';
+import { environment } from '../../environments/environment';
+
+enum Emails {
+  Info = 'info@bookaquest.com'
+}
 
 export function initEmail() {
   if (process.env.SENDGRID_API_KEY) {
@@ -6,14 +16,33 @@ export function initEmail() {
   }
 }
 
-export function sendBookingEmail() {
-  const msg = {
-    to: 'vincaslt@gmail.com',
-    from: 'vincas.stonys@bookaquest.com',
-    subject: 'Sending with Twilio SendGrid is Fun',
-    text: 'and easy to do anywhere, even with Node.js',
-    html: '<strong>and easy to do anywhere, even with Node.js</strong>'
-  };
+// TODO: localize emails and dates
+// ! TODO: add currency
+export function sendBookingEmail(
+  booking: DocumentType<Booking>,
+  escapeRoom: DocumentType<EscapeRoom>
+) {
+  const adjustedStartDate = utcToZonedTime(
+    booking.startDate,
+    escapeRoom.timezone
+  );
+  const adjustedEndDate = utcToZonedTime(booking.endDate, escapeRoom.timezone);
 
-  return send(msg);
+  return send({
+    to: booking.email,
+    from: Emails.Info,
+    templateId: 'd-72811a13a18d4ea28e9f84e83b12a798',
+    dynamicTemplateData: {
+      escapeRoomTitle: escapeRoom.name,
+      escapeRoomImage: escapeRoom.images[0],
+      date: `${format(adjustedStartDate, 'PPPp')} - ${format(
+        adjustedEndDate,
+        isSameDay(adjustedStartDate, adjustedEndDate) ? 'p' : 'PPPp'
+      )}`,
+      name: booking.name,
+      participants: booking.participants,
+      price: booking.price,
+      itineraryUrl: `${environment.bookingAppUrl}/itinerary/${booking._id}`
+    }
+  });
 }
