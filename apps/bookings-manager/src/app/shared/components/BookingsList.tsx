@@ -30,7 +30,7 @@ export function BookingsList({
   pagination,
   onMoreDetails,
   escapeRooms = [],
-  updateBookings = () => undefined,
+  updateBookings,
   onAcceptDone = () => undefined,
   onRejectDone = () => undefined
 }: Props) {
@@ -41,7 +41,7 @@ export function BookingsList({
     const updatedBookings = await withLoadingUpdate(
       api.rejectBooking(booking._id)
     );
-    updateBookings(updatedBookings);
+    updateBookings?.(updatedBookings);
     onRejectDone();
   };
 
@@ -49,7 +49,7 @@ export function BookingsList({
     const updatedBookings = await withLoadingUpdate(
       api.acceptBooking(booking._id)
     );
-    updateBookings(updatedBookings);
+    updateBookings?.(updatedBookings);
     onAcceptDone();
   };
 
@@ -75,6 +75,7 @@ export function BookingsList({
           return (
             <List.Item
               actions={
+                updateBookings &&
                 booking.status === BookingStatus.Pending &&
                 booking.startDate > new Date()
                   ? [

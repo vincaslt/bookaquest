@@ -98,6 +98,7 @@ export function BookingsSection({
           />
         </Section>
       </Col>
+
       <Col xl={14} xxl={12}>
         <Section title={t`Pending Bookings`}>
           <PendingBookings
@@ -109,9 +110,7 @@ export function BookingsSection({
             onMoreDetails={onMoreDetails}
           />
         </Section>
-      </Col>
 
-      <Col xl={{ span: 16, offset: 0 }} xxl={{ span: 14, offset: 0 }}>
         <Section title={t`Booking history`} extra={renderRangeText()}>
           {!allBookings ? (
             <div className="m-4 text-center">
@@ -127,10 +126,11 @@ export function BookingsSection({
               />
               <div className="flex flex-grow px-4">
                 <BookingsList
-                  timeZone={timeZone}
                   bookings={allBookings}
+                  loading={loading}
+                  timeZone={timeZone}
+                  escapeRooms={escapeRooms}
                   onMoreDetails={onMoreDetails}
-                  updateBookings={updateBookings}
                 />
               </div>
               <Button
