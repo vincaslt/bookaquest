@@ -8,10 +8,13 @@ import {
   Spin,
   Button,
   Popconfirm,
-  message
+  message,
+  Select
 } from 'antd';
 import AspectRatio from 'react-aspect-ratio';
 import { navigate } from '@reach/router';
+import { code } from 'currency-codes';
+import * as currencies from 'currency-codes/data';
 import * as React from 'react';
 import { WorkHours } from '@bookaquest/components';
 import * as Yup from 'yup';
@@ -48,6 +51,11 @@ const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
       (range: [number, number]) => !range || range[0] <= range[1]
     ),
   price: Yup.number().positive(),
+  currency: Yup.string().test(
+    'currencyTest',
+    'Invalid currency',
+    (value: string) => !!code(value)
+  ),
   pricingType: Yup.string().oneOf(Object.values(PricingType)) as Yup.Schema<
     PricingType
   >,
@@ -83,6 +91,7 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
   const updateName = (name: string) => updateEscapeRoom({ name });
   const updateInterval = (interval: number) => updateEscapeRoom({ interval });
   const updatePrice = (price: number) => updateEscapeRoom({ price });
+  const updateCurrency = (currency: string) => updateEscapeRoom({ currency });
   const updateLocation = (location: string) => updateEscapeRoom({ location });
   const updateDescription = (description: string) =>
     updateEscapeRoom({ description });
@@ -152,6 +161,29 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
                 {escapeRoom.price}
               </EditableText>
             </DetailsItem>
+            <DetailsItem label={t`Currency:`}>
+              <Select
+                showSearch
+                className="w-full mb-2"
+                value={escapeRoom.currency}
+                onChange={updateCurrency}
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option.props.children as string[])
+                    .join()
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {currencies
+                  .filter(currency => currency.countries.length)
+                  .map(currency => (
+                    <Select.Option key={currency.code} value={currency.code}>
+                      {currency.currency} ({currency.code})
+                    </Select.Option>
+                  ))}
+              </Select>
+            </DetailsItem>
             <DetailsItem label={t`Pricing type:`}>
               <Radio.Group
                 disabled={!escapeRoom.price}
@@ -177,7 +209,7 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
         </Col>
         <Col span={12}>
           <div className="mb-8">
-            <SectionTitle>{t`Images`}</SectionTitle>
+            <SectionTitle>{t`Image`}</SectionTitle>
             <AspectRatio ratio="532/320">
               <img
                 className="object-cover"

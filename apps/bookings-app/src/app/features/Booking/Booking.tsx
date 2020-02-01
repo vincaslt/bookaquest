@@ -115,12 +115,14 @@ export function Booking() {
             <Section>
               {step === BookingStep.TIMESLOT && selectedRoom && (
                 <TimeslotStep
+                  timeslot={timeslot}
                   onSelect={handleSelectTimeslot}
                   room={selectedRoom}
                 />
               )}
               {step === BookingStep.BOOKING_INFO && selectedRoom && (
                 <BookingInfoStep
+                  bookingInfo={bookingInfo}
                   onSubmit={handleSubmitBookingInfo}
                   room={selectedRoom}
                 />

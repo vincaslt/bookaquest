@@ -9,13 +9,16 @@ import { TimeslotPicker } from '../../../components/TimeslotPicker/TimeslotPicke
 
 interface Props {
   room: EscapeRoom;
+  timeslot?: Timeslot;
   onSelect: (timeslot: Timeslot) => void;
 }
 
-export function TimeslotStep({ room, onSelect }: Props) {
+export function TimeslotStep({ room, onSelect, timeslot }: Props) {
   const { t } = useI18n();
   const [availability, setAvailability] = React.useState<Availability>([]);
-  const [selectedDay, setSelectedDay] = React.useState<Date>();
+  const [selectedDay, setSelectedDay] = React.useState<Date | undefined>(
+    timeslot?.start
+  );
 
   const handleMonthChange = React.useCallback(
     debounce(300, (interval: { start: Date; end: Date }) => {

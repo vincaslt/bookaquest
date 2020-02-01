@@ -2,6 +2,7 @@ import { send, setApiKey } from '@sendgrid/mail';
 import { format, utcToZonedTime } from 'date-fns-tz';
 import { isSameDay } from 'date-fns';
 import { DocumentType } from '@typegoose/typegoose';
+import { formatCurrency } from '@bookaquest/utilities';
 import { Booking } from '../models/Booking';
 import { EscapeRoom } from '../models/EscapeRoom';
 import { environment } from '../../environments/environment';
@@ -17,7 +18,6 @@ export function initEmail() {
 }
 
 // TODO: localize emails and dates
-// ! TODO: add currency
 export function sendBookingEmail(
   booking: DocumentType<Booking>,
   escapeRoom: DocumentType<EscapeRoom>
@@ -41,7 +41,7 @@ export function sendBookingEmail(
       )}`,
       name: booking.name,
       participants: booking.participants,
-      price: booking.price,
+      totalPrice: formatCurrency('en', booking.currency, booking.price), // TODO: dynamic locale
       itineraryUrl: `${environment.bookingAppUrl}/itinerary/${booking._id}`
     }
   });

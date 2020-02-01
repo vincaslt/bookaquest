@@ -52,7 +52,6 @@ export function EarningsStats({
           value={earningsToday}
           precision={2}
           valueStyle={{ color: green[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
@@ -60,7 +59,6 @@ export function EarningsStats({
           value={projectedToday}
           precision={2}
           valueStyle={{ color: blue[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
@@ -68,7 +66,6 @@ export function EarningsStats({
           value={pendingToday}
           precision={2}
           valueStyle={{ color: orange[6] }}
-          suffix="$"
         />
       </div>
       <h3 className="mb-2 font-semibold">
@@ -87,7 +84,6 @@ export function EarningsStats({
           value={earningsWeekly}
           precision={2}
           valueStyle={{ color: green[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
@@ -95,7 +91,6 @@ export function EarningsStats({
           value={projectedWeekly}
           precision={2}
           valueStyle={{ color: blue[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
@@ -103,7 +98,6 @@ export function EarningsStats({
           value={pendingWeekly}
           precision={2}
           valueStyle={{ color: orange[6] }}
-          suffix="$"
         />
       </div>
     </div>

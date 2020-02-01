@@ -137,6 +137,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
   const bookingFields: BookingInitFields = {
     ...dto,
     price,
+    currency: escapeRoom.currency,
     escapeRoom: escapeRoomId,
     status: BookingStatus.Pending
   };
@@ -159,7 +160,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
     await stripe.charges.create({
       amount: price * 100,
-      currency: 'eur', // ! TODO: dynamic currency
+      currency: 'eur', // TODO: dynamic currency
       description: `Payment to book ${escapeRoom.name}`,
       source: dto.paymentToken
     });
@@ -169,7 +170,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
   const booking = await BookingModel.create(bookingFields);
 
-  // TODO: send email for members of organization?
+  // ! TODO: send email for members of organization?
 
   await sendBookingEmail(booking, escapeRoom);
 

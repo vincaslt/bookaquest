@@ -7,10 +7,13 @@ import {
   Rate,
   ResetButton,
   SubmitButton,
-  Switch
+  Switch,
+  Select
 } from 'formik-antd';
 import { Col, Icon, Row, message } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
+import * as currencies from 'currency-codes/data';
+import { code } from 'currency-codes';
 import * as React from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
@@ -55,6 +58,7 @@ export function CreateEscapeRoomForm({
     images: [],
     interval: 60,
     participants: [],
+    currency: 'EUR', // TODO: get from organization or user location
     timezone:
       organization.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     businessHours: organization.businessHours ?? [],
@@ -81,7 +85,7 @@ export function CreateEscapeRoomForm({
       .required()
       .test(
         'rangeTest',
-        'Invalid range',
+        'Invalid range', // TODO: translate?
         ([from, to]: [number, number]) => from <= to
       ),
     interval: Yup.number()
@@ -102,7 +106,8 @@ export function CreateEscapeRoomForm({
             .required()
         })
       )
-      .required()
+      .required(),
+    currency: Yup.string().required()
   });
 
   const handleSubmit = (
@@ -121,6 +126,7 @@ export function CreateEscapeRoomForm({
       });
   };
 
+  // ! TODO: limit price decimals based on currency selected
   // ! TODO: show hours/timezone picker when with default values from organization
   // TODO: validate accept payments in backend - to have payment codes first
   return (
@@ -168,12 +174,48 @@ export function CreateEscapeRoomForm({
                 />
               </FormItem>
 
-              <FormItem name="images" hasFeedback label={t`Images`}>
+              <FormItem name="images" hasFeedback label={t`Image`}>
                 <Input name="images[0]" />
               </FormItem>
 
               <FormItem name="price" hasFeedback label={t`Price`}>
-                <InputNumber name="price" min={0} />
+                <InputNumber
+                  name="price"
+                  min={0}
+                  precision={code(values.currency)?.digits ?? 2}
+                />
+              </FormItem>
+              <FormItem
+                name="currency"
+                hasFeedback
+                label={t`Currency`}
+                className="flex-grow"
+              >
+                <Select
+                  name="currency"
+                  showSearch
+                  onChange={val =>
+                    setFieldValue(
+                      'price',
+                      values.price.toFixed(code(val as string)?.digits ?? 2)
+                    )
+                  }
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option.props.children as string[])
+                      .join()
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                >
+                  {currencies
+                    .filter(currency => currency.countries.length)
+                    .map(currency => (
+                      <Select.Option key={currency.code} value={currency.code}>
+                        {currency.currency} ({currency.code})
+                      </Select.Option>
+                    ))}
+                </Select>
               </FormItem>
 
               <FormItem name="pricingType" hasFeedback label={t`Pricing type`}>

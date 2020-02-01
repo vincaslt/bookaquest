@@ -49,6 +49,7 @@
     "class-transformer-validator": "^0.8.0",
     "class-validator": "^0.11.0",
     "core-js": "^3.4.1",
+    "currency-codes": "^1.5.1",
     "date-fns": "^2.7.0",
     "date-fns-timezone": "git+https://github.com/vincaslt/date-fns-timezone.git",
     "date-fns-tz": "^1.0.8",

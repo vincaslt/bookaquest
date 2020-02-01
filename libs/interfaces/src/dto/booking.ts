@@ -12,6 +12,7 @@ export interface BookingDTO {
   participants: number;
   createdAt: string;
   price: number;
+  currency: string;
   comment?: string;
 }
 
