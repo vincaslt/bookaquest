@@ -65,8 +65,20 @@ export async function findUserInvitations(user: RefType) {
   }).populate('organization');
 }
 
+export async function findOrganizationMembers(
+  organization: string | Ref<Organization>
+) {
+  return OrganizationMembershipModel.find({
+    organization
+  })
+    .select('-organization')
+    .populate('user');
+}
+
 // TODO: rename stuff in frontend - user invitation (in user), organization invitation (in org)
-export async function findOrganizationInvitations(organization: RefType) {
+export async function findOrganizationInvitations(
+  organization: string | Ref<Organization>
+) {
   return await OrganizationInvitationModel.find({
     organization
   })

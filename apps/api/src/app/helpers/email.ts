@@ -6,6 +6,8 @@ import { formatCurrency } from '@bookaquest/utilities';
 import { Booking } from '../models/Booking';
 import { EscapeRoom } from '../models/EscapeRoom';
 import { environment } from '../../environments/environment';
+import { OrganizationMembership } from '../models/OrganizationMembership';
+import { User } from '../models/User';
 
 enum Emails {
   Info = 'info@bookaquest.com'
@@ -18,7 +20,7 @@ export function initEmail() {
 }
 
 // TODO: localize emails and dates
-export function sendBookingEmail(
+export function sendPlayerBookingRequestEmail(
   booking: DocumentType<Booking>,
   escapeRoom: DocumentType<EscapeRoom>
 ) {
@@ -45,4 +47,40 @@ export function sendBookingEmail(
       itineraryUrl: `${environment.bookingAppUrl}/itinerary/${booking._id}`
     }
   });
+}
+
+export function sendOrganizationBookingRequestEmail(
+  members: DocumentType<OrganizationMembership>[],
+  booking: DocumentType<Booking>,
+  escapeRoom: DocumentType<EscapeRoom>
+) {
+  const adjustedStartDate = utcToZonedTime(
+    booking.startDate,
+    escapeRoom.timezone
+  );
+  const adjustedEndDate = utcToZonedTime(booking.endDate, escapeRoom.timezone);
+
+  return Promise.all(
+    members.map(member =>
+      send({
+        to: (member.user as DocumentType<User>).email,
+        from: Emails.Info,
+        templateId: 'd-54aec4106fef41afa54e70d9bbb94101',
+        dynamicTemplateData: {
+          escapeRoomTitle: escapeRoom.name,
+          escapeRoomImage: escapeRoom.images[0],
+          date: `${format(adjustedStartDate, 'PPPp')} - ${format(
+            adjustedEndDate,
+            isSameDay(adjustedStartDate, adjustedEndDate) ? 'p' : 'PPPp'
+          )}`,
+          name: booking.name,
+          participants: booking.participants,
+          totalPrice: formatCurrency('en', booking.currency, booking.price),
+          bookingUrl: `${environment.bookingManagerUrl}/booking/${booking._id}`,
+          email: booking.email,
+          phoneNumber: booking.phoneNumber
+        }
+      })
+    )
+  );
 }

@@ -32,6 +32,7 @@ export function PrivateRoutes() {
     <Router>
       <OrganizationPage path={Routes.Organization} />
       <RequireOrganization component={BookingsPage} path={Routes.Bookings} />
+      <RequireOrganization component={BookingsPage} path={Routes.Booking} />
       <RequireOrganization
         component={EscapeRoomPage}
         path={Routes.EscapeRoom}

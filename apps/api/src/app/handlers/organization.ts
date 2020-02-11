@@ -21,7 +21,8 @@ import {
   requireOwnerOfOrganization,
   findUserMemberships,
   findUserInvitations,
-  findOrganizationInvitations
+  findOrganizationInvitations,
+  findOrganizationMembers
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
@@ -134,13 +135,10 @@ const listMembers: AugmentedRequestHandler = async (req, res) => {
 
   await requireBelongsToOrganization(organizationId, userId);
 
-  const memberships = await OrganizationMembershipModel.find({
-    organization: organizationId
-  })
-    .select('-organization')
-    .populate('user');
-
-  const invitations = await findOrganizationInvitations(organizationId);
+  const [memberships, invitations] = await Promise.all([
+    findOrganizationMembers(organizationId),
+    findOrganizationInvitations(organizationId)
+  ]);
 
   return {
     invitations,

@@ -21,7 +21,8 @@ import {
 import { PricingType } from '../models/EscapeRoom';
 import {
   requireBelongsToOrganization,
-  requireOrganization
+  requireOrganization,
+  findOrganizationMembers
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
@@ -29,7 +30,10 @@ import { getBody } from '../lib/utils/getBody';
 import { requireEscapeRoom } from '../helpers/escapeRoom';
 import { getQuery } from '../lib/utils/getQuery';
 import { requireBooking, generateTimeslots } from '../helpers/booking';
-import { sendBookingEmail } from '../helpers/email';
+import {
+  sendPlayerBookingRequestEmail,
+  sendOrganizationBookingRequestEmail
+} from '../helpers/email';
 
 const MAX_DAYS_SELECT = 7 * 6;
 const PAGINATION_LIMIT = 500;
@@ -170,9 +174,12 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
   const booking = await BookingModel.create(bookingFields);
 
-  // ! TODO: send email for members of organization?
-
-  await sendBookingEmail(booking, escapeRoom);
+  await Promise.all([
+    sendPlayerBookingRequestEmail(booking, escapeRoom),
+    findOrganizationMembers(escapeRoom.organization).then(members =>
+      sendOrganizationBookingRequestEmail(members, booking, escapeRoom)
+    )
+  ]);
 
   return booking;
 };
