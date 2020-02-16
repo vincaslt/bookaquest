@@ -26,6 +26,7 @@ const PageWithSidebarContainer = styled(Layout)`
   min-height: 100vh;
 `;
 
+// TODO: format currency and numbers based on selected locale
 export const App = withUserProvider(() => {
   const { isLoading, userInfo, memberships } = useUser();
   const { i18n } = useI18n(undefined, { useSuspense: false });

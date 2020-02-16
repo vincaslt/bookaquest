@@ -12,6 +12,7 @@ export interface EscapeRoomInitFields {
   description: string;
   pricingType: PricingType;
   price: number;
+  currency: string;
   participants: [number, number];
   location: string;
   interval: number;
@@ -35,7 +36,10 @@ export class EscapeRoom {
   pricingType: PricingType;
 
   @prop({ required: true })
-  price: number; // TODO: store in stripe price format (x100)
+  price: number;
+
+  @prop({ required: true })
+  currency: string;
 
   @arrayProp({ items: Number, required: true })
   participants: [number, number];

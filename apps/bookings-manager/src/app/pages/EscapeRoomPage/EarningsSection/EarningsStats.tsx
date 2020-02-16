@@ -1,7 +1,6 @@
 import { green, blue, orange } from '@ant-design/colors';
 import { startOfWeek, endOfWeek } from 'date-fns';
 import { Statistic } from 'antd';
-import { zonedTimeToUtc } from 'date-fns-tz';
 import * as React from 'react';
 import { Booking } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
@@ -53,7 +52,6 @@ export function EarningsStats({
           value={earningsToday}
           precision={2}
           valueStyle={{ color: green[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
@@ -61,7 +59,6 @@ export function EarningsStats({
           value={projectedToday}
           precision={2}
           valueStyle={{ color: blue[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
@@ -69,20 +66,15 @@ export function EarningsStats({
           value={pendingToday}
           precision={2}
           valueStyle={{ color: orange[6] }}
-          suffix="$"
         />
       </div>
       <h3 className="mb-2 font-semibold">
         <Time
           type={{ format: 'MMM d' }}
           date={[
-            zonedTimeToUtc(
-              startOfWeek(week, { locale: dateFnsLocale }),
-              timeZone
-            ),
-            zonedTimeToUtc(endOfWeek(week, { locale: dateFnsLocale }), timeZone)
+            startOfWeek(week, { locale: dateFnsLocale }),
+            endOfWeek(week, { locale: dateFnsLocale })
           ]}
-          timeZone={timeZone}
         />
       </h3>
       <div className="flex justify-between">
@@ -92,7 +84,6 @@ export function EarningsStats({
           value={earningsWeekly}
           precision={2}
           valueStyle={{ color: green[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
@@ -100,7 +91,6 @@ export function EarningsStats({
           value={projectedWeekly}
           precision={2}
           valueStyle={{ color: blue[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
@@ -108,7 +98,6 @@ export function EarningsStats({
           value={pendingWeekly}
           precision={2}
           valueStyle={{ color: orange[6] }}
-          suffix="$"
         />
       </div>
     </div>

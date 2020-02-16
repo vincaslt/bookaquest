@@ -21,7 +21,8 @@ import {
   requireOwnerOfOrganization,
   findUserMemberships,
   findUserInvitations,
-  findOrganizationInvitations
+  findOrganizationInvitations,
+  findOrganizationMembers
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
@@ -113,10 +114,14 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
     throw createError(STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
   }
 
+  const dateRange = toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate };
+
   const bookings = await BookingModel.find(
     {
       escapeRoom: { $in: escapeRooms.map(({ id }) => id) },
-      endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate },
+      ...(select === 'historical'
+        ? { createdAt: dateRange }
+        : { endDate: dateRange }),
       ...(select === 'upcoming'
         ? { status: { $in: [BookingStatus.Accepted, BookingStatus.Pending] } }
         : {})
@@ -134,13 +139,10 @@ const listMembers: AugmentedRequestHandler = async (req, res) => {
 
   await requireBelongsToOrganization(organizationId, userId);
 
-  const memberships = await OrganizationMembershipModel.find({
-    organization: organizationId
-  })
-    .select('-organization')
-    .populate('user');
-
-  const invitations = await findOrganizationInvitations(organizationId);
+  const [memberships, invitations] = await Promise.all([
+    findOrganizationMembers(organizationId),
+    findOrganizationInvitations(organizationId)
+  ]);
 
   return {
     invitations,

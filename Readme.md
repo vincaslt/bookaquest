@@ -1,5 +1,15 @@
 # Bookaquest
 
+## Environment
+
+`.env`:
+
+```
+MONGODB_CONNECTION = mongodb://<host>:<port>/<database>
+JWT_SECRET = <random_generated_string>
+SENDGRID_API_KEY = <from_sendgrid>
+```
+
 This project was generated using [Nx](https://nx.dev).
 
 <p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" width="450"></p>

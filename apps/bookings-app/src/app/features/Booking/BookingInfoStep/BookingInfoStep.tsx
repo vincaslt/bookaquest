@@ -12,14 +12,16 @@ export type BookingInfo = Omit<
 
 interface Props {
   room: EscapeRoom;
+  bookingInfo?: BookingInfo;
   onSubmit: (info: BookingInfo) => void;
 }
 
+// ! TODO: phone number input
 // ! TODO: form validation
-export function BookingInfoStep({ onSubmit, room }: Props) {
+export function BookingInfoStep({ onSubmit, room, bookingInfo }: Props) {
   const { t } = useI18n();
 
-  const initialValues: BookingInfo = {
+  const initialValues: BookingInfo = bookingInfo || {
     name: '',
     phoneNumber: '',
     email: '',
@@ -28,7 +30,7 @@ export function BookingInfoStep({ onSubmit, room }: Props) {
 
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
-      {({ values }) => (
+      {() => (
         <Form labelCol={{ span: 6 }} wrapperCol={{ span: 12 }}>
           <FormItem name="name" hasFeedback label={t`Full name`}>
             <Input name="name" />

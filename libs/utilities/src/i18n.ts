@@ -41,6 +41,7 @@ export function initI18n() {
 
 export const useI18n = (ns?: Namespace, options?: UseTranslationOptions) => {
   const i18n = useTranslation(ns, options);
+  const locale = i18n.i18n.language;
   const dateFnsLocale =
     localeMapping[i18n.i18n.language] || localeMapping[fallbackLng];
 
@@ -67,5 +68,5 @@ export const useI18n = (ns?: Namespace, options?: UseTranslationOptions) => {
     return tt(undefined)(parts, ...values);
   }
 
-  return { i18n, t, tt, dateFnsLocale };
+  return { i18n, t, tt, locale, dateFnsLocale };
 };

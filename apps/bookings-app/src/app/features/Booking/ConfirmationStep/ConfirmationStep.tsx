@@ -8,7 +8,7 @@ import {
   CreateBooking,
   PricingType
 } from '@bookaquest/interfaces';
-import { useI18n, useLoading } from '@bookaquest/utilities';
+import { useI18n, useLoading, formatCurrency } from '@bookaquest/utilities';
 import * as api from '../../../api/application';
 import { BookingInfo } from '../BookingInfoStep/BookingInfoStep';
 import { ContactInfo } from './Details/ContactInfo';
@@ -28,7 +28,7 @@ interface Props {
 }
 
 export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [, setLocation] = useLocation();
   const [loading, withLoading, withFnLoading] = useLoading();
 
@@ -87,19 +87,22 @@ export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
           </div>
           <div className="flex justify-between">
             <span>{isFlatPrice ? t`Group price` : t`Per participant`}</span>
-            <span className="font-bold">${escapeRoom.price}</span>
+            <span className="font-bold">
+              {formatCurrency(locale, escapeRoom.currency, escapeRoom.price)}
+            </span>
           </div>
           <Divider>{t`Total`}</Divider>
           <div className="flex justify-between items-center mb-2">
             <Button type="link" className="p-0">{t`Apply a discount`}</Button>
             <Statistic
               className="font-bold text-green-500"
-              value={
+              value={formatCurrency(
+                locale,
+                escapeRoom.currency,
                 isFlatPrice
                   ? escapeRoom.price
                   : escapeRoom.price * bookingInfo.participants
-              }
-              suffix="$" // TODO: dynamic currency
+              )}
             />
           </div>
           {!escapeRoom.paymentEnabled && (

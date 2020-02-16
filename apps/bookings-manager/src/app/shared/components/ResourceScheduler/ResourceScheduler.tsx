@@ -21,11 +21,7 @@ import { isBefore } from 'date-fns/esm';
 import * as React from 'react';
 import times from 'ramda/es/times';
 import { BusinessHours, Booking, BookingStatus } from '@bookaquest/interfaces';
-import {
-  isSameOrAfter,
-  convertBetweenTimezones,
-  useI18n
-} from '@bookaquest/utilities';
+import { isSameOrAfter, useI18n } from '@bookaquest/utilities';
 import styled from 'styled-components';
 import { ResourceEvent } from './ResourceEvent';
 import { CurrentHourMarker } from './CurrentHourMarker';
@@ -150,9 +146,7 @@ export function ResourceScheduler({
   const { dateFnsLocale, t } = useI18n();
   const [now, setNow] = React.useState(utcToZonedTime(new Date(), timeZone));
 
-  const days = eachDayOfInterval(range).map(day =>
-    utcToZonedTime(day, timeZone)
-  );
+  const days = eachDayOfInterval(range);
 
   const resourcesAvailabilities = getAvailabilitiesInTimezone(
     range.start as Date,
@@ -320,11 +314,7 @@ export function ResourceScheduler({
                       return hours.map((hour, j) => {
                         const bookingsAtHourStart = resource.bookings.filter(
                           ({ startDate }) => {
-                            const date = convertBetweenTimezones(
-                              startDate,
-                              resource.timeZone,
-                              timeZone
-                            );
+                            const date = utcToZonedTime(startDate, timeZone);
                             return (
                               isSameOrAfter(date, hour) &&
                               isBefore(date, addMinutes(hour, 30))
@@ -333,11 +323,7 @@ export function ResourceScheduler({
                         );
                         const bookingsAtHourEnd = resource.bookings.filter(
                           ({ startDate }) => {
-                            const date = convertBetweenTimezones(
-                              startDate,
-                              resource.timeZone,
-                              timeZone
-                            );
+                            const date = utcToZonedTime(startDate, timeZone);
                             return (
                               isSameOrAfter(date, addMinutes(hour, 30)) &&
                               isBefore(date, endOfHour(hour))

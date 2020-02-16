@@ -18,6 +18,7 @@ export interface BookingInitFields {
   escapeRoom: string;
   status: BookingStatus;
   price: number;
+  currency: string;
   comment?: string;
 }
 
@@ -51,6 +52,9 @@ export class Booking {
 
   @prop({ required: true })
   price: number;
+
+  @prop({ required: true })
+  currency: string;
 }
 
 export const BookingModel = getModelForClass(Booking, {

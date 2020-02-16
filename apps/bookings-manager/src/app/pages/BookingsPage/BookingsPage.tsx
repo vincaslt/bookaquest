@@ -1,4 +1,4 @@
-import { RouteComponentProps } from '@reach/router';
+import { RouteComponentProps, Redirect } from '@reach/router';
 import * as React from 'react';
 import { useLoading } from '@bookaquest/utilities';
 import {
@@ -11,10 +11,13 @@ import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
 import { BookingModal } from '../../shared/components/BookingModal/BookingModal';
+import { PrivateRoutes, getUrl } from '../../constants/routes';
 import { BookingsSection } from './BookingsSection/BookingsSection';
 import { SchedulerSection } from './SchedulerSection';
 
-export function BookingsPage(props: RouteComponentProps) {
+export function BookingsPage(
+  props: RouteComponentProps<{ bookingId?: string }>
+) {
   const { memberships } = useUser();
   const [loading, withLoading] = useLoading(true);
   const [upcomingBookings, setUpcomingBookings] = React.useState<Booking[]>([]);
@@ -22,6 +25,7 @@ export function BookingsPage(props: RouteComponentProps) {
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
   const [selectedBookings, setSelectedBookings] = React.useState<Booking[]>([]);
 
+  const openBooking = props.bookingId;
   const membership = memberships?.[0]; // TODO: use selected, instead of first one
 
   React.useEffect(() => {
@@ -41,6 +45,18 @@ export function BookingsPage(props: RouteComponentProps) {
       );
     }
   }, [membership, withLoading]);
+
+  React.useEffect(() => {
+    if (!openBooking) {
+      return;
+    }
+
+    const booking = upcomingBookings.find(({ _id }) => _id === openBooking);
+
+    if (booking) {
+      setSelectedBookings(selected => [...selected, booking]);
+    }
+  }, [openBooking, upcomingBookings]);
 
   const updateBookings = (updatedBookings: Booking[]) => {
     const getUpdated = (booking: Booking) =>
@@ -64,9 +80,19 @@ export function BookingsPage(props: RouteComponentProps) {
     );
   };
 
-  const handleCloseModal = () => setSelectedBookings([]);
+  const handleCloseModal = () => {
+    setSelectedBookings([]);
+    props.navigate?.(PrivateRoutes.Bookings, { replace: true });
+  };
+
   const handleSelectBookings = (selected: Booking[]) => {
-    setSelectedBookings(selected);
+    if (selected.length > 1) {
+      setSelectedBookings(selected);
+    } else {
+      props.navigate?.(
+        getUrl(PrivateRoutes.Booking, { bookingId: selected[0]._id })
+      );
+    }
   };
 
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -74,6 +100,10 @@ export function BookingsPage(props: RouteComponentProps) {
 
   if (!membership?.organization) {
     return null;
+  }
+
+  if (!loading && !escapeRooms.length) {
+    return <Redirect noThrow to={PrivateRoutes.EscapeRooms} />;
   }
 
   return (

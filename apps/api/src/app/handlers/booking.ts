@@ -21,7 +21,8 @@ import {
 import { PricingType } from '../models/EscapeRoom';
 import {
   requireBelongsToOrganization,
-  requireOrganization
+  requireOrganization,
+  findOrganizationMembers
 } from '../helpers/organization';
 import { getParams } from '../lib/utils/getParams';
 import { getAuth } from '../lib/utils/getAuth';
@@ -29,6 +30,12 @@ import { getBody } from '../lib/utils/getBody';
 import { requireEscapeRoom } from '../helpers/escapeRoom';
 import { getQuery } from '../lib/utils/getQuery';
 import { requireBooking, generateTimeslots } from '../helpers/booking';
+import {
+  sendPlayerBookingRequestEmail,
+  sendOrganizationBookingRequestEmail,
+  sendPlayerBookingConfirmationEmail,
+  sendPlayerBookingRejectionEmail
+} from '../helpers/email';
 
 const MAX_DAYS_SELECT = 7 * 6;
 const PAGINATION_LIMIT = 500;
@@ -136,6 +143,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
   const bookingFields: BookingInitFields = {
     ...dto,
     price,
+    currency: escapeRoom.currency,
     escapeRoom: escapeRoomId,
     status: BookingStatus.Pending
   };
@@ -158,7 +166,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
     await stripe.charges.create({
       amount: price * 100,
-      currency: 'eur', // ! TODO: dynamic currency
+      currency: 'eur', // TODO: dynamic currency
       description: `Payment to book ${escapeRoom.name}`,
       source: dto.paymentToken
     });
@@ -166,7 +174,16 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
     bookingFields.status = BookingStatus.Accepted;
   }
 
-  return await BookingModel.create(bookingFields);
+  const booking = await BookingModel.create(bookingFields);
+
+  await Promise.all([
+    sendPlayerBookingRequestEmail(booking, escapeRoom),
+    findOrganizationMembers(escapeRoom.organization).then(members =>
+      sendOrganizationBookingRequestEmail(members, booking, escapeRoom)
+    )
+  ]);
+
+  return booking;
 };
 
 const getAvailability: AugmentedRequestHandler = async (req, res) => {
@@ -236,7 +253,7 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   booking.status = BookingStatus.Rejected;
   const savedBooking = await booking.save();
 
-  // ! TODO: send email
+  await sendPlayerBookingRejectionEmail(savedBooking, escapeRoom);
 
   return [savedBooking];
 };
@@ -274,7 +291,7 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   booking.status = BookingStatus.Accepted;
   const savedBooking = await booking.save();
 
-  // ! TODO: send email
+  await sendPlayerBookingConfirmationEmail(savedBooking, escapeRoom);
 
   return [savedBooking, ...updatedSameTimeBookings];
 };

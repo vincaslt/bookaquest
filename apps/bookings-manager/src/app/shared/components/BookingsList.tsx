@@ -4,7 +4,7 @@ import { PaginationConfig } from 'antd/lib/table';
 import * as React from 'react';
 import { Booking, BookingStatus, EscapeRoom } from '@bookaquest/interfaces';
 import { Time } from '@bookaquest/components';
-import { useLoading, useI18n } from '@bookaquest/utilities';
+import { useLoading, useI18n, formatCurrency } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 import { IconText } from './IconText';
 import { BookingStatusIcon } from './BookingStatusIcon';
@@ -30,18 +30,18 @@ export function BookingsList({
   pagination,
   onMoreDetails,
   escapeRooms = [],
-  updateBookings = () => undefined,
+  updateBookings,
   onAcceptDone = () => undefined,
   onRejectDone = () => undefined
 }: Props) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [loadingUpdate, withLoadingUpdate] = useLoading();
 
   const handleReject = async (booking: Booking) => {
     const updatedBookings = await withLoadingUpdate(
       api.rejectBooking(booking._id)
     );
-    updateBookings(updatedBookings);
+    updateBookings?.(updatedBookings);
     onRejectDone();
   };
 
@@ -49,7 +49,7 @@ export function BookingsList({
     const updatedBookings = await withLoadingUpdate(
       api.acceptBooking(booking._id)
     );
-    updateBookings(updatedBookings);
+    updateBookings?.(updatedBookings);
     onAcceptDone();
   };
 
@@ -75,6 +75,7 @@ export function BookingsList({
           return (
             <List.Item
               actions={
+                updateBookings &&
                 booking.status === BookingStatus.Pending &&
                 booking.startDate > new Date()
                   ? [
@@ -128,12 +129,13 @@ export function BookingsList({
                     }
                   />
                   <div className="flex mt-2">
-                    <IconText
-                      className="mr-4"
-                      title={t`Price`}
-                      text={booking.price}
-                      icon="dollar"
-                    />
+                    <span title={t`Price`} className="flex items-center mr-2">
+                      {formatCurrency(
+                        locale,
+                        booking.currency || 'USD',
+                        booking.price
+                      )}
+                    </span>
                     <IconText
                       title={t`Participants`}
                       text={booking.participants}

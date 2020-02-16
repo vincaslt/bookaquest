@@ -3,33 +3,36 @@ import dropRepeatsWith from 'ramda/es/dropRepeatsWith';
 import * as React from 'react';
 import { EscapeRoom, Timeslot, Availability } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
+import { debounce } from 'throttle-debounce';
 import * as api from '../../../api/application';
 import { TimeslotPicker } from '../../../components/TimeslotPicker/TimeslotPicker';
 
 interface Props {
   room: EscapeRoom;
+  timeslot?: Timeslot;
   onSelect: (timeslot: Timeslot) => void;
 }
 
-export function TimeslotStep({ room, onSelect }: Props) {
+export function TimeslotStep({ room, onSelect, timeslot }: Props) {
   const { t } = useI18n();
   const [availability, setAvailability] = React.useState<Availability>([]);
-  const [selectedDay, setSelectedDay] = React.useState<Date>();
+  const [selectedDay, setSelectedDay] = React.useState<Date | undefined>(
+    timeslot?.start
+  );
 
-  // ! TODO: cancel prev request or aggregate them
   const handleMonthChange = React.useCallback(
-    (interval: { start: Date; end: Date }) => {
+    debounce(300, (interval: { start: Date; end: Date }) => {
       api
         .getAvailability(room._id, interval.start, interval.end)
-        .then(results =>
+        .then(results => {
           setAvailability(prev =>
             dropRepeatsWith((a, b) => isSameDay(a.date, b.date), [
               ...prev,
               ...results
             ])
-          )
-        );
-    },
+          );
+        });
+    }),
     [room]
   );
 

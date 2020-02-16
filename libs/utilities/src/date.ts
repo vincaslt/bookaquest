@@ -4,12 +4,17 @@ import {
   eachDayOfInterval,
   Locale,
   startOfWeek,
-  endOfWeek
+  endOfWeek,
+  getDay
 } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 export function convertBetweenTimezones(date: Date, from: string, to: string) {
   return utcToZonedTime(zonedTimeToUtc(date, from), to);
+}
+
+export function isSameWeekday(date: Date, dateToCompare: Date) {
+  return getDay(date) === getDay(dateToCompare);
 }
 
 /**

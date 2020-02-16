@@ -1,5 +1,5 @@
 import { Spin, Button } from 'antd';
-import { utcToZonedTime } from 'date-fns-tz';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { startOfDay, addWeeks, endOfDay, subDays } from 'date-fns';
 import { Booking, Organization, EscapeRoom } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
@@ -30,13 +30,10 @@ export function SchedulerSection({
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const timeZone = organization?.timezone ?? localTimeZone;
 
-  const today = new Date();
+  const today = utcToZonedTime(new Date(), timeZone);
   const range = {
-    start: utcToZonedTime(startOfDay(addWeeks(today, weekOffset)), timeZone),
-    end: utcToZonedTime(
-      endOfDay(subDays(addWeeks(today, weekOffset + 1), 1)),
-      timeZone
-    )
+    start: startOfDay(addWeeks(today, weekOffset)),
+    end: endOfDay(subDays(addWeeks(today, weekOffset + 1), 1))
   };
 
   return (
@@ -63,7 +60,10 @@ export function SchedulerSection({
               <div>
                 <Time
                   type="date"
-                  date={[range.start, range.end]}
+                  date={[
+                    zonedTimeToUtc(range.start, timeZone),
+                    zonedTimeToUtc(range.end, timeZone)
+                  ]}
                   timeZone={timeZone}
                 />
               </div>

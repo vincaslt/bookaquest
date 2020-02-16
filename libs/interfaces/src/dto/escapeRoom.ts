@@ -6,6 +6,7 @@ export interface CreateEscapeRoomDTO {
   description: string;
   images: string[];
   price: number;
+  currency: string;
   businessHours: BusinessHoursDTO[];
   timezone: string;
   interval: number;
@@ -28,6 +29,7 @@ export interface EscapeRoomDTO {
   timezone: string;
   interval: number;
   price: number;
+  currency: string;
   location: string;
   difficulty: number;
   paymentEnabled: boolean;
@@ -44,6 +46,7 @@ export interface UpdateEscapeRoomDTO {
   pricingType?: PricingType;
   participants?: number[];
   price?: number;
+  currency?: string;
   difficulty?: number;
   location?: string;
   paymentEnabled?: boolean;

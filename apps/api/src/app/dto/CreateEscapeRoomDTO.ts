@@ -17,6 +17,7 @@ import {
   ValidateNested
 } from 'class-validator';
 import { PricingType } from '../models/EscapeRoom';
+import { IsCurrencyCode } from '../utils/validators';
 import { BusinessHoursDTO } from './BusinessHoursDTO';
 
 export class CreateEscapeRoomDTO {
@@ -32,6 +33,10 @@ export class CreateEscapeRoomDTO {
   @IsNumber()
   @IsPositive()
   price: number;
+
+  @IsNotEmpty()
+  @IsCurrencyCode()
+  currency: string;
 
   // TODO: somehow validate if it's a valid image
   @IsNotEmpty()

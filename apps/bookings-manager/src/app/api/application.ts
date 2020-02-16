@@ -123,7 +123,7 @@ export const getOrganizationBookings = withAuth(
     params: {
       from?: Date;
       to?: Date;
-      select?: 'upcoming';
+      select?: 'upcoming' | 'historical';
     }
   ) =>
     api

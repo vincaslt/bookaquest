@@ -6,7 +6,7 @@ import AspectRatio from 'react-aspect-ratio';
 import Text from 'antd/lib/typography/Text';
 import * as React from 'react';
 import { Booking, EscapeRoom, BookingStatus } from '@bookaquest/interfaces';
-import { useI18n } from '@bookaquest/utilities';
+import { useI18n, formatCurrency } from '@bookaquest/utilities';
 import { Time, DifficultyIndicator } from '@bookaquest/components';
 import styled from 'styled-components';
 
@@ -21,7 +21,7 @@ interface Props {
 }
 
 export function BookingDetails({ booking, escapeRoom, timeZone }: Props) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   const statusText = {
     [BookingStatus.Accepted]: t`Accepted`,
@@ -50,10 +50,9 @@ export function BookingDetails({ booking, escapeRoom, timeZone }: Props) {
         <Statistic
           className="mr-4"
           title={t`Price`}
-          value={booking.price}
+          value={formatCurrency(locale, booking.currency, booking.price)}
           precision={2}
           valueStyle={{ color: green[6] }}
-          suffix="$"
         />
         <Statistic
           className="mr-4"
