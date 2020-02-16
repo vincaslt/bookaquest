@@ -48,6 +48,7 @@ export function BookingsSection({
 
     api
       .getOrganizationBookings(organization._id, {
+        select: 'historical',
         from: zonedTimeToUtc(
           startOfWeek(week, { locale: dateFnsLocale }),
           timeZone
@@ -70,17 +71,20 @@ export function BookingsSection({
     const week = addWeeks(now, weekOffset);
 
     return (
-      <Time
-        type="date"
-        date={[
-          zonedTimeToUtc(
-            startOfWeek(week, { locale: dateFnsLocale }),
-            timeZone
-          ),
-          zonedTimeToUtc(endOfWeek(week, { locale: dateFnsLocale }), timeZone)
-        ]}
-        timeZone={timeZone}
-      />
+      <>
+        <i className="mr-2">{t`Booked at:`}</i>
+        <Time
+          type="date"
+          date={[
+            zonedTimeToUtc(
+              startOfWeek(week, { locale: dateFnsLocale }),
+              timeZone
+            ),
+            zonedTimeToUtc(endOfWeek(week, { locale: dateFnsLocale }), timeZone)
+          ]}
+          timeZone={timeZone}
+        />
+      </>
     );
   };
 

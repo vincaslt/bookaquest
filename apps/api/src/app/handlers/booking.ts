@@ -32,7 +32,9 @@ import { getQuery } from '../lib/utils/getQuery';
 import { requireBooking, generateTimeslots } from '../helpers/booking';
 import {
   sendPlayerBookingRequestEmail,
-  sendOrganizationBookingRequestEmail
+  sendOrganizationBookingRequestEmail,
+  sendPlayerBookingConfirmationEmail,
+  sendPlayerBookingRejectionEmail
 } from '../helpers/email';
 
 const MAX_DAYS_SELECT = 7 * 6;
@@ -251,7 +253,7 @@ const rejectBooking: AugmentedRequestHandler = async (req, res) => {
   booking.status = BookingStatus.Rejected;
   const savedBooking = await booking.save();
 
-  // ! TODO: send email
+  await sendPlayerBookingRejectionEmail(savedBooking, escapeRoom);
 
   return [savedBooking];
 };
@@ -289,7 +291,7 @@ const acceptBooking: AugmentedRequestHandler = async (req, res) => {
   booking.status = BookingStatus.Accepted;
   const savedBooking = await booking.save();
 
-  // ! TODO: send email
+  await sendPlayerBookingConfirmationEmail(savedBooking, escapeRoom);
 
   return [savedBooking, ...updatedSameTimeBookings];
 };

@@ -49,6 +49,62 @@ export function sendPlayerBookingRequestEmail(
   });
 }
 
+export function sendPlayerBookingConfirmationEmail(
+  booking: DocumentType<Booking>,
+  escapeRoom: DocumentType<EscapeRoom>
+) {
+  const adjustedStartDate = utcToZonedTime(
+    booking.startDate,
+    escapeRoom.timezone
+  );
+  const adjustedEndDate = utcToZonedTime(booking.endDate, escapeRoom.timezone);
+
+  return send({
+    to: booking.email,
+    from: Emails.Info,
+    templateId: 'd-69a43ce1149a40b6abacea432fa8d891',
+    dynamicTemplateData: {
+      escapeRoomTitle: escapeRoom.name,
+      escapeRoomImage: escapeRoom.images[0],
+      date: `${format(adjustedStartDate, 'PPPp')} - ${format(
+        adjustedEndDate,
+        isSameDay(adjustedStartDate, adjustedEndDate) ? 'p' : 'PPPp'
+      )}`,
+      participants: booking.participants,
+      totalPrice: formatCurrency('en', booking.currency, booking.price), // TODO: dynamic locale
+      itineraryUrl: `${environment.bookingAppUrl}/itinerary/${booking._id}`
+    }
+  });
+}
+
+export function sendPlayerBookingRejectionEmail(
+  booking: DocumentType<Booking>,
+  escapeRoom: DocumentType<EscapeRoom>
+) {
+  const adjustedStartDate = utcToZonedTime(
+    booking.startDate,
+    escapeRoom.timezone
+  );
+  const adjustedEndDate = utcToZonedTime(booking.endDate, escapeRoom.timezone);
+
+  return send({
+    to: booking.email,
+    from: Emails.Info,
+    templateId: 'd-6d92e4cfffc0423092d992ff7450f85c',
+    dynamicTemplateData: {
+      escapeRoomTitle: escapeRoom.name,
+      escapeRoomImage: escapeRoom.images[0],
+      date: `${format(adjustedStartDate, 'PPPp')} - ${format(
+        adjustedEndDate,
+        isSameDay(adjustedStartDate, adjustedEndDate) ? 'p' : 'PPPp'
+      )}`,
+      participants: booking.participants,
+      totalPrice: formatCurrency('en', booking.currency, booking.price), // TODO: dynamic locale
+      itineraryUrl: `${environment.bookingAppUrl}/itinerary/${booking._id}`
+    }
+  });
+}
+
 export function sendOrganizationBookingRequestEmail(
   members: DocumentType<OrganizationMembership>[],
   booking: DocumentType<Booking>,

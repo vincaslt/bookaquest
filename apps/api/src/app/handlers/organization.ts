@@ -114,10 +114,14 @@ const listBookings: AugmentedRequestHandler = async (req, res) => {
     throw createError(STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
   }
 
+  const dateRange = toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate };
+
   const bookings = await BookingModel.find(
     {
       escapeRoom: { $in: escapeRooms.map(({ id }) => id) },
-      endDate: toDate ? { $gt: fromDate, $lt: toDate } : { $gt: fromDate },
+      ...(select === 'historical'
+        ? { createdAt: dateRange }
+        : { endDate: dateRange }),
       ...(select === 'upcoming'
         ? { status: { $in: [BookingStatus.Accepted, BookingStatus.Pending] } }
         : {})
