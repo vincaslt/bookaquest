@@ -1,61 +1,65 @@
-import { isSameDay } from 'date-fns';
-import dropRepeatsWith from 'ramda/es/dropRepeatsWith';
+import { FormItem, Form, InputNumber, SubmitButton } from 'formik-antd';
+import { Formik } from 'formik';
 import * as React from 'react';
-import { EscapeRoom, Timeslot, Availability } from '@bookaquest/interfaces';
+import { EscapeRoom, Timeslot, CreateBooking } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
-import { debounce } from 'throttle-debounce';
-import * as api from '../../../api/application';
-import { TimeslotPicker } from '../../../components/TimeslotPicker/TimeslotPicker';
+import * as Yup from 'yup';
+import TimeslotInput from './TimeslotInput';
+
+export type TimeslotInfo = Pick<CreateBooking, 'participants'> & {
+  timeslot: Timeslot;
+};
 
 interface Props {
   room: EscapeRoom;
-  timeslot?: Timeslot;
-  onSelect: (timeslot: Timeslot) => void;
+  timeslotInfo?: TimeslotInfo;
+  onSelect: (info: TimeslotInfo) => void;
 }
 
-export function TimeslotStep({ room, onSelect, timeslot }: Props) {
+export function TimeslotStep({ room, onSelect, timeslotInfo }: Props) {
   const { t } = useI18n();
-  const [availability, setAvailability] = React.useState<Availability>([]);
-  const [selectedDay, setSelectedDay] = React.useState<Date | undefined>(
-    timeslot?.start
-  );
 
-  const handleMonthChange = React.useCallback(
-    debounce(300, (interval: { start: Date; end: Date }) => {
-      api
-        .getAvailability(room._id, interval.start, interval.end)
-        .then(results => {
-          setAvailability(prev =>
-            dropRepeatsWith((a, b) => isSameDay(a.date, b.date), [
-              ...prev,
-              ...results
-            ])
-          );
-        });
-    }),
-    [room]
-  );
+  const initialValues: TimeslotInfo = timeslotInfo || {
+    participants: room.participants[0],
+    timeslot: {} as Timeslot
+  };
 
-  const toggleSelect = (day: Date) =>
-    setSelectedDay(selected =>
-      !selected || !isSameDay(selected, day) ? day : undefined
-    );
-
-  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const validationSchema = Yup.object().shape<TimeslotInfo>({
+    participants: Yup.number()
+      .required()
+      .min(room.participants[0])
+      .max(room.participants[1]),
+    timeslot: Yup.object<Timeslot>({
+      start: Yup.date().required(),
+      end: Yup.date().required(),
+      price: Yup.number().required()
+    }).required()
+  });
 
   return (
-    <>
-      {room.timezone !== localTimeZone && (
-        <div className="mb-2">{t`Timezone: ${room.timezone}`}</div>
+    <Formik
+      validateOnMount
+      initialValues={initialValues}
+      onSubmit={onSelect}
+      validationSchema={validationSchema}
+    >
+      {({ setFieldValue, isValid, values }) => (
+        <Form>
+          <FormItem name="participants" hasFeedback label={t`Participants`}>
+            <InputNumber name="participants" />
+          </FormItem>
+          <TimeslotInput
+            room={room}
+            timeslot={values.timeslot}
+            participants={values.participants}
+            initialTimeslot={timeslotInfo?.timeslot}
+            onSelectTimeslot={value => {
+              setFieldValue('timeslot', value);
+            }}
+          />
+          <SubmitButton disabled={!isValid}>{t`Continue`}</SubmitButton>
+        </Form>
       )}
-      <TimeslotPicker
-        timeZone={room.timezone}
-        onSelectTimeslot={onSelect}
-        onSelectDay={toggleSelect}
-        onMonthChange={handleMonthChange}
-        selectedDate={selectedDay}
-        availability={availability}
-      />
-    </>
+    </Formik>
   );
 }

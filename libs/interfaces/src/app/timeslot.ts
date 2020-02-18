@@ -3,6 +3,7 @@ import { AvailabilityDTO, TimeslotDTO } from '../dto/timeslot';
 export type Timeslot = Omit<TimeslotDTO, 'start' | 'end'> & {
   start: Date;
   end: Date;
+  price: number;
 };
 
 export type Availability = Array<{

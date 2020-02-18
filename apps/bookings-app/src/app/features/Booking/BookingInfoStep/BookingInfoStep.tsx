@@ -1,14 +1,11 @@
-import { Form, FormItem, Input, InputNumber, SubmitButton } from 'formik-antd';
+import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
 import { Col, Row } from 'antd';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
 import { EscapeRoom, CreateBooking } from '@bookaquest/interfaces';
 
-export type BookingInfo = Omit<
-  CreateBooking,
-  'startDate' | 'endDate' | 'escapeRoomId' | 'paymentToken'
->;
+export type BookingInfo = Pick<CreateBooking, 'name' | 'phoneNumber' | 'email'>;
 
 interface Props {
   room: EscapeRoom;
@@ -24,8 +21,7 @@ export function BookingInfoStep({ onSubmit, room, bookingInfo }: Props) {
   const initialValues: BookingInfo = bookingInfo || {
     name: '',
     phoneNumber: '',
-    email: '',
-    participants: room.participants[0]
+    email: ''
   };
 
   return (
@@ -40,13 +36,6 @@ export function BookingInfoStep({ onSubmit, room, bookingInfo }: Props) {
           </FormItem>
           <FormItem name="phoneNumber" hasFeedback label={t`Phone number`}>
             <Input type="tel" name="phoneNumber" />
-          </FormItem>
-          <FormItem name="participants" hasFeedback label={t`Participants`}>
-            <InputNumber
-              name="participants"
-              min={room.participants[0]}
-              max={room.participants[1]}
-            />
           </FormItem>
           <Row>
             <Col push={6}>

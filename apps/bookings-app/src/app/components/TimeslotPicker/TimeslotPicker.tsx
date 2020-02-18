@@ -22,8 +22,10 @@ interface Props {
   onSelectTimeslot: (date: Timeslot) => void;
   onSelectDay: (date: Date) => void;
   onMonthChange: (interval: { start: Date; end: Date }) => void;
+  timeslot?: Timeslot;
   selectedDate?: Date;
   availability?: Availability;
+  currency: string;
 }
 
 // ! TODO: convert month interval to timezone
@@ -33,7 +35,9 @@ export function TimeslotPicker({
   onSelectDay,
   onSelectTimeslot,
   onMonthChange,
-  selectedDate
+  selectedDate,
+  timeslot,
+  currency
 }: Props) {
   const { dateFnsLocale } = useI18n();
   const [monthDate, setMonthDate] = React.useState(startOfMonth(new Date()));
@@ -79,12 +83,15 @@ export function TimeslotPicker({
                   currentMonth={getMonth(monthDate)}
                   timeslotCount={getTimeslotsFor(date).length}
                   selected={selectedDate && isSameDay(date, selectedDate)}
+                  marked={timeslot?.start && isSameDay(date, timeslot?.start)}
                   onSelect={onSelectDay}
                 />
               ))}
             </tr>
             {selectedDate && isDayInWeek(selectedDate, days) && (
               <Timeslots
+                currency={currency}
+                timeslot={timeslot}
                 timeZone={timeZone}
                 loading={!availability}
                 timeslots={getTimeslotsFor(selectedDate)}

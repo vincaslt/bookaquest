@@ -188,17 +188,29 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
 
 const getAvailability: AugmentedRequestHandler = async (req, res) => {
   const { escapeRoomId } = getParams(req, ['escapeRoomId']);
-  const { from, to } = getQuery(req, ['from', 'to']);
+  const { from, to, players } = getQuery(req, ['from', 'to', 'players']);
 
   const dateNow = new Date();
   const fromDay = startOfDay(new Date(from));
   const toDay = startOfDay(new Date(to));
+  const participants = +players;
 
   if (differenceInCalendarDays(toDay, fromDay) > MAX_DAYS_SELECT) {
     throw createError(STATUS_ERROR.BAD_REQUEST, 'Date range is too big');
   }
 
   const escapeRoom = await requireEscapeRoom(escapeRoomId);
+
+  if (
+    participants < escapeRoom.participants[0] ||
+    participants > escapeRoom.participants[1]
+  ) {
+    throw createError(
+      STATUS_ERROR.BAD_REQUEST,
+      'Participants count is invalid'
+    );
+  }
+
   const activeBookings = await BookingModel.find({
     escapeRoom: escapeRoomId,
     endDate: { $gt: fromDay },
@@ -215,17 +227,25 @@ const getAvailability: AugmentedRequestHandler = async (req, res) => {
 
     const timeslots = generateTimeslots(date, escapeRoom);
 
-    const availableTimeslots = timeslots.filter(
-      ({ start, end }) =>
-        isAfter(start, dateNow) &&
-        activeBookings.every(
-          booking =>
-            !areIntervalsOverlapping(
-              { start, end },
-              { start: booking.startDate, end: booking.endDate }
-            )
-        )
-    );
+    const availableTimeslots = timeslots
+      .filter(
+        ({ start, end }) =>
+          isAfter(start, dateNow) &&
+          activeBookings.every(
+            booking =>
+              !areIntervalsOverlapping(
+                { start, end },
+                { start: booking.startDate, end: booking.endDate }
+              )
+          )
+      )
+      .map(timeslot => ({
+        ...timeslot,
+        price:
+          escapeRoom.pricingType === PricingType.FLAT
+            ? escapeRoom.price
+            : escapeRoom.price * participants
+      }));
 
     return { date, availableTimeslots };
   }, differenceInCalendarDays(toDay, fromDay)).filter(Boolean);

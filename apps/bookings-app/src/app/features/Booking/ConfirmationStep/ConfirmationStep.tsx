@@ -2,15 +2,11 @@ import { Alert, Button, Divider, Statistic, Typography } from 'antd';
 import { useLocation } from 'wouter';
 import * as React from 'react';
 import styled from 'styled-components';
-import {
-  EscapeRoom,
-  Timeslot,
-  CreateBooking,
-  PricingType
-} from '@bookaquest/interfaces';
+import { EscapeRoom, CreateBooking, PricingType } from '@bookaquest/interfaces';
 import { useI18n, useLoading, formatCurrency } from '@bookaquest/utilities';
 import * as api from '../../../api/application';
 import { BookingInfo } from '../BookingInfoStep/BookingInfoStep';
+import { TimeslotInfo } from '../TimeslotStep/TimeslotStep';
 import { ContactInfo } from './Details/ContactInfo';
 import { ReservationInfo } from './Details/ReservationInfo';
 import { CardForm } from './StripeCardForm/CardForm';
@@ -24,10 +20,14 @@ const BookingPriceContainer = styled.div`
 interface Props {
   escapeRoom: EscapeRoom;
   bookingInfo: BookingInfo;
-  timeslot: Timeslot;
+  timeslotInfo: TimeslotInfo;
 }
 
-export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
+export function ConfirmationStep({
+  bookingInfo,
+  escapeRoom,
+  timeslotInfo
+}: Props) {
   const { t, locale } = useI18n();
   const [, setLocation] = useLocation();
   const [loading, withLoading, withFnLoading] = useLoading();
@@ -35,8 +35,9 @@ export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
   const handleSubmit = async (token?: stripe.Token) => {
     const options: CreateBooking = {
       ...bookingInfo,
-      startDate: timeslot.start,
-      endDate: timeslot.end,
+      participants: timeslotInfo.participants,
+      startDate: timeslotInfo.timeslot.start,
+      endDate: timeslotInfo.timeslot.end,
       escapeRoomId: escapeRoom._id
     };
 
@@ -67,7 +68,7 @@ export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
               <Title level={4}>{t`Reservation info`}</Title>
               <ReservationInfo
                 escapeRoom={escapeRoom}
-                timeslot={timeslot}
+                timeslot={timeslotInfo.timeslot}
                 className="mb-4"
               />
               <ContactInfo bookingInfo={bookingInfo} className="mb-4" />
@@ -83,25 +84,32 @@ export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
           <Title level={4}>{t`Price`}</Title>
           <div className="flex justify-between">
             <span>{t`Participants`}</span>
-            <span className="font-bold">{bookingInfo.participants}</span>
+            <span className="font-bold">{timeslotInfo.participants}</span>
           </div>
           <div className="flex justify-between">
             <span>{isFlatPrice ? t`Group price` : t`Per participant`}</span>
             <span className="font-bold">
-              {formatCurrency(locale, escapeRoom.currency, escapeRoom.price)}
+              {isFlatPrice
+                ? formatCurrency(
+                    locale,
+                    escapeRoom.currency,
+                    timeslotInfo.timeslot.price
+                  )
+                : formatCurrency(
+                    locale,
+                    escapeRoom.currency,
+                    timeslotInfo.timeslot.price / timeslotInfo.participants
+                  )}
             </span>
           </div>
           <Divider>{t`Total`}</Divider>
-          <div className="flex justify-between items-center mb-2">
-            <Button type="link" className="p-0">{t`Apply a discount`}</Button>
+          <div className="flex justify-end items-center mb-2">
             <Statistic
               className="font-bold text-green-500"
               value={formatCurrency(
                 locale,
                 escapeRoom.currency,
-                isFlatPrice
-                  ? escapeRoom.price
-                  : escapeRoom.price * bookingInfo.participants
+                timeslotInfo.timeslot.price
               )}
             />
           </div>
@@ -124,7 +132,7 @@ export function ConfirmationStep({ bookingInfo, escapeRoom, timeslot }: Props) {
           <div className="flex">
             <ReservationInfo
               escapeRoom={escapeRoom}
-              timeslot={timeslot}
+              timeslot={timeslotInfo.timeslot}
               className="mr-8"
             />
             <ContactInfo bookingInfo={bookingInfo} />

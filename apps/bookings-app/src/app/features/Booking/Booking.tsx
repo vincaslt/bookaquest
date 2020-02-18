@@ -2,11 +2,11 @@ import { Col, Icon, Row, Steps } from 'antd';
 import { useLocation, useRoute, DefaultParams } from 'wouter';
 import * as React from 'react';
 import styled from 'styled-components';
-import { Organization, EscapeRoom, Timeslot } from '@bookaquest/interfaces';
+import { Organization, EscapeRoom } from '@bookaquest/interfaces';
 import * as api from '../../api/application';
 import { BookingSummary } from './BookingSummary/BookingSummary';
 import { ConfirmationStep } from './ConfirmationStep/ConfirmationStep';
-import { TimeslotStep } from './TimeslotStep/TimeslotStep';
+import { TimeslotStep, TimeslotInfo } from './TimeslotStep/TimeslotStep';
 import {
   BookingInfo,
   BookingInfoStep
@@ -43,7 +43,7 @@ export function Booking() {
 
   const [selectedRoom, setSelectedRoom] = React.useState<EscapeRoom>();
   const [bookingInfo, setBookingInfo] = React.useState<BookingInfo>();
-  const [timeslot, setTimeslot] = React.useState<Timeslot>();
+  const [timeslotInfo, setTimeslotInfo] = React.useState<TimeslotInfo>();
 
   const organizationId = params && params.organizationId;
   const escapeRoomId = params && params.escapeRoomId;
@@ -79,8 +79,8 @@ export function Booking() {
     goToStep(BookingStep.CONFIRMATION);
   };
 
-  const handleSelectTimeslot = (timeslotInfo: Timeslot) => {
-    setTimeslot(timeslotInfo);
+  const handleSelectTimeslot = (info: TimeslotInfo) => {
+    setTimeslotInfo(info);
     goToStep(BookingStep.BOOKING_INFO);
   };
 
@@ -90,7 +90,6 @@ export function Booking() {
     [BookingStep.CONFIRMATION]: 2
   }[step];
 
-  // ! TODO: Add participants count to timeslot step to immediatelly calculate prices (on the calendar)
   // TODO: show Payment as step if booking room has payments
   return (
     <Row>
@@ -115,7 +114,7 @@ export function Booking() {
             <Section>
               {step === BookingStep.TIMESLOT && selectedRoom && (
                 <TimeslotStep
-                  timeslot={timeslot}
+                  timeslotInfo={timeslotInfo}
                   onSelect={handleSelectTimeslot}
                   room={selectedRoom}
                 />
@@ -128,7 +127,7 @@ export function Booking() {
                 />
               )}
               {step === BookingStep.CONFIRMATION &&
-                timeslot &&
+                timeslotInfo &&
                 bookingInfo &&
                 selectedRoom &&
                 organization && (
@@ -136,7 +135,7 @@ export function Booking() {
                     <ConfirmationStep
                       bookingInfo={bookingInfo}
                       escapeRoom={selectedRoom}
-                      timeslot={timeslot}
+                      timeslotInfo={timeslotInfo}
                     />
                   </OrganizationStripeProvider>
                 )}

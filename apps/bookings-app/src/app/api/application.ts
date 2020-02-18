@@ -51,10 +51,15 @@ export const createBooking = (booking: CreateBooking) =>
     .then(res => res.data)
     .then(fromBookingDTO);
 
-export const getAvailability = (escapeRoomId: string, from: Date, to: Date) =>
+export const getAvailability = (
+  escapeRoomId: string,
+  from: Date,
+  to: Date,
+  players: number
+) =>
   api
     .get<AvailabilityDTO>(`escape-room/${escapeRoomId}/availability`, {
-      params: { from, to }
+      params: { from, to, players }
     })
     .then(res => res.data)
     .then(fromAvailabilityDTO);

@@ -35,7 +35,10 @@ export function PrivateHeader({ sidebarVisible = false }: Props) {
     >
       {userInfo && (
         <Dropdown trigger={['click']} overlay={menu}>
-          <button className="px-2 ant-dropdown-link flex items-center hover:bg-gray-100">
+          <button
+            type="button"
+            className="px-2 ant-dropdown-link flex items-center hover:bg-gray-100"
+          >
             {userInfo.fullName} <Icon className="ml-1" type="down" />
           </button>
         </Dropdown>

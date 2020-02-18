@@ -1,13 +1,14 @@
 import { Tooltip } from 'antd';
 import { getMonth, isBefore, isSameDay, startOfDay, format } from 'date-fns';
 import AspectRatio from 'react-aspect-ratio';
-import { red } from '@ant-design/colors';
+import { red, yellow } from '@ant-design/colors';
 import { useI18n, classNames } from '@bookaquest/utilities';
 import * as React from 'react';
 import styled, { css } from 'styled-components';
 
 interface DayButtonProps {
   selected?: boolean;
+  marked?: boolean;
 }
 
 const DayButton = styled.button<DayButtonProps>`
@@ -20,11 +21,11 @@ const DayButton = styled.button<DayButtonProps>`
     background-color: ${({ selected }) => selected && '#fff'};
   }
 
-  ${({ selected }) =>
+  ${({ selected, marked }) =>
     !selected &&
     css`
       &:not(:disabled):hover span {
-        background-color: ${red[6]};
+        background-color: ${marked ? yellow[6] : red[6]};
         color: white;
       }
     `}
@@ -35,6 +36,7 @@ interface Props {
   currentMonth: number;
   timeslotCount: number;
   selected?: boolean;
+  marked?: boolean;
   onSelect: (date: Date) => void;
 }
 
@@ -43,14 +45,16 @@ export function Day({
   currentMonth,
   onSelect,
   timeslotCount,
-  selected = false
+  selected = false,
+  marked = false
 }: Props) {
   const now = new Date();
   const { t, dateFnsLocale } = useI18n();
 
   const isDisabled = isBefore(date, startOfDay(now));
 
-  const selectedClass = selected ? 'bg-gray-300 border-b-0' : '';
+  const selectedClass = selected && 'bg-gray-300 border-b-0';
+  const markedClass = marked && 'border-2 border-yellow-600';
   const emptyClass = timeslotCount === 0 ? 'text-gray-300' : 'text-gray-600';
   const notCurrentMonthClass =
     getMonth(date) !== currentMonth ? 'bg-gray-100' : emptyClass;
@@ -58,19 +62,24 @@ export function Day({
     ? 'bg-gray-100 text-gray-300'
     : notCurrentMonthClass;
 
-  const todayClass = isSameDay(date, now) ? 'border-2 border-red-600' : '';
+  const todayClass = isSameDay(date, now) && 'border-2 border-red-600';
 
   const handleClick = () => onSelect(date);
 
   const button = (
     <DayButton
+      type="button"
       onClick={handleClick}
       disabled={isDisabled}
       selected={selected}
+      marked={marked}
       className={`flex items-center justify-center text-xl w-full`}
     >
       <span
-        className={`p-2 flex items-center justify-center rounded-full w-10 h-10 ${todayClass}`}
+        className={`p-2 flex items-center justify-center rounded-full w-10 h-10 ${classNames(
+          todayClass,
+          markedClass
+        )}`}
       >
         {format(date, 'd', { locale: dateFnsLocale })}
       </span>

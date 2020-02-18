@@ -24,6 +24,7 @@ export function Header({ month, onPrev, onNext }: Props) {
         <th colSpan={7} className="border border-red-600">
           <div className="flex flex-1 justify-between">
             <button
+              type="button"
               className="w-16 items-center justify-center flex"
               onClick={onPrev}
             >
@@ -33,6 +34,7 @@ export function Header({ month, onPrev, onNext }: Props) {
               <Time date={month} type={{ format: 'LLLL yyyy ' }} />
             </span>
             <button
+              type="button"
               className="w-16 items-center justify-center flex"
               onClick={onNext}
             >
