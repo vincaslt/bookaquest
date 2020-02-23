@@ -41,6 +41,10 @@ export const UserProvider = ({ children }: Props) => {
           setInvitations(data.invitations);
           setUserInfo(data.user);
         })
+        .catch(() => {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+        })
         .finally(() => setIsLoading(false));
     }
   }, [userInfo]);

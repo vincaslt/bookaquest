@@ -23,6 +23,7 @@ export function EscapeRoomCard({ escapeRoom, onSelect }: Props) {
 
   return (
     <Card
+      bordered={false}
       hoverable={!!onSelect}
       onClick={handleSelect}
       cover={

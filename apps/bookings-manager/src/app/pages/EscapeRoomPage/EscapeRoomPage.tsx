@@ -36,19 +36,21 @@ export function EscapeRoomPage({
   return (
     <PageContent
       header={
-        escapeRoom && (
-          <PageHeader
-            title={escapeRoom.name}
-            extra={
+        <PageHeader
+          title={
+            escapeRoom ? t`Escape Room "${escapeRoom.name}"` : t`Escape Room`
+          }
+          extra={
+            escapeRoom && (
               <Link
                 href={`${environment.bookingAppUrl}/booking/${escapeRoom.organization}/${escapeRoom._id}`}
                 newTab
               >
                 <Button type="link">{t`Go to booking page`}</Button>
               </Link>
-            }
-          />
-        )
+            )
+          }
+        />
       }
       noBackground
       loading={!escapeRoom}

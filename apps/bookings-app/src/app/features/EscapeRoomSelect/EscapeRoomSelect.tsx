@@ -1,14 +1,17 @@
-import { List } from 'antd';
+import { List, Row, Col } from 'antd';
 import { useRoute, useLocation } from 'wouter';
+import Title from 'antd/lib/typography/Title';
 import * as React from 'react';
 import { EscapeRoom } from '@bookaquest/interfaces';
 import { EscapeRoomCard } from '@bookaquest/components';
+import { useI18n } from '@bookaquest/utilities';
 import * as api from '../../api/application';
 
 export function EscapeRoomSelect() {
   const [, params] = useRoute<{ organizationId: string }>(
     '/booking/:organizationId'
   );
+  const { t } = useI18n();
   const [, setLocation] = useLocation();
   const [loading, setLoading] = React.useState(true);
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
@@ -27,30 +30,42 @@ export function EscapeRoomSelect() {
     }
   }, [organizationId]);
 
+  React.useEffect(() => {
+    document.title = `Pick a Room - BookaQuest`;
+  }, []);
+
   const handleSelectEscapeRoom = (room: EscapeRoom) =>
     setLocation(`booking/${organizationId}/${room._id}`);
 
+  // TODO: math for calculating better 1,2,3,4 escape rooms grid placement
   return (
-    <List
-      grid={{
-        gutter: 16,
-        xs: 1,
-        sm: 1,
-        md: 2,
-        lg: 2,
-        xl: 3,
-        xxl: 4
-      }}
-      loading={loading}
-      dataSource={escapeRooms}
-      renderItem={escapeRoom => (
-        <List.Item>
-          <EscapeRoomCard
-            escapeRoom={escapeRoom}
-            onSelect={handleSelectEscapeRoom}
+    <>
+      <Title className="text-center">{t`Pick a Room`}</Title>
+      <Row className="bg-gray-400 p-4 pb-0 rounded-sm">
+        <Col xxl={{ span: 16, push: 4 }}>
+          <List
+            grid={{
+              gutter: 16,
+              xs: 1,
+              sm: 1,
+              md: 2,
+              lg: 2,
+              xl: 3,
+              xxl: 3
+            }}
+            loading={loading}
+            dataSource={escapeRooms}
+            renderItem={escapeRoom => (
+              <List.Item>
+                <EscapeRoomCard
+                  escapeRoom={escapeRoom}
+                  onSelect={handleSelectEscapeRoom}
+                />
+              </List.Item>
+            )}
           />
-        </List.Item>
-      )}
-    />
+        </Col>
+      </Row>
+    </>
   );
 }

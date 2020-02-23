@@ -1,7 +1,7 @@
 import { Tooltip } from 'antd';
 import { getMonth, isBefore, isSameDay, startOfDay, format } from 'date-fns';
 import AspectRatio from 'react-aspect-ratio';
-import { red, yellow } from '@ant-design/colors';
+import { red, blue } from '@ant-design/colors';
 import { useI18n, classNames } from '@bookaquest/utilities';
 import * as React from 'react';
 import styled, { css } from 'styled-components';
@@ -25,7 +25,7 @@ const DayButton = styled.button<DayButtonProps>`
     !selected &&
     css`
       &:not(:disabled):hover span {
-        background-color: ${marked ? yellow[6] : red[6]};
+        background-color: ${marked ? blue[6] : red[6]};
         color: white;
       }
     `}
@@ -54,7 +54,7 @@ export function Day({
   const isDisabled = isBefore(date, startOfDay(now));
 
   const selectedClass = selected && 'bg-gray-300 border-b-0';
-  const markedClass = marked && 'border-2 border-yellow-600';
+  const markedClass = marked && 'border-2 border-blue-600';
   const emptyClass = timeslotCount === 0 ? 'text-gray-300' : 'text-gray-600';
   const notCurrentMonthClass =
     getMonth(date) !== currentMonth ? 'bg-gray-100' : emptyClass;

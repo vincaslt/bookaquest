@@ -17,6 +17,7 @@ const Section = styled.div`
   background: white;
   padding: 20px;
   margin-bottom: 20px;
+  border-radius: 0.125em;
 `;
 
 enum BookingStep {
@@ -66,6 +67,12 @@ export function Booking() {
       api.getEscapeRoom(escapeRoomId).then(setSelectedRoom);
     }
   }, [escapeRoomId]);
+
+  React.useEffect(() => {
+    if (selectedRoom) {
+      document.title = `Booking ${selectedRoom.name} - BookaQuest`;
+    }
+  }, [selectedRoom]);
 
   if (!organizationId || !escapeRoomId) {
     return null; // TODO: redirect to error?

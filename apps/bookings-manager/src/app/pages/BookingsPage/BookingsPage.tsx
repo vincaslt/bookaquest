@@ -1,6 +1,7 @@
 import { RouteComponentProps, Redirect } from '@reach/router';
+import { PageHeader } from 'antd';
 import * as React from 'react';
-import { useLoading } from '@bookaquest/utilities';
+import { useLoading, useI18n } from '@bookaquest/utilities';
 import {
   Booking,
   Organization,
@@ -18,6 +19,7 @@ import { SchedulerSection } from './SchedulerSection';
 export function BookingsPage(
   props: RouteComponentProps<{ bookingId?: string }>
 ) {
+  const { t } = useI18n();
   const { memberships } = useUser();
   const [loading, withLoading] = useLoading(true);
   const [upcomingBookings, setUpcomingBookings] = React.useState<Booking[]>([]);
@@ -107,7 +109,7 @@ export function BookingsPage(
   }
 
   return (
-    <PageContent noBackground>
+    <PageContent header={<PageHeader title={t`All Bookings`} />} noBackground>
       <BookingModal
         visible={selectedBookings.length > 0}
         updateBookings={updateBookings}

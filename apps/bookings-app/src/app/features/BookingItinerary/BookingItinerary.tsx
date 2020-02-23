@@ -24,6 +24,7 @@ const GrayIcon = styled(Icon)`
 const Section = styled.div`
   background: white;
   padding: 20px;
+  border-radius: 0.125em;
 `;
 
 const SectionLoading = styled.div`

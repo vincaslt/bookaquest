@@ -43,8 +43,9 @@ export function Timeslots({
                 'flex justify-between text-base items-center font-bold',
                 selected &&
                   isEqual(selected.start, timeslot.start) &&
-                  isEqual(selected.end, timeslot.end) &&
-                  'bg-yellow-100'
+                  isEqual(selected.end, timeslot.end)
+                  ? 'bg-blue-600 text-white'
+                  : 'hover:bg-gray-200'
               )}
             >
               <span className="flex items-center">

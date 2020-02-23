@@ -1,5 +1,5 @@
 import { RouteComponentProps } from '@reach/router';
-import { Col, Row, message } from 'antd';
+import { Col, Row, message, PageHeader } from 'antd';
 import * as React from 'react';
 import { Organization } from '@bookaquest/interfaces';
 import { useLoading, useI18n } from '@bookaquest/utilities';
@@ -36,7 +36,18 @@ export function OrganizationPage(props: RouteComponentProps) {
   };
 
   return (
-    <PageContent noBackground>
+    <PageContent
+      header={
+        <PageHeader
+          title={
+            organization
+              ? t`Organization "${organization.name}"`
+              : t`Organization`
+          }
+        />
+      }
+      noBackground
+    >
       {membership ? (
         <Row gutter={24}>
           <Col xxl={8} xl={12}>
