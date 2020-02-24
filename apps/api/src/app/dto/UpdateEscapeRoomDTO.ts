@@ -12,8 +12,7 @@ import {
   IsString,
   Max,
   Min,
-  ValidateNested,
-  IsNotEmpty
+  ValidateNested
 } from 'class-validator';
 import { PricingType } from '../models/EscapeRoom';
 import { IsCurrencyCode } from '../utils/validators';
@@ -57,7 +56,7 @@ export class UpdateEscapeRoomDTO {
   @IsPositive()
   price?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsCurrencyCode()
   currency?: string;
 

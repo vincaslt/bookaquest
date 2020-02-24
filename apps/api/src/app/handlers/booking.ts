@@ -42,8 +42,15 @@ const PAGINATION_LIMIT = 500;
 
 const getBooking: AugmentedRequestHandler = async (req, res) => {
   const { bookingId } = getParams(req, ['bookingId']);
+  const { noRoom } = getQuery(req, [], ['noRoom']);
 
-  const booking = await BookingModel.findById(bookingId).populate('escapeRoom');
+  let promise = BookingModel.findById(bookingId);
+
+  if (!noRoom) {
+    promise = promise.populate('escapeRoom');
+  }
+
+  const booking = await promise;
 
   if (!booking) {
     throw createError(STATUS_ERROR.NOT_FOUND, 'Booking not found');

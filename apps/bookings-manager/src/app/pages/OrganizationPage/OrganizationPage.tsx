@@ -12,6 +12,7 @@ import { OrganizationDetails } from './OrganizationDetails';
 import { OrganizationMembers } from './OrganizationMembers/OrganizationMembers';
 import { OrganizationSchedule } from './OrganizationSchedule';
 import { Payments } from './Payments/Payments';
+import OrganizationContacts from './OrganizationContacts';
 
 // TODO: let user pick organizations / multiple organizations support
 export function OrganizationPage(props: RouteComponentProps) {
@@ -35,7 +36,7 @@ export function OrganizationPage(props: RouteComponentProps) {
     setOrganization(org);
   };
 
-  return (
+  return membership ? (
     <PageContent
       header={
         <PageHeader
@@ -48,35 +49,39 @@ export function OrganizationPage(props: RouteComponentProps) {
       }
       noBackground
     >
-      {membership ? (
-        <Row gutter={24}>
-          <Col xxl={8} xl={12}>
-            <OrganizationDetails
-              loading={loading}
+      <Row gutter={24}>
+        <Col xxl={8} xl={12}>
+          <OrganizationDetails
+            loading={loading}
+            organization={organization}
+            onUpdateOrganization={handleOrganizationUpdate}
+          />
+
+          <OrganizationContacts
+            organization={organization}
+            loading={loading}
+            setOrganization={setOrganization}
+          />
+          {environment.paymentEnabled && (
+            <Payments
               organization={organization}
-              onUpdateOrganization={handleOrganizationUpdate}
-            />
-            {environment.paymentEnabled && (
-              <Payments
-                organization={organization}
-                setOrganization={setOrganization}
-              />
-            )}
-          </Col>
-          <Col xxl={8} xl={12}>
-            <OrganizationMembers organizationId={membership.organization} />
-          </Col>
-          <Col xxl={8} xl={12}>
-            <OrganizationSchedule
-              organization={organization}
-              loading={loading}
               setOrganization={setOrganization}
             />
-          </Col>
-        </Row>
-      ) : (
-        <CreateOrganization />
-      )}
+          )}
+        </Col>
+        <Col xxl={8} xl={12}>
+          <OrganizationMembers organizationId={membership.organization} />
+        </Col>
+        <Col xxl={8} xl={12}>
+          <OrganizationSchedule
+            organization={organization}
+            loading={loading}
+            setOrganization={setOrganization}
+          />
+        </Col>
+      </Row>
     </PageContent>
+  ) : (
+    <CreateOrganization />
   );
 }

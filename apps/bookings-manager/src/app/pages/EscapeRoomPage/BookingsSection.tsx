@@ -61,20 +61,23 @@ export function EscapeRoomBookingsList({ escapeRoom }: Props) {
     const week = addWeeks(now, weekOffset);
 
     return (
-      <Time
-        type="date"
-        date={[
-          zonedTimeToUtc(
-            startOfWeek(week, { locale: dateFnsLocale }),
-            escapeRoom.timezone
-          ),
-          zonedTimeToUtc(
-            endOfWeek(week, { locale: dateFnsLocale }),
-            escapeRoom.timezone
-          )
-        ]}
-        timeZone={escapeRoom.timezone}
-      />
+      <>
+        <i className="mr-2">{t`Booked for:`}</i>
+        <Time
+          type="date"
+          date={[
+            zonedTimeToUtc(
+              startOfWeek(week, { locale: dateFnsLocale }),
+              escapeRoom.timezone
+            ),
+            zonedTimeToUtc(
+              endOfWeek(week, { locale: dateFnsLocale }),
+              escapeRoom.timezone
+            )
+          ]}
+          timeZone={escapeRoom.timezone}
+        />
+      </>
     );
   };
 
@@ -93,7 +96,11 @@ export function EscapeRoomBookingsList({ escapeRoom }: Props) {
             onClick={() => setWeekOffset(dec)}
           />
           <div className="flex flex-grow px-4">
-            <BookingsList timeZone={escapeRoom.timezone} bookings={bookings} />
+            <BookingsList
+              timeZone={escapeRoom.timezone}
+              escapeRooms={[escapeRoom]}
+              bookings={bookings}
+            />
           </div>
           <Button
             className="flex justify-center ml-4"

@@ -15,9 +15,7 @@ const StyledForm = styled(Form)`
 `;
 
 const initialValues: CreateOrganization = {
-  name: '',
-  website: '',
-  location: ''
+  name: ''
 };
 
 interface Props {
@@ -28,11 +26,7 @@ export function CreateOrganizationForm({ onCreateOrganization }: Props) {
   const { t } = useI18n();
 
   const validationSchema = Yup.object().shape<CreateOrganization>({
-    name: Yup.string().required(),
-    website: Yup.string()
-      .required()
-      .url(),
-    location: Yup.string().required()
+    name: Yup.string().required()
   });
 
   const handleSubmit = (
@@ -55,16 +49,8 @@ export function CreateOrganizationForm({ onCreateOrganization }: Props) {
       onSubmit={handleSubmit}
     >
       <StyledForm layout="vertical">
-        <FormItem name="name" hasFeedback label={t`Name`}>
+        <FormItem name="name" hasFeedback label={t`Organization name`}>
           <Input name="name" />
-        </FormItem>
-
-        <FormItem name="website" hasFeedback label={t`Website`}>
-          <Input name="website" type="url" />
-        </FormItem>
-
-        <FormItem name="location" hasFeedback label={t`Location`}>
-          <Input name="location" />
         </FormItem>
 
         <FormItem name="action">

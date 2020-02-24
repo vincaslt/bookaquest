@@ -24,9 +24,7 @@ export function OrganizationDetails({
 }: Props) {
   const { t } = useI18n();
 
-  const handleChange = (key: 'name' | 'website' | 'location') => (
-    value: string
-  ) =>
+  const handleChange = (key: 'name') => (value: string) =>
     organization &&
     api
       .updateOrganization(organization._id, { [key]: value })
@@ -44,16 +42,6 @@ export function OrganizationDetails({
             onChange={handleChange('name')}
           >
             {organization?.name}
-          </EditableText>
-        </DetailsItem>
-        <DetailsItem label={t`Website:`}>
-          <EditableText onChange={handleChange('website')}>
-            {organization?.website}
-          </EditableText>
-        </DetailsItem>
-        <DetailsItem label={t`Location:`}>
-          <EditableText onChange={handleChange('location')}>
-            {organization?.location}
           </EditableText>
         </DetailsItem>
       </DetailsList>

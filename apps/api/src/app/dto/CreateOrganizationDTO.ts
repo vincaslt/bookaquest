@@ -4,7 +4,9 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  ValidateNested
+  ValidateNested,
+  IsEmail,
+  IsPhoneNumber
 } from 'class-validator';
 import { BusinessHoursDTO } from './BusinessHoursDTO';
 import { CreatePaymentDetailsDTO } from './CreatePaymentDetailsDTO';
@@ -17,6 +19,14 @@ export class CreateOrganizationDTO {
   @IsOptional()
   @IsUrl()
   website?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsPhoneNumber('ZZ')
+  phoneNumber?: string;
 
   @IsOptional()
   @ValidateNested({ each: true })

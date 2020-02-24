@@ -14,6 +14,8 @@ export interface OrganizationDTO {
   name: string;
   website?: string;
   location?: string;
+  phoneNumber?: string;
+  email?: string;
   timezone?: string;
   createdAt: string;
   updatedAt: string;

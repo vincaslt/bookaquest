@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { useI18n } from '@bookaquest/utilities';
 
 const SplashImage = styled.img`
-  max-width: 256px;
+  max-width: 196px;
   margin: 16px;
 `;
 

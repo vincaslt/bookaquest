@@ -49,16 +49,13 @@ export function BookingsPage(
   }, [membership, withLoading]);
 
   React.useEffect(() => {
-    if (!openBooking) {
-      return;
+    if (openBooking) {
+      // TODO: probably not the best idea to query booking every time separately
+      api
+        .getBooking(openBooking)
+        .then(booking => setSelectedBookings([booking]));
     }
-
-    const booking = upcomingBookings.find(({ _id }) => _id === openBooking);
-
-    if (booking) {
-      setSelectedBookings(selected => [...selected, booking]);
-    }
-  }, [openBooking, upcomingBookings]);
+  }, [openBooking]);
 
   const updateBookings = (updatedBookings: Booking[]) => {
     const getUpdated = (booking: Booking) =>

@@ -150,7 +150,10 @@ export function Booking() {
           </Col>
           <Col span={12}>
             <Section>
-              <BookingSummary selectedRoom={selectedRoom} />
+              <BookingSummary
+                organization={organization}
+                selectedRoom={selectedRoom}
+              />
             </Section>
           </Col>
         </Row>

@@ -13,6 +13,8 @@ export interface OrganizationInitFields {
   name: string;
   website?: string;
   location?: string;
+  phoneNumber?: string;
+  email?: string;
   timezone?: string;
   paymentDetails?: PaymentDetails;
   businessHours?: BusinessHours[];
@@ -27,6 +29,12 @@ export class Organization {
 
   @prop()
   location?: string;
+
+  @prop()
+  phoneNumber?: string;
+
+  @prop()
+  email?: string;
 
   @prop()
   timezone?: string;

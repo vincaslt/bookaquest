@@ -53,13 +53,14 @@ const DayHeading = styled.th`
   }
 `;
 
-const HourHeading = styled.th<{ lastHour: boolean }>`
+const HourHeading = styled.th<{ lastHour: boolean; outdated?: boolean }>`
   min-width: ${COLUMN_WIDTH}px;
   height: 36px;
   padding: 0.5em;
   border-bottom: 1px solid #d9d9d9;
   border-left: 1px solid #d9d9d9;
   border-right: ${({ lastHour }) => (lastHour ? '2px' : '1px')} solid #d9d9d9;
+  ${({ outdated }) => (outdated ? 'opacity: 0.5;' : '')}
   &:first-child {
     border-left: none;
   }
@@ -241,6 +242,8 @@ export function ResourceScheduler({
     availability => availability.hours.length
   );
 
+  console.log(globalWorkHours);
+
   return (
     <div className="flex">
       <div className="flex border-t border-r mr-auto max-w-full">
@@ -292,6 +295,7 @@ export function ResourceScheduler({
                       key={i}
                       colSpan={2}
                       lastHour={i === hours.length - 1}
+                      outdated={isBefore(addHours(hour, 1), now)}
                     >
                       {format(hour, 'p', { locale: dateFnsLocale })}
                     </HourHeading>

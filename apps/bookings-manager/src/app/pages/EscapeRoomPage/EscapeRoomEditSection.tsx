@@ -54,7 +54,7 @@ const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
   currency: Yup.string().test(
     'currencyTest',
     'Invalid currency',
-    (value: string) => !!code(value)
+    (value: string) => !value || !!code(value)
   ),
   pricingType: Yup.string().oneOf(Object.values(PricingType)) as Yup.Schema<
     PricingType
@@ -81,6 +81,7 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
 
   const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
     if (escapeRoom) {
+      console.log(values);
       const dto = await validationSchema.validate(values);
       const updatedRoom = await api.updateEscapeRoom(escapeRoom._id, dto);
       setEscapeRoom(updatedRoom);

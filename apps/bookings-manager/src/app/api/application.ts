@@ -241,3 +241,9 @@ export const declineInvitation = withAuth(headers => (invitationId: string) =>
     .then(res => res.data)
     .then(map(fromOrganizationInvitationDTO))
 );
+
+export const getBooking = (bookingId: string) =>
+  api
+    .get<BookingDTO>(`/booking/${bookingId}?noRoom=true`)
+    .then(res => res.data)
+    .then(fromBookingDTO);
