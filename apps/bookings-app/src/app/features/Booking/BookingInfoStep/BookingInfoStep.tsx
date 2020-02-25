@@ -4,20 +4,44 @@ import { Col, Row } from 'antd';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
-import { EscapeRoom, CreateBooking } from '@bookaquest/interfaces';
+import { CreateBooking } from '@bookaquest/interfaces';
 import Phone from 'react-phone-number-input';
+import * as Yup from 'yup';
+import * as LibPhoneNumber from 'google-libphonenumber';
+
+const phoneUtil = LibPhoneNumber.PhoneNumberUtil.getInstance();
 
 export type BookingInfo = Pick<CreateBooking, 'name' | 'phoneNumber' | 'email'>;
 
 interface Props {
-  room: EscapeRoom;
   bookingInfo?: BookingInfo;
   onSubmit: (info: BookingInfo) => void;
 }
 
-// ! TODO: form validation
-export function BookingInfoStep({ onSubmit, room, bookingInfo }: Props) {
+export function BookingInfoStep({ onSubmit, bookingInfo }: Props) {
   const { t } = useI18n();
+
+  const validationSchema = Yup.object().shape<BookingInfo>({
+    name: Yup.string()
+      .required()
+      .matches(/^((\w|\.|,)+(\s(?!$)|$))+$/, t`Invalid full name`),
+    email: Yup.string()
+      .required()
+      .email(),
+    phoneNumber: Yup.string()
+      .required()
+      .test('phoneNumberTest', t`Invalid phone number`, (value: string) => {
+        if (!value) {
+          return false;
+        }
+        try {
+          const phoneNum = phoneUtil.parseAndKeepRawInput(value, 'ZZ');
+          return phoneUtil.isValidNumber(phoneNum);
+        } catch (e) {
+          return false;
+        }
+      })
+  });
 
   const initialValues: BookingInfo = bookingInfo || {
     name: '',
@@ -26,17 +50,23 @@ export function BookingInfoStep({ onSubmit, room, bookingInfo }: Props) {
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
-      {({ setFieldValue, values }) => (
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validationSchema={validationSchema}
+    >
+      {({ setFieldValue, values, setFieldTouched }) => (
         <Form labelCol={{ span: 6 }} wrapperCol={{ span: 12 }}>
-          <FormItem name="name" hasFeedback label={t`Full name`}>
+          <FormItem name="name" label={t`Full name`}>
             <Input name="name" />
           </FormItem>
-          <FormItem name="email" hasFeedback label={t`Email`}>
+          <FormItem name="email" label={t`Email`}>
             <Input type="email" name="email" />
           </FormItem>
-          <FormItem name="phoneNumber" hasFeedback label={t`Phone number`}>
+          <FormItem name="phoneNumber" label={t`Phone number`}>
             <Phone
+              name="phoneNumber"
+              onBlur={() => setFieldTouched('phoneNumber')}
               numberInputProps={{ className: 'ant-input' }}
               onChange={value => setFieldValue('phoneNumber', value)}
               value={values.phoneNumber}

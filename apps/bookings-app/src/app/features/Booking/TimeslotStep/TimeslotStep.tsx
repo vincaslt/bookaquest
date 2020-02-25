@@ -45,7 +45,7 @@ export function TimeslotStep({ room, onSelect, timeslotInfo }: Props) {
     >
       {({ setFieldValue, isValid, values }) => (
         <Form>
-          <FormItem name="participants" hasFeedback label={t`Participants`}>
+          <FormItem name="participants" label={t`Participants`}>
             <InputNumber name="participants" />
           </FormItem>
           <TimeslotInput

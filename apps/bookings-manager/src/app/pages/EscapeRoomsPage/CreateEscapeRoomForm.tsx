@@ -85,7 +85,7 @@ export function CreateEscapeRoomForm({
       .required()
       .test(
         'rangeTest',
-        'Invalid range', // TODO: translate?
+        t`Invalid range`,
         ([from, to]: [number, number]) => from <= to
       ),
     interval: Yup.number()
@@ -126,11 +126,11 @@ export function CreateEscapeRoomForm({
       });
   };
 
-  // ! TODO: limit price decimals based on currency selected
   // ! TODO: show hours/timezone picker when with default values from organization
   // TODO: validate accept payments in backend - to have payment codes first
   return (
     <Formik
+      isInitialValid={false}
       validationSchema={validationSchema}
       initialValues={initialValues}
       onSubmit={handleSubmit}

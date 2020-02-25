@@ -126,11 +126,10 @@ export function Booking() {
                   room={selectedRoom}
                 />
               )}
-              {step === BookingStep.BOOKING_INFO && selectedRoom && (
+              {step === BookingStep.BOOKING_INFO && (
                 <BookingInfoStep
                   bookingInfo={bookingInfo}
                   onSubmit={handleSubmitBookingInfo}
-                  room={selectedRoom}
                 />
               )}
               {step === BookingStep.CONFIRMATION &&

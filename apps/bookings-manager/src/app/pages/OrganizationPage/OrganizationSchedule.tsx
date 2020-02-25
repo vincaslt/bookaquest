@@ -24,7 +24,6 @@ interface Props {
   organization?: Organization;
 }
 
-// ! TODO: form validation
 export function OrganizationSchedule({
   organization,
   setOrganization,

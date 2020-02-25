@@ -242,8 +242,6 @@ export function ResourceScheduler({
     availability => availability.hours.length
   );
 
-  console.log(globalWorkHours);
-
   return (
     <div className="flex">
       <div className="flex border-t border-r mr-auto max-w-full">

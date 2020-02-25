@@ -1,10 +1,9 @@
 import { prop, arrayProp } from '@typegoose/typegoose';
 
-// TODO: validation, weekday >= 0 (sunday) && weekday <= 6
 export class BusinessHours {
-  @prop({ required: true })
+  @prop({ required: true, min: 0, max: 6 })
   weekday: number;
 
-  @arrayProp({ items: Number })
+  @arrayProp({ items: Number, min: 0, max: 24 })
   hours: number[]; // TODO: rework into an object
 }

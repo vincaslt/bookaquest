@@ -28,8 +28,7 @@ export function LoginForm() {
     actions: FormikHelpers<SignIn>
   ) => {
     await login(values)
-      .catch(e => {
-        console.log(e);
+      .catch(() => {
         message.error(t`Invalid credentials`);
       })
       .finally(() => {

@@ -34,34 +34,6 @@ import * as api from '../../api/application';
 import { PrivateRoutes } from '../../constants/routes';
 import { ParticipantsEditableText } from './ParticipantsEditableText';
 
-const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
-  name: Yup.string(),
-  description: Yup.string(),
-  location: Yup.string(),
-  difficulty: Yup.number()
-    .min(1)
-    .max(5),
-  interval: Yup.number().min(10),
-  participants: Yup.array()
-    .notRequired()
-    .of(Yup.number())
-    .test(
-      'rangeTest',
-      'Invalid range',
-      (range: [number, number]) => !range || range[0] <= range[1]
-    ),
-  price: Yup.number().positive(),
-  currency: Yup.string().test(
-    'currencyTest',
-    'Invalid currency',
-    (value: string) => !value || !!code(value)
-  ),
-  pricingType: Yup.string().oneOf(Object.values(PricingType)) as Yup.Schema<
-    PricingType
-  >,
-  paymentEnabled: Yup.boolean()
-});
-
 interface Props {
   escapeRoom?: EscapeRoom;
   setEscapeRoom: (escapeRoom: EscapeRoom) => void;
@@ -70,6 +42,34 @@ interface Props {
 export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
   const { t } = useI18n();
   const [loading, withLoading] = useLoading();
+
+  const validationSchema = Yup.object().shape<UpdateEscapeRoom>({
+    name: Yup.string(),
+    description: Yup.string(),
+    location: Yup.string(),
+    difficulty: Yup.number()
+      .min(1)
+      .max(5),
+    interval: Yup.number().min(10),
+    participants: Yup.array()
+      .notRequired()
+      .of(Yup.number())
+      .test(
+        'rangeTest',
+        t`Invalid range`,
+        (range: [number, number]) => !range || range[0] <= range[1]
+      ),
+    price: Yup.number().positive(),
+    currency: Yup.string().test(
+      'currencyTest',
+      t`Invalid currency`,
+      (value: string) => !value || !!code(value)
+    ),
+    pricingType: Yup.string().oneOf(Object.values(PricingType)) as Yup.Schema<
+      PricingType
+    >,
+    paymentEnabled: Yup.boolean()
+  });
 
   const deleteEscapeRoom = async () => {
     if (escapeRoom) {
@@ -81,7 +81,6 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
 
   const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
     if (escapeRoom) {
-      console.log(values);
       const dto = await validationSchema.validate(values);
       const updatedRoom = await api.updateEscapeRoom(escapeRoom._id, dto);
       setEscapeRoom(updatedRoom);

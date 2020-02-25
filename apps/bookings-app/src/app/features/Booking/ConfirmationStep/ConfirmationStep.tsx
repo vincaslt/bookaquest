@@ -1,5 +1,6 @@
 import { Alert, Button, Divider, Statistic, Typography } from 'antd';
 import { useLocation } from 'wouter';
+import { Trans } from 'react-i18next';
 import * as React from 'react';
 import styled from 'styled-components';
 import { EscapeRoom, CreateBooking, PricingType } from '@bookaquest/interfaces';
@@ -74,7 +75,13 @@ export function ConfirmationStep({
               <ContactInfo bookingInfo={bookingInfo} className="mb-4" />
               <Alert
                 message={t`This is a reservation`}
-                description={t`Escape room operator will need to confirm your reservation. Payment will be done upon arrival.`}
+                description={
+                  <Trans>
+                    <strong>Payment is made upon arrival.</strong>
+                    <br />
+                    Escape room operator needs to confirm your reservation.
+                  </Trans>
+                }
                 type="info"
               />
             </div>
