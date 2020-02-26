@@ -136,7 +136,6 @@ interface Props {
 // TODO: overlapping bookings support (show combined min max with lighter shade color for difference)
 // TODO: resource name height dynamic based on row height
 // TODO: don't let column width expand (e.g. when day is overflowing)
-// ! TODO: focus current time or earliest booking on opening
 export function ResourceScheduler({
   range,
   resources,
@@ -145,6 +144,7 @@ export function ResourceScheduler({
   onClickEvent
 }: Props) {
   const { dateFnsLocale, t } = useI18n();
+  const [shouldFocusNow, setShouldFocusNow] = React.useState(true);
   const [now, setNow] = React.useState(utcToZonedTime(new Date(), timeZone));
 
   const days = eachDayOfInterval(range);
@@ -162,6 +162,15 @@ export function ResourceScheduler({
 
     return () => clearInterval(interval);
   }, [timeZone]);
+
+  React.useEffect(() => {
+    if (shouldFocusNow) {
+      const el = document.getElementById('current-hour');
+      if (el) {
+        el.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [now, shouldFocusNow]);
 
   const bookingStatus = (booking: Booking) =>
     ({
@@ -272,7 +281,13 @@ export function ResourceScheduler({
           </tbody>
         </ResourceNamesTable>
 
-        <SchedulerContainer>
+        <SchedulerContainer
+          onScroll={() => {
+            if (shouldFocusNow) {
+              setShouldFocusNow(false);
+            }
+          }}
+        >
           <table>
             <thead>
               <tr>
@@ -288,16 +303,26 @@ export function ResourceScheduler({
               </tr>
               <tr>
                 {globalWorkHours.map(({ hours }) =>
-                  hours.map((hour, i) => (
-                    <HourHeading
-                      key={i}
-                      colSpan={2}
-                      lastHour={i === hours.length - 1}
-                      outdated={isBefore(addHours(hour, 1), now)}
-                    >
-                      {format(hour, 'p', { locale: dateFnsLocale })}
-                    </HourHeading>
-                  ))
+                  hours.map((hour, i) => {
+                    const isOutdated = isBefore(addHours(hour, 1), now);
+                    const isPrevOutdated =
+                      i === 0 || isBefore(addHours(hours[i - 1], 1), now);
+                    return (
+                      <HourHeading
+                        key={i}
+                        colSpan={2}
+                        lastHour={i === hours.length - 1}
+                        outdated={isOutdated}
+                        id={
+                          isPrevOutdated && !isOutdated
+                            ? 'current-hour'
+                            : undefined
+                        }
+                      >
+                        {format(hour, 'p', { locale: dateFnsLocale })}
+                      </HourHeading>
+                    );
+                  })
                 )}
               </tr>
             </thead>

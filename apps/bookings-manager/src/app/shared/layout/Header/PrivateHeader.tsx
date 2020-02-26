@@ -31,7 +31,7 @@ export function PrivateHeader({ sidebarVisible = false }: Props) {
   return (
     <HeaderWithShadow
       sidebarVisible={sidebarVisible}
-      className="px-4 py-8 bg-white flex justify-end items-center z-10"
+      className="px-4 py-8 bg-white flex justify-end items-center z-30"
     >
       {userInfo && (
         <Dropdown trigger={['click']} overlay={menu}>
