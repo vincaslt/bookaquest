@@ -1,6 +1,6 @@
 import { Checkbox, Col, Form, Row, TimePicker } from 'antd';
 import moment, { Moment } from 'moment';
-import { getDay, format } from 'date-fns';
+import { format, getISODay } from 'date-fns';
 import update from 'ramda/es/update';
 import * as React from 'react';
 import { BusinessHours } from '@bookaquest/interfaces';
@@ -45,7 +45,7 @@ export function BusinessHoursInput({ value, onChange }: Props) {
   return (
     <Form.Item label={t`Weekdays`}>
       {listWeekdays(dateFnsLocale).map(weekdayDate => {
-        const weekday = getDay(weekdayDate);
+        const weekday = getISODay(weekdayDate);
         const day = value.find(businessDay => businessDay.weekday === weekday);
         const [open, close] = day ? day.hours : [];
         return (

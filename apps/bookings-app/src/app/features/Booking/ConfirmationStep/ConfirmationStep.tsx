@@ -1,4 +1,4 @@
-import { Alert, Button, Divider, Statistic, Typography } from 'antd';
+import { Alert, Button, Divider, Statistic, Typography, message } from 'antd';
 import { useLocation } from 'wouter';
 import { Trans } from 'react-i18next';
 import * as React from 'react';
@@ -46,7 +46,11 @@ export function ConfirmationStep({
       options.paymentToken = token.id;
     }
 
-    const { _id } = await api.createBooking(options);
+    const { _id } = await api.createBooking(options).catch(e => {
+      message.error(t`Error creating a booking, please try again later`);
+      throw e;
+    });
+    // TODO: handle error
     setLocation(`/itinerary/${_id}`);
   };
 

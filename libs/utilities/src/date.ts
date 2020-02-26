@@ -5,7 +5,7 @@ import {
   Locale,
   startOfWeek,
   endOfWeek,
-  getDay
+  getISODay
 } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
@@ -14,7 +14,7 @@ export function convertBetweenTimezones(date: Date, from: string, to: string) {
 }
 
 export function isSameWeekday(date: Date, dateToCompare: Date) {
-  return getDay(date) === getDay(dateToCompare);
+  return getISODay(date) === getISODay(dateToCompare);
 }
 
 /**

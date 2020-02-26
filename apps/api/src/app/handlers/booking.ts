@@ -113,6 +113,7 @@ const createBooking: AugmentedRequestHandler = async (req, res) => {
     dto.participants,
     escapeRoom.participants
   );
+
   const invalidTimeslot = timeslots.every(
     timeslot =>
       !isEqual(timeslot.start, dto.startDate) ||

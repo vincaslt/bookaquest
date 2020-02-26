@@ -1,5 +1,5 @@
 import { Icon } from 'antd';
-import { getDay } from 'date-fns';
+import { getISODay } from 'date-fns';
 import * as React from 'react';
 import styled from 'styled-components';
 import { Time } from '@bookaquest/components';
@@ -47,7 +47,7 @@ export function Header({ month, onPrev, onNext }: Props) {
         {listWeekdays(dateFnsLocale).map(weekday => (
           <DayHeading
             className="p-2 text-center border border-red-600"
-            key={getDay(weekday)}
+            key={getISODay(weekday)}
           >
             <Time date={weekday} type={{ format: 'ccc' }} />
           </DayHeading>

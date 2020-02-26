@@ -5,13 +5,14 @@ import {
   IsNotEmpty,
   IsNumber,
   Max,
+  Min,
   IsPositive
 } from 'class-validator';
 
 export class BusinessHoursDTO {
   @IsNotEmpty()
-  @IsPositive()
-  @Max(6)
+  @Max(7)
+  @Min(1)
   @IsNumber()
   weekday: number;
 

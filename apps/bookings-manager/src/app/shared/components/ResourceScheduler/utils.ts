@@ -6,16 +6,16 @@ import {
   max,
   min,
   addDays,
-  getDay,
-  setMinutes
+  setMinutes,
+  getISODay
 } from 'date-fns';
 import { BusinessHours } from '@bookaquest/interfaces';
 import { convertBetweenTimezones } from '@bookaquest/utilities';
 
 function setDayUpcoming(date: Date, weekday: number) {
-  return weekday >= getDay(date)
-    ? addDays(date, weekday - getDay(date))
-    : addDays(date, 7 - getDay(date) + weekday);
+  return weekday >= getISODay(date)
+    ? addDays(date, weekday - getISODay(date))
+    : addDays(date, 7 - getISODay(date) + weekday);
 }
 
 export function getAvailabilitiesInTimezone(

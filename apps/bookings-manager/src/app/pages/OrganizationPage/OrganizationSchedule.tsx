@@ -40,17 +40,10 @@ export function OrganizationSchedule({
       return;
     }
 
-    try {
-      const updatedOrg = await api.updateOrganization(
-        organization._id,
-        schedule
-      );
-      setOrganization(updatedOrg);
-      message.success(t`Organization business hours have been updated`);
-      toggleEditing(false);
-    } catch (e) {
-      message.success(t`Failed to update business hours, try again later`);
-    }
+    const updatedOrg = await api.updateOrganization(organization._id, schedule);
+    setOrganization(updatedOrg);
+    message.success(t`Organization business hours have been updated`);
+    toggleEditing(false);
     actions.setSubmitting(false);
   };
 

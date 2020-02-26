@@ -1,5 +1,5 @@
-import { zonedTimeToUtc } from 'date-fns-tz';
-import { startOfDay, getDay, addMinutes } from 'date-fns';
+import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
+import { startOfDay, addMinutes, getISODay } from 'date-fns';
 import { DocumentType } from '@typegoose/typegoose';
 import { createError } from 'micro';
 import { times } from 'ramda';
@@ -11,11 +11,12 @@ export function generateTimeslots(
   date: Date,
   escapeRoom: DocumentType<EscapeRoom>
 ) {
-  const dayOfweek = getDay(date);
   const timeZone = escapeRoom.timezone;
+  const zoneDate = utcToZonedTime(date, timeZone); // zoned time, because work hours are in timezone
+  const dayOfWeek = getISODay(zoneDate);
 
   const businessHours = escapeRoom.businessHours.find(
-    ({ weekday }) => weekday === dayOfweek
+    ({ weekday }) => weekday === dayOfWeek
   );
 
   if (!businessHours) {
@@ -25,7 +26,7 @@ export function generateTimeslots(
   const [startHour, endHour] = businessHours.hours;
 
   const timeslots = times(i => {
-    const tzDate = zonedTimeToUtc(startOfDay(date), timeZone);
+    const tzDate = zonedTimeToUtc(startOfDay(zoneDate), timeZone);
     const start = addMinutes(tzDate, startHour * 60 + i * escapeRoom.interval);
     const end = addMinutes(
       tzDate,

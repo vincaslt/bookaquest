@@ -2,7 +2,6 @@ import {
   differenceInHours,
   format,
   min,
-  getDay,
   setHours,
   endOfHour,
   eachDayOfInterval,
@@ -13,7 +12,8 @@ import {
   endOfDay,
   startOfDay,
   isSameDay,
-  addMinutes
+  addMinutes,
+  getISODay
 } from 'date-fns';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { utcToZonedTime } from 'date-fns-tz';
@@ -189,7 +189,7 @@ export function ResourceScheduler({
     }[booking.status]);
 
   const weeklyAvailability = days.map(day => {
-    const weekday = getDay(day);
+    const weekday = getISODay(day);
 
     // If base availability exists, it's already in the correct timezone
     const baseAvailabilityForDay = baseAvailability?.find(
@@ -199,7 +199,8 @@ export function ResourceScheduler({
     const hoursForDay = resources.reduce(
       (acc, resource) => {
         const availabilityForDay = resourcesAvailabilities[resource.id].filter(
-          ([start, end]) => weekday === getDay(start) || weekday === getDay(end)
+          ([start, end]) =>
+            weekday === getISODay(start) || weekday === getISODay(end)
         );
 
         if (availabilityForDay.length) {

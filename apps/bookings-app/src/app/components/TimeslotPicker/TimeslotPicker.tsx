@@ -9,6 +9,8 @@ import {
   eachDayOfInterval
 } from 'date-fns';
 import { endOfWeek } from 'date-fns/esm';
+import { zonedTimeToUtc } from 'date-fns-tz';
+import { utcToZonedTime } from 'date-fns-tz/esm';
 import splitEvery from 'ramda/es/splitEvery';
 import { useI18n } from '@bookaquest/utilities';
 import * as React from 'react';
@@ -28,7 +30,6 @@ interface Props {
   currency: string;
 }
 
-// ! TODO: convert month interval to timezone
 export function TimeslotPicker({
   timeZone,
   availability,
@@ -42,19 +43,35 @@ export function TimeslotPicker({
   const { dateFnsLocale } = useI18n();
   const [monthDate, setMonthDate] = React.useState(startOfMonth(new Date()));
 
-  const getMonthInterval = React.useCallback(
+  const monthInterval = React.useMemo(
     () => ({
-      start: startOfWeek(monthDate, { locale: dateFnsLocale }),
-      end: endOfWeek(endOfMonth(monthDate), { locale: dateFnsLocale })
+      start: zonedTimeToUtc(
+        startOfWeek(monthDate, { locale: dateFnsLocale }),
+        timeZone
+      ),
+      end: zonedTimeToUtc(
+        endOfWeek(endOfMonth(monthDate), { locale: dateFnsLocale }),
+        timeZone
+      )
     }),
+    [dateFnsLocale, monthDate, timeZone]
+  );
+
+  const weeks = React.useMemo(
+    () =>
+      splitEvery(
+        7,
+        eachDayOfInterval({
+          start: startOfWeek(monthDate, { locale: dateFnsLocale }),
+          end: endOfWeek(endOfMonth(monthDate), { locale: dateFnsLocale })
+        })
+      ),
     [dateFnsLocale, monthDate]
   );
 
   React.useEffect(() => {
-    onMonthChange(getMonthInterval());
-  }, [getMonthInterval, onMonthChange]);
-
-  const weeks = splitEvery(7, eachDayOfInterval(getMonthInterval()));
+    onMonthChange(monthInterval);
+  }, [monthInterval, onMonthChange]);
 
   const isDayInWeek = (day: Date, week: Date[]) =>
     !!week.find(date => isSameDay(date, day));
@@ -63,8 +80,8 @@ export function TimeslotPicker({
   const nextMonth = () => setMonthDate(date => addMonths(date, 1));
 
   const getTimeslotsFor = (day: Date) => {
-    const dayAvailability = (availability || []).find(({ date }) =>
-      isSameDay(date, day)
+    const dayAvailability = (availability || []).find(
+      ({ date }) => isSameDay(utcToZonedTime(date, timeZone), day) // Day is in timezone already from weeks
     );
     return dayAvailability?.availableTimeslots ?? [];
   };
