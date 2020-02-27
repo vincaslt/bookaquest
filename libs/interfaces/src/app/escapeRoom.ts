@@ -1,3 +1,4 @@
+import { omit } from 'ramda';
 import {
   CreateEscapeRoomDTO,
   EscapeRoomDTO,
@@ -12,8 +13,9 @@ export enum PricingType {
 
 export type CreateEscapeRoom = Omit<
   CreateEscapeRoomDTO,
-  'businessHours' | 'pricingType'
+  'images' | 'businessHours' | 'pricingType'
 > & {
+  image: string;
   businessHours: BusinessHours[];
   pricingType: PricingType;
 };
@@ -35,6 +37,15 @@ export type EscapeRoom = Omit<
   businessHours: BusinessHours[];
   pricingType: PricingType;
 };
+
+export function toCreateEscapeRoomDTO(
+  data: CreateEscapeRoom
+): CreateEscapeRoomDTO {
+  return omit(['image'], {
+    ...data,
+    images: [data.image]
+  });
+}
 
 export function fromEscapeRoomDTO(dto: EscapeRoomDTO): EscapeRoom {
   return {

@@ -1,5 +1,5 @@
 import { Select, Form, FormItem, SubmitButton } from 'formik-antd';
-import { Button, Spin, message } from 'antd';
+import { Button, Spin, message, Form as AntdForm } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import { useToggle } from 'react-use';
 import { listTimeZones } from 'timezone-support';
@@ -103,12 +103,14 @@ export function OrganizationSchedule({
                 ))}
               </Select>
             </FormItem>
-            <BusinessHoursInput
-              value={values.businessHours}
-              onChange={value => {
-                setFieldValue('businessHours', value);
-              }}
-            />
+            <AntdForm.Item label={t`Weekdays`}>
+              <BusinessHoursInput
+                value={values.businessHours}
+                onChange={value => {
+                  setFieldValue('businessHours', value);
+                }}
+              />
+            </AntdForm.Item>
             <SubmitButton>{t`Submit`}</SubmitButton>
           </Form>
         )}

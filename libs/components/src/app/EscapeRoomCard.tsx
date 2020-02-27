@@ -10,11 +10,25 @@ const StyledParagraph = styled(Paragraph)`
 `;
 
 interface Props {
-  escapeRoom: EscapeRoom | CreateEscapeRoom;
+  escapeRoom:
+    | EscapeRoom
+    | (Omit<CreateEscapeRoom, 'image'> & {
+        images: string[];
+      });
   onSelect?: (escapeRoom: EscapeRoom) => void;
 }
 
 export function EscapeRoomCard({ escapeRoom, onSelect }: Props) {
+  const src = escapeRoom.images[0];
+
+  const [imgSrc, setImgSrc] = React.useState(
+    src || 'https://placehold.it/532x320'
+  );
+
+  React.useEffect(() => {
+    setImgSrc(src);
+  }, [src]);
+
   const handleSelect = () => {
     if (onSelect && '_id' in escapeRoom) {
       onSelect(escapeRoom);
@@ -23,14 +37,15 @@ export function EscapeRoomCard({ escapeRoom, onSelect }: Props) {
 
   return (
     <Card
-      bordered={false}
+      bordered={!('_id' in escapeRoom)}
       hoverable={!!onSelect}
       onClick={handleSelect}
       cover={
         <AspectRatio ratio="532/320">
           <img
+            onError={() => setImgSrc('https://placehold.it/532x320')}
             className="object-cover"
-            src={escapeRoom.images[0]}
+            src={imgSrc}
             alt={`${escapeRoom.name} cover`}
           />
         </AspectRatio>

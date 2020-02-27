@@ -5,8 +5,7 @@ import {
   IsNotEmpty,
   IsNumber,
   Max,
-  Min,
-  IsPositive
+  Min
 } from 'class-validator';
 
 export class BusinessHoursDTO {
@@ -19,7 +18,7 @@ export class BusinessHoursDTO {
   @IsNotEmpty()
   @IsNumber(undefined, { each: true })
   @Max(24, { each: true })
-  @IsPositive({ each: true })
+  @Min(0, { each: true })
   @IsArray()
   @ArrayMaxSize(2)
   @ArrayMinSize(2)

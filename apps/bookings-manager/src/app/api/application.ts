@@ -13,7 +13,8 @@ import {
   OrganizationMemberDTO,
   InviteOrganizationMemberDTO,
   MemberInvitationDTO,
-  OrganizationInvitationDTO
+  OrganizationInvitationDTO,
+  toCreateEscapeRoomDTO
 } from '@bookaquest/interfaces';
 import map from 'ramda/es/map';
 import { SignIn } from '../interfaces/auth';
@@ -84,11 +85,15 @@ export const getEscapeRoom = (escapeRoomId: string) =>
     .then(fromEscapeRoomDTO);
 
 export const createEscapeRoom = withAuth(
-  headers => (organizationId: string, dto: CreateEscapeRoom) =>
+  headers => (organizationId: string, data: CreateEscapeRoom) =>
     api
-      .post<EscapeRoomDTO>(`/organization/${organizationId}/escape-room`, dto, {
-        headers
-      })
+      .post<EscapeRoomDTO>(
+        `/organization/${organizationId}/escape-room`,
+        toCreateEscapeRoomDTO(data),
+        {
+          headers
+        }
+      )
       .then(res => res.data)
       .then(fromEscapeRoomDTO)
 );

@@ -10,10 +10,11 @@ import {
   Switch,
   Select
 } from 'formik-antd';
-import { Col, Icon, Row, message } from 'antd';
+import { Col, Icon, Row, message, Card } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import * as currencies from 'currency-codes/data';
 import { code } from 'currency-codes';
+import { listTimeZones } from 'timezone-support';
 import * as React from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
@@ -27,8 +28,11 @@ import {
 import { useI18n } from '@bookaquest/utilities';
 import { EscapeRoomCard } from '@bookaquest/components';
 import { RangeNumberInput } from '../../shared/components/RangeNumberInput';
+import { BusinessHoursInput } from '../../shared/components/BusinessHoursInput';
 import * as api from '../../api/application';
 import { environment } from '../../../environments/environment';
+
+const timezoneOptions = listTimeZones();
 
 const StyledResetButton = styled(ResetButton)`
   margin-right: 16px;
@@ -42,7 +46,6 @@ interface Props {
 
 // TODO: image upload, validation
 // TODO: translated validation messages for forms
-// ! TODO: timezone and business hours may NOT exist, add input fields for those
 export function CreateEscapeRoomForm({
   organization,
   onCreateDone,
@@ -55,9 +58,9 @@ export function CreateEscapeRoomForm({
     description: '',
     location: organization.location ?? '',
     price: 0,
-    images: [],
+    image: '',
     interval: 60,
-    participants: [],
+    participants: [2, 4],
     currency: 'EUR', // TODO: get from organization or user location
     timezone:
       organization.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -77,11 +80,9 @@ export function CreateEscapeRoomForm({
     price: Yup.number()
       .required()
       .positive(),
-    images: Yup.array()
-      .of(Yup.string())
-      .required(),
+    image: Yup.string().required(),
     participants: Yup.array()
-      .of(Yup.number())
+      .of(Yup.number().min(1))
       .required()
       .test(
         'rangeTest',
@@ -122,7 +123,7 @@ export function CreateEscapeRoomForm({
       })
       .catch(() => {
         actions.setSubmitting(false);
-        message.success(t`Please try again in a moment`);
+        message.error(t`Please try again in a moment`);
       });
   };
 
@@ -135,7 +136,7 @@ export function CreateEscapeRoomForm({
       initialValues={initialValues}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue, setFieldTouched }) => (
+      {({ values, setFieldValue, handleBlur }) => (
         <Row gutter={24}>
           <Col span={10}>
             <Form layout="vertical">
@@ -147,7 +148,7 @@ export function CreateEscapeRoomForm({
                 <Input name="location" />
               </FormItem>
 
-              <FormItem name="description" hasFeedback label={t`Description`}>
+              <FormItem name="description" label={t`Description`}>
                 <Input.TextArea name="description" rows={4} />
               </FormItem>
 
@@ -163,25 +164,45 @@ export function CreateEscapeRoomForm({
                 <InputNumber name="interval" min={10} />
               </FormItem>
 
-              <FormItem name="participants" hasFeedback label={t`Participants`}>
+              <FormItem name="participants" label={t`Participants`}>
                 <RangeNumberInput
                   name="participants"
-                  min={0}
                   value={values.participants as [number?, number?]}
                   onChange={value => setFieldValue('participants', value)}
-                  onBlur={() => setFieldTouched('participants', true)}
+                  onBlur={e => handleBlur('participants')(e)}
                   placeholder={[t`From`, t`To`]}
                 />
               </FormItem>
 
-              <FormItem name="images" hasFeedback label={t`Image`}>
-                <Input name="images[0]" />
+              <FormItem name="image" hasFeedback label={t`Image`}>
+                <Input
+                  name="image"
+                  placeholder="https://placehold.it/532x320"
+                />
+              </FormItem>
+
+              <FormItem name="timezone" hasFeedback label={t`Timezone`}>
+                <Select name="timezone" showSearch optionFilterProp="children">
+                  {timezoneOptions.map(option => (
+                    <Select.Option key={option} value={option}>
+                      {option}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </FormItem>
+              <FormItem name="businessHours" label={t`Weekdays`}>
+                <BusinessHoursInput
+                  value={values.businessHours}
+                  onChange={value => {
+                    setFieldValue('businessHours', value);
+                  }}
+                  onBlur={e => handleBlur('businessHours')(e)}
+                />
               </FormItem>
 
               <FormItem name="price" hasFeedback label={t`Price`}>
                 <InputNumber
                   name="price"
-                  min={0}
                   precision={code(values.currency)?.digits ?? 2}
                 />
               </FormItem>
@@ -258,10 +279,7 @@ export function CreateEscapeRoomForm({
             <EscapeRoomCard
               escapeRoom={{
                 ...values,
-                images:
-                  values.images.length > 0
-                    ? values.images
-                    : ['https://placehold.it/532x320']
+                images: [values.image]
               }}
             />
           </Col>

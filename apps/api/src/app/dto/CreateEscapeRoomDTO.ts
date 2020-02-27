@@ -62,6 +62,7 @@ export class CreateEscapeRoomDTO {
 
   @IsNotEmpty()
   @IsNumber(undefined, { each: true })
+  @Min(1, { each: true })
   @IsArray()
   @ArrayMaxSize(2)
   @ArrayMinSize(2)

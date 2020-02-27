@@ -55,7 +55,7 @@ export function BookingInfoStep({ onSubmit, bookingInfo }: Props) {
       onSubmit={onSubmit}
       validationSchema={validationSchema}
     >
-      {({ setFieldValue, values, setFieldTouched }) => (
+      {({ setFieldValue, values, handleBlur }) => (
         <Form labelCol={{ span: 6 }} wrapperCol={{ span: 12 }}>
           <FormItem name="name" label={t`Full name`}>
             <Input name="name" />
@@ -66,7 +66,7 @@ export function BookingInfoStep({ onSubmit, bookingInfo }: Props) {
           <FormItem name="phoneNumber" label={t`Phone number`}>
             <Phone
               name="phoneNumber"
-              onBlur={() => setFieldTouched('phoneNumber')}
+              onBlur={e => handleBlur('phoneNumber')(e)}
               numberInputProps={{ className: 'ant-input' }}
               onChange={value => setFieldValue('phoneNumber', value)}
               value={values.phoneNumber}

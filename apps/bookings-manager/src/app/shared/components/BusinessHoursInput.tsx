@@ -1,19 +1,21 @@
-import { Checkbox, Col, Form, Row, TimePicker } from 'antd';
+import { Checkbox, Col, Row, TimePicker } from 'antd';
 import moment, { Moment } from 'moment';
 import { format, getISODay } from 'date-fns';
 import update from 'ramda/es/update';
 import * as React from 'react';
 import { BusinessHours } from '@bookaquest/interfaces';
-import { useI18n, listWeekdays } from '@bookaquest/utilities';
+import { useI18n, listWeekdays, classNames } from '@bookaquest/utilities';
 
 interface Props {
   value: BusinessHours[];
   onChange: (value: BusinessHours[]) => void;
+  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
 }
 
 // TODO: use moment/date-fns weekdays to get weekdays and first day of week for locale
-export function BusinessHoursInput({ value, onChange }: Props) {
+export function BusinessHoursInput({ value, onChange, onBlur }: Props) {
   const { t, dateFnsLocale } = useI18n();
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const handleCheckWeekday = (day: number) => () => {
     const existingHours = value.find(({ weekday }) => weekday === day);
@@ -42,14 +44,35 @@ export function BusinessHoursInput({ value, onChange }: Props) {
     }
   };
 
+  const weekdaysList = listWeekdays(dateFnsLocale);
+
   return (
-    <Form.Item label={t`Weekdays`}>
-      {listWeekdays(dateFnsLocale).map(weekdayDate => {
+    <div
+      ref={containerRef}
+      onBlur={e => {
+        const isChild = containerRef.current?.contains(
+          e.relatedTarget as Node | null
+        );
+        const isTimepickerPanel = (e.relatedTarget as HTMLDListElement | null)?.classList?.contains(
+          'ant-time-picker-panel-input'
+        );
+        if (!isChild && !isTimepickerPanel) {
+          onBlur?.(e);
+        }
+      }}
+    >
+      {weekdaysList.map((weekdayDate, i) => {
         const weekday = getISODay(weekdayDate);
         const day = value.find(businessDay => businessDay.weekday === weekday);
         const [open, close] = day ? day.hours : [];
         return (
-          <Row key={weekday} className="mb-2 w-full">
+          <Row
+            key={weekday}
+            className={classNames(
+              'w-full',
+              i !== weekdaysList.length - 1 && 'mb-2'
+            )}
+          >
             <Col span={8}>
               <Checkbox checked={!!day} onChange={handleCheckWeekday(weekday)}>
                 {format(weekdayDate, 'cccc')}
@@ -82,6 +105,6 @@ export function BusinessHoursInput({ value, onChange }: Props) {
           </Row>
         );
       })}
-    </Form.Item>
+    </div>
   );
 }

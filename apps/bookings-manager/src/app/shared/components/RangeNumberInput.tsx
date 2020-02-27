@@ -9,7 +9,7 @@ interface Props
   > {
   name: string;
   onChange: (value: [number?, number?]) => void;
-  onBlur: () => void;
+  onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
   value: [number?, number?];
   placeholder?: [string?, string?];
 }
@@ -37,7 +37,7 @@ export function RangeNumberInput({
           onBlur &&
           !containerRef.current?.contains(e.relatedTarget as Node | null)
         ) {
-          onBlur();
+          onBlur(e as any);
         }
       }}
     >
