@@ -66,17 +66,17 @@ export function withAuth<Args extends any[], T>(
         // Try to get a new access token
         const { userId } = parseAccessToken(accessToken);
         return refreshAuthToken({ refreshToken, userId })
-          .then(({ token }) => {
-            localStorage.setItem('accessToken', token);
-            return request(createAuthHeaders(token))(...args);
-          })
-          .catch(_ => {
+          .catch(err => {
             // Failed to refresh token, session has expired
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             // eslint-disable-next-line no-restricted-globals
             location.assign(PublicRoutes.SignIn);
-            return Promise.reject('Token has expired!');
+            return Promise.reject('Tokens have expired!');
+          })
+          .then(({ token }) => {
+            localStorage.setItem('accessToken', token);
+            return request(createAuthHeaders(token))(...args);
           });
       }
     );

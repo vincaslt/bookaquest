@@ -30,7 +30,6 @@ export function ParticipantsEditableText({
 
   return editing ? (
     <RangeNumberInput
-      min={0}
       name="participants"
       value={value}
       onChange={setValue}

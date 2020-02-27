@@ -26,7 +26,7 @@ export class CreateBookingDTO {
   name: string;
 
   @IsNotEmpty()
-  @IsPhoneNumber('ZZ')
+  @IsPhoneNumber('ZZ', { message: 'Invalid phone number' })
   phoneNumber: string;
 
   @IsNotEmpty()

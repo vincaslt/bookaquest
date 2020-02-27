@@ -81,7 +81,17 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
 
   const updateEscapeRoom = async (values: UpdateEscapeRoom) => {
     if (escapeRoom) {
-      const dto = await validationSchema.validate(values);
+      let dto: UpdateEscapeRoom;
+
+      try {
+        dto = await validationSchema.validate(values);
+      } catch (e) {
+        message.error(
+          e.message || t`Something is wrong, please check your input`
+        );
+        return;
+      }
+
       const updatedRoom = await api.updateEscapeRoom(escapeRoom._id, dto);
       setEscapeRoom(updatedRoom);
       message.success(t`Escape room info has been updated`);

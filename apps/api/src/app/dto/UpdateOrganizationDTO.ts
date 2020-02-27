@@ -10,22 +10,25 @@ import {
 import { BusinessHoursDTO } from './BusinessHoursDTO';
 import { CreatePaymentDetailsDTO } from './CreatePaymentDetailsDTO';
 
-// ! TODO: fix validation messages to be more descriptive
 export class UpdateOrganizationDTO {
   @IsOptional()
   @IsString()
   name?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsUrl(undefined, {
+    message: 'Invalid url, make sure it starts with http(s)'
+  })
   website?: string;
 
   @IsOptional()
-  @IsEmail()
+  @IsEmail(undefined, { message: 'Invalid email, make sure it includes @' })
   email?: string;
 
   @IsOptional()
-  @IsPhoneNumber('ZZ')
+  @IsPhoneNumber('ZZ', {
+    message: 'Invalid phone number, make sure it has a country code (e.g. +370)'
+  })
   phoneNumber?: string;
 
   @IsOptional()

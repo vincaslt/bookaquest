@@ -1,8 +1,4 @@
-import {
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments
-} from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 import { code } from 'currency-codes';
 
 export function IsCurrencyCode(validationOptions?: ValidationOptions) {
@@ -13,7 +9,7 @@ export function IsCurrencyCode(validationOptions?: ValidationOptions) {
       propertyName: propertyName,
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any) {
           return typeof value === 'string' && !!code(value);
         }
       }

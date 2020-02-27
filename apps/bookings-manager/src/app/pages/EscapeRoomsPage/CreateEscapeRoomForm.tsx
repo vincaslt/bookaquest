@@ -10,7 +10,7 @@ import {
   Switch,
   Select
 } from 'formik-antd';
-import { Col, Icon, Row, message, Card } from 'antd';
+import { Col, Icon, Row, message } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import * as currencies from 'currency-codes/data';
 import { code } from 'currency-codes';
@@ -127,7 +127,6 @@ export function CreateEscapeRoomForm({
       });
   };
 
-  // ! TODO: show hours/timezone picker when with default values from organization
   // TODO: validate accept payments in backend - to have payment codes first
   return (
     <Formik
