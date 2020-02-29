@@ -137,7 +137,7 @@ export function CreateEscapeRoomForm({
     >
       {({ values, setFieldValue, handleBlur }) => (
         <Row gutter={24}>
-          <Col span={10}>
+          <Col xxl={10} xl={12} md={14}>
             <Form layout="vertical">
               <FormItem name="name" hasFeedback label={t`Name`}>
                 <Input name="name" />
@@ -274,7 +274,7 @@ export function CreateEscapeRoomForm({
               </FormItem>
             </Form>
           </Col>
-          <Col span={6}>
+          <Col md={10} xl={6}>
             <EscapeRoomCard
               escapeRoom={{
                 ...values,

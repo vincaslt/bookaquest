@@ -14,7 +14,7 @@ interface Props {
 
 // TODO: use moment/date-fns weekdays to get weekdays and first day of week for locale
 export function BusinessHoursInput({ value, onChange, onBlur }: Props) {
-  const { t, dateFnsLocale } = useI18n();
+  const { dateFnsLocale } = useI18n();
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const handleCheckWeekday = (day: number) => () => {

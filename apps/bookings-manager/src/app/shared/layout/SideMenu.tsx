@@ -21,31 +21,45 @@ function MenuLink({ to, icon, text, ...rest }: MenuLinkProps) {
     <Menu.Item {...rest}>
       {to ? (
         <Link to={to}>
-          <Icon type={icon} /> {text}
+          <Icon type={icon} /> <span>{text}</span>
         </Link>
       ) : (
         <>
-          <Icon type={icon} /> {text}
+          <Icon type={icon} /> <span>{text}</span>
         </>
       )}
     </Menu.Item>
   );
 }
 
-export function SideMenu() {
+interface Props {
+  onCollapse?: (collapsed: boolean) => void;
+}
+
+export function SideMenu({ onCollapse }: Props) {
   const { t } = useI18n();
+  const [collapsed, setCollapsed] = React.useState(false);
 
   return (
     <SiderWithShadow
       width={256}
+      breakpoint="md"
       className="z-20 overflow-auto h-screen fixed left-0"
+      onCollapse={value => {
+        onCollapse?.(value);
+        setCollapsed(value);
+      }}
     >
       <Location>
         {({ location }) => (
           <>
-            <div className="px-8 pb-8 pt-4">
+            <div className={collapsed ? 'px-6 py-4' : 'px-6 py-4'}>
               <Link to={PrivateRoutes.Bookings}>
-                <img src="/assets/logo.svg" alt="BookaQuest logo" />
+                {collapsed ? (
+                  <img src="/assets/logo-small.svg" alt="BookaQuest logo" />
+                ) : (
+                  <img src="/assets/logo.svg" alt="BookaQuest logo" />
+                )}
               </Link>
             </div>
             <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]}>

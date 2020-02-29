@@ -21,8 +21,8 @@ const PageContainer = styled(Layout)`
   min-height: 100vh;
 `;
 
-const PageWithSidebarContainer = styled(Layout)`
-  margin-left: 256px;
+const PageWithSidebarContainer = styled(Layout)<{ collapsed: boolean }>`
+  margin-left: ${({ collapsed }) => (collapsed ? '80px' : '256px')};
   min-height: 100vh;
 `;
 
@@ -30,6 +30,7 @@ const PageWithSidebarContainer = styled(Layout)`
 export const App = withUserProvider(() => {
   const { isLoading, userInfo, memberships } = useUser();
   const { i18n } = useI18n(undefined, { useSuspense: false });
+  const [collapsed, setCollapsed] = React.useState(false);
 
   if (isLoading || !i18n.ready) {
     return (
@@ -44,9 +45,12 @@ export const App = withUserProvider(() => {
       {userInfo ? (
         memberships?.[0] ? (
           <>
-            <SideMenu />
-            <PageWithSidebarContainer>
-              <PrivateHeader sidebarVisible />
+            <SideMenu onCollapse={setCollapsed} />
+            <PageWithSidebarContainer collapsed={collapsed}>
+              <PrivateHeader
+                sidebarVisible
+                sidebarWidth={collapsed ? 80 : 256}
+              />
               <PrivateRoutes />
             </PageWithSidebarContainer>
           </>

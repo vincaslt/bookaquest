@@ -122,7 +122,7 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
   ) : (
     <Section>
       <Row gutter={16}>
-        <Col span={12}>
+        <Col xl={12}>
           <DetailsList title={t`Details`}>
             <DetailsItem label={t`Name:`}>
               <EditableText onChange={updateName}>
@@ -217,7 +217,7 @@ export function EscapeRoomEditSection({ escapeRoom, setEscapeRoom }: Props) {
             )}
           </DetailsList>
         </Col>
-        <Col span={12}>
+        <Col xl={12}>
           <div className="mb-8">
             <SectionTitle>{t`Image`}</SectionTitle>
             <AspectRatio ratio="532/320">

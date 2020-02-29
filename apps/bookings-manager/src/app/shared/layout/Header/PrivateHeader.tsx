@@ -6,16 +6,20 @@ import { useUser } from '../../hooks/useUser';
 
 interface Props {
   sidebarVisible?: boolean;
+  sidebarWidth?: 256 | 80;
 }
 
 const HeaderWithShadow = styled(Layout.Header)`
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   position: fixed;
-  width: ${({ sidebarVisible }: Props) =>
-    sidebarVisible ? 'calc(100% - 256px)' : '100%'};
+  width: ${({ sidebarVisible, sidebarWidth }: Props) =>
+    sidebarVisible ? `calc(100% - ${sidebarWidth}px)` : '100%'};
 `;
 
-export function PrivateHeader({ sidebarVisible = false }: Props) {
+export function PrivateHeader({
+  sidebarVisible = false,
+  sidebarWidth = 256
+}: Props) {
   const { logout, userInfo } = useUser();
   const { t } = useI18n();
 
@@ -30,6 +34,7 @@ export function PrivateHeader({ sidebarVisible = false }: Props) {
 
   return (
     <HeaderWithShadow
+      sidebarWidth={sidebarWidth}
       sidebarVisible={sidebarVisible}
       className="px-4 py-8 bg-white flex justify-end items-center z-30"
     >
