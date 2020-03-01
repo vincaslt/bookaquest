@@ -3,6 +3,7 @@ import { Col, Icon, Result, Row, Spin, Steps, Typography } from 'antd';
 import { isAfter } from 'date-fns';
 import { Trans } from 'react-i18next';
 import { useRoute } from 'wouter';
+import { useMedia } from 'react-use';
 import styled from 'styled-components';
 import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
@@ -15,7 +16,7 @@ import { Time } from '@bookaquest/components';
 import { getBooking, getOrganization } from '../../api/application';
 import { RemainingTime } from './RemainingTime';
 
-const { Text, Paragraph, Title } = Typography;
+const { Text, Title } = Typography;
 
 const GrayIcon = styled(Icon)`
   color: ${grey[0]} !important;
@@ -38,12 +39,6 @@ const SectionLoading = styled.div`
   }
 `;
 
-const DetailsContainer = styled.div`
-  display: flex;
-  margin-bottom: 40px;
-  justify-content: space-between;
-`;
-
 // TODO: add "link to this page"
 // TODO: use Detail component? Or Description whatever
 export function BookingItinerary() {
@@ -51,6 +46,7 @@ export function BookingItinerary() {
   const [, params] = useRoute('/itinerary/:bookingId');
   const [booking, setBooking] = React.useState<BookingWithEscapeRoom>();
   const [organization, setOrganization] = React.useState<Organization>();
+  const isLargerScreen = useMedia('(min-width: 768px)');
 
   const bookingId = params && params.bookingId;
 
@@ -75,7 +71,7 @@ export function BookingItinerary() {
         <Col xxl={{ span: 18, push: 3 }} xl={{ span: 22, push: 1 }} span={24}>
           <SectionLoading>
             <Spin size="large" />
-            <h2>Loading...</h2>
+            <h2>{t`Loading...`}</h2>
           </SectionLoading>
         </Col>
       </Row>
@@ -134,7 +130,7 @@ export function BookingItinerary() {
 
   return (
     <Row>
-      <Col xxl={{ span: 18, push: 3 }} xl={{ span: 22, push: 1 }} span={24}>
+      <Col xxl={{ span: 18, offset: 3 }} xl={{ span: 22, offset: 1 }} span={24}>
         <Section>
           <Result
             icon={
@@ -150,8 +146,8 @@ export function BookingItinerary() {
           >
             {!isOutdated && (
               <>
-                <DetailsContainer>
-                  <Paragraph>
+                <Row gutter={16}>
+                  <Col lg={8} className="mb-4">
                     <Title level={4}>{t`Booking`}</Title>
                     {escapeRoom.timezone !== localTimeZone && (
                       <div>
@@ -177,8 +173,8 @@ export function BookingItinerary() {
                         {booking._id}
                       </Text>
                     </pre>
-                  </Paragraph>
-                  <Paragraph>
+                  </Col>
+                  <Col lg={8} className="mb-4">
                     <Title level={4}>{t`Place`}</Title>
                     <div>
                       <Text strong className="mr-2">{t`Escape room:`}</Text>
@@ -192,66 +188,71 @@ export function BookingItinerary() {
                       <Text strong className="mr-2">{t`Location:`}</Text>
                       <Text>{organization.location}</Text>
                     </div>
-                  </Paragraph>
-                  <Paragraph>
+                  </Col>
+                  <Col lg={8} className="mb-4">
                     <Title level={4}>{t`Contacts`}</Title>
                     <div>
                       <Text strong className="mr-2">{t`Email:`}</Text>
-                      <Text>someemail@email.com</Text>
+                      <Text>{organization.email}</Text>
                     </div>
                     <div>
                       <Text strong className="mr-2">{t`Phone:`}</Text>
-                      <Text>+1234567890</Text>
+                      <Text>{organization.phoneNumber}</Text>
                     </div>
                     <div>
                       <Text strong className="mr-2">{t`Website:`}</Text>
-                      <Text>https://website.com</Text>
+                      <Text>{organization.website}</Text>
                     </div>
-                  </Paragraph>
-                </DetailsContainer>
-                <Steps
-                  progressDot
-                  current={isAccepted ? 2 : 1}
-                  status={stepStatus}
-                >
-                  <Steps.Step
-                    title={
-                      <span className="flex items-center">
-                        {(isAccepted || isPending) && successIcon}
-                        {t`Book`}
-                      </span>
-                    }
-                    description={t`Booking details have been filled`}
-                  />
-                  <Steps.Step
-                    title={
-                      <span className="flex items-center">
-                        {isAccepted && successIcon}
-                        {escapeRoom.paymentEnabled
-                          ? t`Payment`
-                          : t`Confirmation`}
-                      </span>
-                    }
-                    description={
-                      escapeRoom.paymentEnabled
-                        ? t`Payment has been made`
-                        : t`You will receive it in your email soon`
-                    }
-                  />
-                  <Steps.Step
-                    title="Play!"
-                    description={
-                      <Trans>
-                        Show up on{' '}
-                        <Time
-                          date={booking.startDate}
-                          type={{ format: 'PPPp' }}
-                          timeZone={escapeRoom.timezone}
-                        />
-                      </Trans>
-                    }
-                  />
-                </Steps>
+                  </Col>
+                </Row>
+                <Row className="mt-8">
+                  <Col>
+                    <Steps
+                      progressDot
+                      direction={isLargerScreen ? 'horizontal' : 'vertical'}
+                      current={isAccepted ? 2 : 1}
+                      status={stepStatus}
+                    >
+                      <Steps.Step
+                        title={
+                          <span className="flex items-center">
+                            {(isAccepted || isPending) && successIcon}
+                            {t`Book`}
+                          </span>
+                        }
+                        description={t`Booking details have been filled`}
+                      />
+                      <Steps.Step
+                        title={
+                          <span className="flex items-center">
+                            {isAccepted && successIcon}
+                            {escapeRoom.paymentEnabled
+                              ? t`Payment`
+                              : t`Confirmation`}
+                          </span>
+                        }
+                        description={
+                          escapeRoom.paymentEnabled
+                            ? t`Payment has been made`
+                            : t`You will receive it in your email soon`
+                        }
+                      />
+                      <Steps.Step
+                        title="Play!"
+                        description={
+                          <Trans>
+                            Show up on{' '}
+                            <Time
+                              date={booking.startDate}
+                              type={{ format: 'PPPp' }}
+                              timeZone={escapeRoom.timezone}
+                            />
+                          </Trans>
+                        }
+                      />
+                    </Steps>
+                  </Col>
+                </Row>
               </>
             )}
           </Result>

@@ -101,7 +101,7 @@ export function Booking() {
   return (
     <Row>
       <Col xxl={{ span: 18, push: 3 }} xl={{ span: 22, push: 1 }} span={24}>
-        <Row>
+        <Row className="hidden md:block">
           <Section>
             <Steps current={currentStep}>
               <Steps.Step title="Date & Time" icon={<Icon type="calendar" />} />
@@ -117,7 +117,7 @@ export function Booking() {
           </Section>
         </Row>
         <Row gutter={24}>
-          <Col span={12}>
+          <Col md={12}>
             <Section>
               {step === BookingStep.TIMESLOT && selectedRoom && (
                 <TimeslotStep
@@ -147,7 +147,7 @@ export function Booking() {
                 )}
             </Section>
           </Col>
-          <Col span={12}>
+          <Col md={12}>
             <Section>
               <BookingSummary
                 organization={organization}

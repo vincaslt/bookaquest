@@ -1,6 +1,6 @@
 import 'react-phone-number-input/style.css';
 import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
-import { Col, Row } from 'antd';
+import { Col, Row, Icon } from 'antd';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { useI18n } from '@bookaquest/utilities';
@@ -50,35 +50,41 @@ export function BookingInfoStep({ onSubmit, bookingInfo }: Props) {
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      validationSchema={validationSchema}
-    >
-      {({ setFieldValue, values, handleBlur }) => (
-        <Form labelCol={{ span: 6 }} wrapperCol={{ span: 12 }}>
-          <FormItem name="name" label={t`Full name`}>
-            <Input name="name" />
-          </FormItem>
-          <FormItem name="email" label={t`Email`}>
-            <Input type="email" name="email" />
-          </FormItem>
-          <FormItem name="phoneNumber" label={t`Phone number`}>
-            <Phone
-              name="phoneNumber"
-              onBlur={e => handleBlur('phoneNumber')(e)}
-              numberInputProps={{ className: 'ant-input' }}
-              onChange={value => setFieldValue('phoneNumber', value)}
-              value={values.phoneNumber}
-            />
-          </FormItem>
-          <Row>
-            <Col push={6}>
-              <SubmitButton>{t`Continue`}</SubmitButton>
-            </Col>
-          </Row>
-        </Form>
-      )}
-    </Formik>
+    <Row>
+      <Col sm={14} md={18} lg={14}>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={onSubmit}
+          validationSchema={validationSchema}
+        >
+          {({ setFieldValue, values, handleBlur }) => (
+            <Form>
+              <FormItem name="name" label={t`Full name`}>
+                <Input prefix={<Icon type="user" />} name="name" />
+              </FormItem>
+              <FormItem name="email" label={t`Email`}>
+                <Input
+                  prefix={<Icon type="mail" />}
+                  type="email"
+                  name="email"
+                />
+              </FormItem>
+              <FormItem name="phoneNumber" label={t`Phone number`}>
+                <Phone
+                  name="phoneNumber"
+                  onBlur={e => handleBlur('phoneNumber')(e)}
+                  numberInputProps={{ className: 'ant-input' }}
+                  onChange={value => setFieldValue('phoneNumber', value)}
+                  value={values.phoneNumber}
+                />
+              </FormItem>
+              <div className="mt-8">
+                <SubmitButton>{t`Continue`}</SubmitButton>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </Col>
+    </Row>
   );
 }

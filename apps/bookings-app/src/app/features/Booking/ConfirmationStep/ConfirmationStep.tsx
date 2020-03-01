@@ -1,8 +1,16 @@
-import { Alert, Button, Divider, Statistic, Typography, message } from 'antd';
+import {
+  Alert,
+  Button,
+  Divider,
+  Statistic,
+  Typography,
+  message,
+  Row,
+  Col
+} from 'antd';
 import { useLocation } from 'wouter';
 import { Trans } from 'react-i18next';
 import * as React from 'react';
-import styled from 'styled-components';
 import { EscapeRoom, CreateBooking, PricingType } from '@bookaquest/interfaces';
 import { useI18n, useLoading, formatCurrency } from '@bookaquest/utilities';
 import * as api from '../../../api/application';
@@ -13,10 +21,6 @@ import { ReservationInfo } from './Details/ReservationInfo';
 import { CardForm } from './StripeCardForm/CardForm';
 
 const { Title } = Typography;
-
-const BookingPriceContainer = styled.div`
-  min-width: 256px;
-`;
 
 interface Props {
   escapeRoom: EscapeRoom;
@@ -57,9 +61,9 @@ export function ConfirmationStep({
   const isFlatPrice = escapeRoom.pricingType === PricingType.FLAT;
 
   return (
-    <div>
-      <div className="flex justify-between mb-8">
-        <div className="mr-4 flex-1">
+    <>
+      <Row gutter={16}>
+        <Col lg={12}>
           {escapeRoom.paymentEnabled ? (
             <>
               <Title level={4}>{t`Payment details`}</Title>
@@ -78,6 +82,7 @@ export function ConfirmationStep({
               />
               <ContactInfo bookingInfo={bookingInfo} className="mb-4" />
               <Alert
+                className="mb-4 lg:mb-0"
                 message={t`This is a reservation`}
                 description={
                   <Trans>
@@ -90,8 +95,8 @@ export function ConfirmationStep({
               />
             </div>
           )}
-        </div>
-        <BookingPriceContainer className="pl-4 w-2/5">
+        </Col>
+        <Col lg={12}>
           <Title level={4}>{t`Price`}</Title>
           <div className="flex justify-between">
             <span>{t`Participants`}</span>
@@ -135,21 +140,26 @@ export function ConfirmationStep({
               {t`Request reservation`}
             </Button>
           )}
-        </BookingPriceContainer>
-      </div>
-      {escapeRoom.paymentEnabled && (
-        <>
-          <Divider orientation="left">{t`Booking info`}</Divider>
-          <div className="flex">
-            <ReservationInfo
-              escapeRoom={escapeRoom}
-              timeslot={timeslotInfo.timeslot}
-              className="mr-8"
-            />
-            <ContactInfo bookingInfo={bookingInfo} />
-          </div>
-        </>
-      )}
-    </div>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col>
+          {escapeRoom.paymentEnabled && (
+            <>
+              <Divider orientation="left">{t`Booking info`}</Divider>
+              <div className="flex">
+                <ReservationInfo
+                  escapeRoom={escapeRoom}
+                  timeslot={timeslotInfo.timeslot}
+                  className="mr-8"
+                />
+                <ContactInfo bookingInfo={bookingInfo} />
+              </div>
+            </>
+          )}
+        </Col>
+      </Row>
+    </>
   );
 }
