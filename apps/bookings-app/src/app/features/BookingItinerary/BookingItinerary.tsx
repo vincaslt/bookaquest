@@ -186,7 +186,7 @@ export function BookingItinerary() {
                     </div>
                     <div>
                       <Text strong className="mr-2">{t`Location:`}</Text>
-                      <Text>{organization.location}</Text>
+                      <Text>{escapeRoom.location}</Text>
                     </div>
                   </Col>
                   <Col lg={8} className="mb-4">

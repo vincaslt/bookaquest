@@ -2,6 +2,7 @@ import { Card, Divider, Icon, Row, Col } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import AspectRatio from 'react-aspect-ratio';
+import { useMeasure } from 'react-use';
 import * as React from 'react';
 import { EscapeRoom, Organization } from '@bookaquest/interfaces';
 import { useI18n } from '@bookaquest/utilities';
@@ -14,6 +15,7 @@ interface Props {
 
 export function BookingSummary({ organization, selectedRoom }: Props) {
   const { t } = useI18n();
+  const [containerRef, { width }] = useMeasure();
 
   if (!selectedRoom) {
     return null;
@@ -23,12 +25,14 @@ export function BookingSummary({ organization, selectedRoom }: Props) {
 
   return (
     <Row gutter={16}>
-      <Col lg={14}>
+      <Col lg={12}>
         <Title level={3}>{selectedRoom.name}</Title>
-        <div className="flex flex-wrap font-semibold">
+        <div className="flex flex-wrap font-semibold" ref={containerRef}>
           <div className="mb-4 flex items-center">
             <Icon type="team" className="flex mr-1" />
-            {t`${minParticipants}-${maxParticipants} players`}
+            {width > 320
+              ? t`${minParticipants}-${maxParticipants} players`
+              : `${minParticipants}-${maxParticipants}`}
             <Divider type="vertical" />
           </div>
           <div className="mb-4 flex items-center">
@@ -37,17 +41,14 @@ export function BookingSummary({ organization, selectedRoom }: Props) {
             <Divider type="vertical" />
           </div>
           <div className="mb-4 flex items-center">
-            {t`Difficulty`}
-            <DifficultyIndicator
-              className="ml-2"
-              difficulty={selectedRoom.difficulty}
-            />
+            {width > 280 && <span className="mr-2">{t`Difficulty`}</span>}
+            <DifficultyIndicator difficulty={selectedRoom.difficulty} />
           </div>
         </div>
         <Paragraph>{selectedRoom.description}</Paragraph>
       </Col>
 
-      <Col sm={14} md={16} lg={10}>
+      <Col sm={14} md={16} lg={12}>
         <Card
           cover={
             <AspectRatio ratio="532/320">
@@ -62,7 +63,7 @@ export function BookingSummary({ organization, selectedRoom }: Props) {
           <Card.Meta
             title={t`Contacts`}
             description={
-              <>
+              <div className="overflow-auto">
                 <div className="mb-2 mr-4 flex items-baseline">
                   <Icon type="home" className="flex mr-2" />
                   {selectedRoom.location}
@@ -85,7 +86,7 @@ export function BookingSummary({ organization, selectedRoom }: Props) {
                     {organization?.website}
                   </div>
                 )}
-              </>
+              </div>
             }
           />
         </Card>
