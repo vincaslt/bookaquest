@@ -5,11 +5,8 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { useI18n } from '@bookaquest/utilities';
 import { PublicRoutes } from '../../constants/routes';
+import Logo from '../../shared/components/Logo';
 import { RegistrationForm } from './RegistrationForm';
-
-const LogoImg = styled.img`
-  width: 200px;
-`;
 
 const HeroSection = styled.div`
   background-color: #001021;
@@ -32,13 +29,13 @@ export function RegistrationPage(props: RouteComponentProps) {
   };
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <HeroSection className="text-white">
         <header className="px-16 py-8">
           <Row>
             <Col offset={2} span={20}>
               <div className="flex justify-between items-center">
-                <LogoImg src="/assets/logo.svg" alt="BookaQuest logo" />
+                <Logo />
                 <div className="font-medium">
                   <Link to={PublicRoutes.SignIn}>{t`Login`}</Link>
                   <a
@@ -156,6 +153,6 @@ export function RegistrationPage(props: RouteComponentProps) {
       <footer className="text-gray-100 bg-gray-800 p-4 text-center">
         © 2019 BookaQuest
       </footer>
-    </>
+    </div>
   );
 }

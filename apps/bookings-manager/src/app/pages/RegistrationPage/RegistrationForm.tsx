@@ -36,12 +36,9 @@ export function RegistrationForm() {
   ) => {
     api
       .register(values)
-      .then(() => login({ email: values.email, password: values.password }))
       .then(() => navigate(PrivateRoutes.Bookings))
-      .catch(() => {
-        message.error(t`Please try again in a moment`);
-      })
-      .finally(() => actions.setSubmitting(false));
+      .then(() => login({ email: values.email, password: values.password }))
+      .catch(() => actions.setSubmitting(false));
   };
 
   return (

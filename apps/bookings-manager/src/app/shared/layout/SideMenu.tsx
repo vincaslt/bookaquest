@@ -4,6 +4,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { useI18n } from '@bookaquest/utilities';
 import { PrivateRoutes } from '../../constants/routes';
+import Logo from '../components/Logo';
 
 const SiderWithShadow = styled(Layout.Sider)`
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
@@ -54,13 +55,7 @@ export function SideMenu({ onCollapse }: Props) {
         {({ location }) => (
           <>
             <div className={collapsed ? 'px-6 py-4' : 'px-6 py-4'}>
-              <Link to={PrivateRoutes.Bookings}>
-                {collapsed ? (
-                  <img src="/assets/logo-small.svg" alt="BookaQuest logo" />
-                ) : (
-                  <img src="/assets/logo.svg" alt="BookaQuest logo" />
-                )}
-              </Link>
+              <Logo type={collapsed ? 'small-light' : 'light'} />
             </div>
             <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]}>
               <MenuLink
