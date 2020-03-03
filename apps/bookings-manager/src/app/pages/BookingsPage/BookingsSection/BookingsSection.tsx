@@ -72,7 +72,7 @@ export function BookingsSection({
 
     return (
       <>
-        <i className="mr-2">{t`Booked at:`}</i>
+        <i className="mr-2">{t`Created at:`}</i>
         <Time
           type="date"
           date={[
@@ -91,7 +91,7 @@ export function BookingsSection({
   return (
     <Row gutter={16}>
       <Col xl={10} xxl={12}>
-        <Section title={t`Upcoming Bookings`}>
+        <Section title={t`Upcoming reservations`}>
           <UpcomingBookings
             bookings={bookings}
             loading={loading}
@@ -104,7 +104,7 @@ export function BookingsSection({
       </Col>
 
       <Col xl={14} xxl={12}>
-        <Section title={t`Pending Bookings`}>
+        <Section title={t`Pending reservations`}>
           <PendingBookings
             bookings={bookings}
             loading={loading}
@@ -115,7 +115,7 @@ export function BookingsSection({
           />
         </Section>
 
-        <Section title={t`Booking history`} extra={renderRangeText()}>
+        <Section title={t`Reservation history`} extra={renderRangeText()}>
           {!allBookings ? (
             <div className="m-4 text-center">
               <Spin />

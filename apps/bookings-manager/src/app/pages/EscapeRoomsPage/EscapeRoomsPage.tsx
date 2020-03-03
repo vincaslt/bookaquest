@@ -35,7 +35,7 @@ export function EscapeRoomsPage(props: RouteComponentProps) {
                 href={`${environment.bookingAppUrl}/booking/${organization._id}`}
                 newTab
               >
-                <Button type="link">{t`Go to organization booking page`}</Button>
+                <Button type="link">{t`Go to reservation page`}</Button>
               </Link>
             )
           }

@@ -68,7 +68,7 @@ export function BookingModal({
             {firstBooking.name}
           </div>
         ) : (
-          t`Bookings`
+          t`Reservations`
         )
       }
       width={630}

@@ -1,5 +1,4 @@
 import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
-import { message } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import { navigate } from '@reach/router';
 import * as React from 'react';

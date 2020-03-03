@@ -98,16 +98,16 @@ export function BookingItinerary() {
   }[booking.status];
 
   const titleText = {
-    [BookingStatus.Pending]: t`Booking request for "${escapeRoom.name}" has been received`,
-    [BookingStatus.Accepted]: t`Booking for "${escapeRoom.name}" has been confirmed, see you in`,
-    [BookingStatus.Rejected]: t`Booking for "${escapeRoom.name}" has been rejected`,
-    [BookingStatus.Canceled]: t`Booking for "${escapeRoom.name}" has been canceled`
+    [BookingStatus.Pending]: t`Reservation request for "${escapeRoom.name}" has been received`,
+    [BookingStatus.Accepted]: t`Reservation for "${escapeRoom.name}" has been confirmed, see you in`,
+    [BookingStatus.Rejected]: t`Reservation for "${escapeRoom.name}" has been rejected`,
+    [BookingStatus.Canceled]: t`Reservation for "${escapeRoom.name}" has been canceled`
   }[booking.status];
 
   const subtitleText = {
-    [BookingStatus.Pending]: t`The escape room operator will now review your booking and send you an email
+    [BookingStatus.Pending]: t`The escape room operator will now review your reservation request and send you an email
                   confirmation with details to ${booking.email} once it's accepted. You can come back
-                  to this page to check your booking status.`,
+                  to this page to check your resrvation status.`,
     [BookingStatus.Accepted]: <RemainingTime date={booking.startDate} />,
     [BookingStatus.Rejected]: booking.comment
       ? t`Comment: ${booking.comment}`
@@ -141,14 +141,14 @@ export function BookingItinerary() {
               )
             }
             status={isOutdated ? undefined : status}
-            title={isOutdated ? t`Booking is no longer active` : titleText}
+            title={isOutdated ? t`Reservation is no longer active` : titleText}
             subTitle={isOutdated ? undefined : subtitleText}
           >
             {!isOutdated && (
               <>
                 <Row gutter={16}>
                   <Col lg={8} className="mb-4">
-                    <Title level={4}>{t`Booking`}</Title>
+                    <Title level={4}>{t`Reservation`}</Title>
                     {escapeRoom.timezone !== localTimeZone && (
                       <div>
                         <Text strong className="mr-2">{t`Timezone:`}</Text>
@@ -220,7 +220,7 @@ export function BookingItinerary() {
                             {t`Book`}
                           </span>
                         }
-                        description={t`Booking details have been filled`}
+                        description={t`Reservation details have been filled`}
                       />
                       <Steps.Step
                         title={

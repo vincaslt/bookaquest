@@ -1,5 +1,3 @@
-// import '@bookaquest/user-script';
-
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { initCommons } from '@bookaquest/components';

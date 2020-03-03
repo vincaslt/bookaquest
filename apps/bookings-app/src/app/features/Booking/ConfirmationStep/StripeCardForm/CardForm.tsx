@@ -40,7 +40,7 @@ export const CardForm = injectStripe(({ onSubmit, loading, stripe }: Props) => {
       <Alert
         type="warning"
         message={t`Your card will be charged`}
-        description={t`Your booking will be completed after payment`}
+        description={t`Your reservation will be completed after payment`}
       />
       <FormItem style={{ marginBottom: 15 }} label={t`Name on card`}>
         <Input

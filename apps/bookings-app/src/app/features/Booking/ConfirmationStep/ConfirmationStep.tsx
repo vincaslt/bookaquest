@@ -51,7 +51,7 @@ export function ConfirmationStep({
     }
 
     const { _id } = await api.createBooking(options).catch(e => {
-      message.error(t`Error creating a booking, please try again later`);
+      message.error(t`Error creating a reservation, please try again later`);
       throw e;
     });
     // TODO: handle error
@@ -147,7 +147,7 @@ export function ConfirmationStep({
         <Col>
           {escapeRoom.paymentEnabled && (
             <>
-              <Divider orientation="left">{t`Booking info`}</Divider>
+              <Divider orientation="left">{t`Reservation info`}</Divider>
               <div className="flex">
                 <ReservationInfo
                   escapeRoom={escapeRoom}

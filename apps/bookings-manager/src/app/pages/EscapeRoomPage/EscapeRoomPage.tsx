@@ -46,7 +46,7 @@ export function EscapeRoomPage({
                 href={`${environment.bookingAppUrl}/booking/${escapeRoom.organization}/${escapeRoom._id}`}
                 newTab
               >
-                <Button type="link">{t`Go to booking page`}</Button>
+                <Button type="link">{t`Go to reservation page`}</Button>
               </Link>
             )
           }

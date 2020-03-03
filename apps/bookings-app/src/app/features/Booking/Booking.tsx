@@ -106,7 +106,7 @@ export function Booking() {
             <Steps current={currentStep}>
               <Steps.Step title="Date & Time" icon={<Icon type="calendar" />} />
               <Steps.Step
-                title="Booking Details"
+                title="Reservation Details"
                 icon={<Icon type="contacts" />}
               />
               <Steps.Step

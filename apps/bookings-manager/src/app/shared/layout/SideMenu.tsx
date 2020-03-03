@@ -61,7 +61,7 @@ export function SideMenu({ onCollapse }: Props) {
               <MenuLink
                 key={PrivateRoutes.Bookings}
                 to={PrivateRoutes.Bookings}
-                text={t`Bookings`}
+                text={t`Reservations`}
                 icon="schedule"
               />
               <MenuLink

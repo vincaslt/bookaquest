@@ -105,7 +105,7 @@ export function BookingDetails({ booking, escapeRoom, timeZone }: Props) {
           <a href={`mailto:${booking.email}`}>{booking.email}</a>
         </div>
         <div>
-          <Text strong className="mr-2">{t`Booked at:`}</Text>
+          <Text strong className="mr-2">{t`Created at:`}</Text>
           <Time
             date={booking.createdAt}
             type={{ format: 'PPPp' }}
@@ -113,7 +113,7 @@ export function BookingDetails({ booking, escapeRoom, timeZone }: Props) {
           />
         </div>
         <div>
-          <Text strong className="mr-2">{t`Booking id:`}</Text>
+          <Text strong className="mr-2">{t`Reservation ID:`}</Text>
           <Text copyable>{booking._id}</Text>
         </div>
       </div>

@@ -62,7 +62,7 @@ export function EscapeRoomBookingsList({ escapeRoom }: Props) {
 
     return (
       <>
-        <i className="mr-2">{t`Booked for:`}</i>
+        <i className="mr-2">{t`Reserved for:`}</i>
         <Time
           type="date"
           date={[

@@ -52,7 +52,7 @@ export function RegistrationPage(props: RouteComponentProps) {
             <Col offset={2} span={10}>
               <h1 className="text-white text-4xl mb-8" id="hero">
                 <Trans>
-                  Booking Management Software for
+                  Reservation Management Software for
                   <strong> Escape Rooms</strong>
                 </Trans>
               </h1>
@@ -95,7 +95,7 @@ export function RegistrationPage(props: RouteComponentProps) {
             <img
               className="shadow-md rounded"
               src="./assets/feature-booking-manager.png"
-              alt={t`Booking manager preview`}
+              alt={t`Reservation manager preview`}
             />
           </Col>
         </Row>
@@ -118,7 +118,7 @@ export function RegistrationPage(props: RouteComponentProps) {
         <Row gutter={64} className="px-16 py-8">
           <Col offset={2} span={10}>
             <h2 className="text-2xl mb-8 font-medium">{t`Hassle-free setup`}</h2>
-            <p className="text-lg mb-4">{t`Our process is straightforward enough that you can start accepting bookings for your escape rooms in a matter of minutes.`}</p>
+            <p className="text-lg mb-4">{t`Our process is straightforward enough that you can start accepting reservations for your escape rooms in a matter of minutes.`}</p>
             <p className="text-lg">{t`We're focused on deliver the best experience for escape room operators - intuitive interface without confusing jargon.`}</p>
           </Col>
           <Col span={10}>

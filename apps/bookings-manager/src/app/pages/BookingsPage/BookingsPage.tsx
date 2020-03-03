@@ -106,7 +106,10 @@ export function BookingsPage(
   }
 
   return (
-    <PageContent header={<PageHeader title={t`All Bookings`} />} noBackground>
+    <PageContent
+      header={<PageHeader title={t`All Reservations`} />}
+      noBackground
+    >
       <BookingModal
         visible={selectedBookings.length > 0}
         updateBookings={updateBookings}

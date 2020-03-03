@@ -1,6 +1,5 @@
 import { List, Row, Col } from 'antd';
 import { useRoute, useLocation } from 'wouter';
-import Title from 'antd/lib/typography/Title';
 import * as React from 'react';
 import { EscapeRoom } from '@bookaquest/interfaces';
 import { EscapeRoomCard } from '@bookaquest/components';
@@ -40,8 +39,8 @@ export function EscapeRoomSelect() {
   // TODO: math for calculating better 1,2,3,4 escape rooms grid placement
   return (
     <>
-      <Title className="text-center">{t`Pick a Room`}</Title>
-      <Row className="bg-gray-400 p-4 pb-0 rounded-sm">
+      <h1 className="text-3xl font-medium mb-8 text-center">{t`Pick a Room`}</h1>
+      <Row className="bg-gray-300 p-12 pb-8 rounded-sm">
         <Col xxl={{ span: 16, push: 4 }}>
           <List
             grid={{
