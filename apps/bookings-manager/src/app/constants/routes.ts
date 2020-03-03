@@ -9,8 +9,8 @@ export enum PrivateRoutes {
 }
 
 export enum PublicRoutes {
-  SignIn = '/',
-  Register = '/register'
+  SignIn = '/login',
+  Landing = '/'
 }
 
 export const getUrl = (path: PublicRoutes | PrivateRoutes, params: object) => {

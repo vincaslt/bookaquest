@@ -7,8 +7,8 @@ import { RegistrationPage } from './pages/RegistrationPage/RegistrationPage';
 export function PublicRoutes() {
   return (
     <Router>
+      <RegistrationPage path={Routes.Landing} />
       <LoginPage path={Routes.SignIn} />
-      <RegistrationPage path={Routes.Register} />
     </Router>
   );
 }
