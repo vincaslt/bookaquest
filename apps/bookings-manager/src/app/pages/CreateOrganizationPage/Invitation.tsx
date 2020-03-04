@@ -2,9 +2,9 @@ import { Trans } from 'react-i18next';
 import { Button, Alert } from 'antd';
 import * as React from 'react';
 import { useI18n, useLoading } from '@bookaquest/utilities';
-import { OrganizationInvitation } from '../../../interfaces/organizationMember';
-import * as api from '../../../api/application';
-import { UserMembership } from '../../../interfaces/user';
+import { OrganizationInvitation } from '../../interfaces/organizationMember';
+import * as api from '../../api/application';
+import { UserMembership } from '../../interfaces/user';
 
 interface Props {
   invitation: OrganizationInvitation;

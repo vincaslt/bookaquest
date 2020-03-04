@@ -10,6 +10,7 @@ import {
   findUserInvitations,
   findUserMemberships
 } from '../helpers/organization';
+import { generateRandomString } from '../utils/string';
 
 const createUser: AugmentedRequestHandler = async (req, res) => {
   const dto = await getBody(req, CreateUserDTO);
@@ -22,8 +23,12 @@ const createUser: AugmentedRequestHandler = async (req, res) => {
   const password = await bcrypt.hash(dto.password, 10);
   const user: UserInitFields = {
     ...dto,
-    password
+    password,
+    verificationCode: generateRandomString(32)
   };
+
+  // ! TODO: send verification email
+  // ! TODO: don't send stuff to unverified emails
 
   await UserModel.create(user);
 };

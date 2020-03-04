@@ -1,4 +1,5 @@
 import { Layout, Spin } from 'antd';
+import { Router } from '@reach/router';
 import * as React from 'react';
 import styled from 'styled-components';
 import { useI18n } from '@bookaquest/utilities';
@@ -8,6 +9,8 @@ import { useUser } from './shared/hooks/useUser';
 import { PrivateHeader } from './shared/layout/Header/PrivateHeader';
 import { SideMenu } from './shared/layout/SideMenu';
 import { withUserProvider } from './shared/providers/UserProvider';
+import { CreateOrganizationPage } from './pages/CreateOrganizationPage/CreateOrganizationPage';
+import UnverifiedEmailPage from './pages/UnverifiedEmailPage';
 
 const AppSpinnerContainer = styled('div')`
   display: flex;
@@ -40,31 +43,47 @@ export const App = withUserProvider(() => {
     );
   }
 
-  return (
-    <Layout>
-      {userInfo ? (
-        memberships?.[0] ? (
-          <>
-            <SideMenu onCollapse={setCollapsed} />
-            <PageWithSidebarContainer collapsed={collapsed}>
-              <PrivateHeader
-                sidebarVisible
-                sidebarWidth={collapsed ? 80 : 256}
-              />
-              <PrivateRoutes />
-            </PageWithSidebarContainer>
-          </>
-        ) : (
-          <PageContainer>
-            <PrivateHeader />
-            <PrivateRoutes />
-          </PageContainer>
-        )
-      ) : (
+  if (!userInfo) {
+    return (
+      <Layout>
         <PageContainer>
           <PublicRoutes />
         </PageContainer>
-      )}
+      </Layout>
+    );
+  }
+
+  if (!userInfo.verified) {
+    return (
+      <Layout>
+        <PageContainer>
+          <PrivateHeader />
+          <Router>
+            <UnverifiedEmailPage default />
+          </Router>
+        </PageContainer>
+      </Layout>
+    );
+  }
+
+  if (!memberships?.[0]) {
+    return (
+      <Layout>
+        <PageContainer>
+          <PrivateHeader />
+          <CreateOrganizationPage />
+        </PageContainer>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <SideMenu onCollapse={setCollapsed} />
+      <PageWithSidebarContainer collapsed={collapsed}>
+        <PrivateHeader sidebarVisible sidebarWidth={collapsed ? 80 : 256} />
+        <PrivateRoutes />
+      </PageWithSidebarContainer>
     </Layout>
   );
 });

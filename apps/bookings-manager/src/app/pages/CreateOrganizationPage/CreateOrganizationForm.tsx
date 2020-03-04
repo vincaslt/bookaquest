@@ -5,9 +5,9 @@ import * as React from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { useI18n } from '@bookaquest/utilities';
-import * as api from '../../../api/application';
-import { CreateOrganization } from '../../../interfaces/organization';
-import { UserMembership } from '../../../interfaces/user';
+import * as api from '../../api/application';
+import { CreateOrganization } from '../../interfaces/organization';
+import { UserMembership } from '../../interfaces/user';
 
 const StyledForm = styled(Form)`
   max-width: 512px;

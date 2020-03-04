@@ -4,6 +4,7 @@ export class UserInitFields {
   email: string;
   fullName: string;
   password: string;
+  verificationCode: string;
 }
 
 export class User {
@@ -12,6 +13,12 @@ export class User {
 
   @prop({ required: true })
   fullName: string;
+
+  @prop({ required: true, default: false })
+  verified: boolean;
+
+  @prop({ required: true, select: false })
+  verificationCode: string;
 
   @prop({ required: true, select: false })
   password: string;

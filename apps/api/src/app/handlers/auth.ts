@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcryptjs';
 import { createError } from 'micro';
-import { post, AugmentedRequestHandler } from 'microrouter';
+import { post, get, AugmentedRequestHandler } from 'microrouter';
 import { omit } from 'ramda';
 import { SignInDTO } from '../dto/SignInDTO';
 import { STATUS_ERROR } from '../lib/constants';
@@ -18,6 +18,7 @@ import {
   findUserInvitations,
   findUserMemberships
 } from '../helpers/organization';
+import { getQuery } from '../lib/utils/getQuery';
 
 const login: AugmentedRequestHandler = async (req, res) => {
   const { email, password } = await getBody(req, SignInDTO);
@@ -74,8 +75,34 @@ const refreshToken: AugmentedRequestHandler = async (req, res) => {
   return { token };
 };
 
+const verifyEmail: AugmentedRequestHandler = async (req, res) => {
+  const { userId } = getAuth(req);
+  const { code } = getQuery(req, ['code']);
+
+  const user = await UserModel.findById(userId).select('+verificationCode');
+
+  if (!user) {
+    throw createError(STATUS_ERROR.NOT_FOUND, 'User not found');
+  }
+
+  if (user.verificationCode !== code) {
+    throw createError(
+      STATUS_ERROR.BAD_REQUEST,
+      'Invalid email verification code'
+    );
+  }
+
+  if (user.verified) {
+    throw createError(STATUS_ERROR.BAD_REQUEST, 'Email already verified');
+  }
+
+  user.verified = true;
+  await user.save();
+};
+
 export const authHandlers = [
   post('/login', login),
   post('/refreshToken', refreshToken),
-  post('/logout', logout)
+  post('/logout', logout),
+  get('/verify', verifyEmail)
 ];

@@ -7,7 +7,6 @@ import * as api from '../../api/application';
 import { useUser } from '../../shared/hooks/useUser';
 import { PageContent } from '../../shared/layout/PageContent';
 import { environment } from '../../../environments/environment';
-import { CreateOrganization } from './CreateOrganization/CreateOrganization';
 import { OrganizationDetails } from './OrganizationDetails';
 import { OrganizationMembers } from './OrganizationMembers/OrganizationMembers';
 import { OrganizationSchedule } from './OrganizationSchedule';
@@ -36,7 +35,11 @@ export function OrganizationPage(props: RouteComponentProps) {
     setOrganization(org);
   };
 
-  return membership ? (
+  if (!membership) {
+    return null;
+  }
+
+  return (
     <PageContent
       header={
         <PageHeader
@@ -81,7 +84,5 @@ export function OrganizationPage(props: RouteComponentProps) {
         </Col>
       </Row>
     </PageContent>
-  ) : (
-    <CreateOrganization />
   );
 }
