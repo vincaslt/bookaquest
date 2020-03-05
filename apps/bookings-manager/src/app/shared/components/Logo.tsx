@@ -8,10 +8,11 @@ const LogoImg = styled.img`
 `;
 
 interface Props {
+  className?: string;
   type?: 'small-light' | 'dark' | 'light';
 }
 
-function Logo({ type = 'light' }: Props) {
+function Logo({ type = 'light', className }: Props) {
   const url = {
     light: '/assets/logo.svg',
     dark: '/assets/logo-dark.svg',
@@ -19,7 +20,7 @@ function Logo({ type = 'light' }: Props) {
   }[type];
 
   return (
-    <Link to={PublicRoutes.Landing}>
+    <Link to={PublicRoutes.Landing} className={className}>
       <LogoImg src={url} alt="BookaQuest logo" />
     </Link>
   );

@@ -19,19 +19,18 @@ function UnverifiedEmailPage({ navigate, location }: RouteComponentProps) {
   const { userInfo, setUserInfo } = useUser();
   const [loading, withLoading] = useLoading(false);
   const params = location?.search && parse(location.search);
-  const verificationCode = params && params['code'];
+  const verificationCode =
+    (params && params['code']) || (location?.state as any)?.verificationCode;
 
   React.useEffect(() => {
     if (userInfo && verificationCode && typeof verificationCode === 'string') {
-      withLoading(
-        api.verifyEmail(verificationCode).then(() => {
-          setUserInfo({ ...userInfo, verified: true });
-          message.success(t`Email verified successfully`);
-          if (navigate && location) {
-            navigate(location.pathname, { replace: true });
-          }
-        })
-      );
+      withLoading(api.verifyEmail(verificationCode)).then(() => {
+        setUserInfo({ ...userInfo, verified: true });
+        message.success(t`Email verified successfully`);
+        if (navigate && location) {
+          navigate(location.pathname, { replace: true });
+        }
+      });
     }
   }, [verificationCode, userInfo, setUserInfo, withLoading]);
 

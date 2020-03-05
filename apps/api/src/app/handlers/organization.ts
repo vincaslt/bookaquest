@@ -43,6 +43,16 @@ const createOrganization: AugmentedRequestHandler = async (req, res) => {
   const { userId } = getAuth(req);
   const dto = await getBody(req, CreateOrganizationDTO);
 
+  const user = await UserModel.findById(userId);
+
+  if (!user) {
+    throw createError(STATUS_ERROR.NOT_FOUND, 'User not found');
+  }
+
+  if (!user.verified) {
+    throw createError(STATUS_ERROR.BAD_REQUEST, 'Email is not verified');
+  }
+
   const belongsToOtherOrganization = await OrganizationMembershipModel.exists({
     user: userId
   });

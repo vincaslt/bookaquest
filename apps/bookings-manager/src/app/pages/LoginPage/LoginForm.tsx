@@ -1,13 +1,10 @@
 import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
 import { Formik, FormikHelpers } from 'formik';
-import { message } from 'antd';
-import { navigate } from '@reach/router';
 import * as React from 'react';
 import * as Yup from 'yup';
 import { useI18n } from '@bookaquest/utilities';
 import { SignIn } from '../../interfaces/auth';
 import { useUser } from '../../shared/hooks/useUser';
-import { PrivateRoutes } from '../../constants/routes';
 
 const initialValues: SignIn = {
   email: '',
@@ -21,7 +18,11 @@ const validationSchema = Yup.object().shape<SignIn>({
   password: Yup.string().required()
 });
 
-export function LoginForm() {
+interface Props {
+  onLoginDone: () => void;
+}
+
+export function LoginForm({ onLoginDone }: Props) {
   const { t } = useI18n();
   const { login } = useUser();
 
@@ -30,11 +31,8 @@ export function LoginForm() {
     actions: FormikHelpers<SignIn>
   ) => {
     await login(values)
-      .then(() => navigate(PrivateRoutes.Bookings))
-      .catch(() => {
-        message.error(t`Invalid credentials`);
-        actions.setSubmitting(false);
-      });
+      .then(onLoginDone)
+      .catch(() => actions.setSubmitting(false));
   };
 
   return (
