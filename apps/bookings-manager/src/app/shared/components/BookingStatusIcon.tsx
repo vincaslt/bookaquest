@@ -1,8 +1,8 @@
+import { Icon } from 'antd';
+import { green, blue, red, orange } from '@ant-design/colors';
 import * as React from 'react';
 import { BookingStatus } from '@bookaquest/interfaces';
-import { Icon } from 'antd';
 import { useI18n } from '@bookaquest/utilities';
-import { green, blue, red, orange } from '@ant-design/colors';
 
 interface Props {
   status: BookingStatus;

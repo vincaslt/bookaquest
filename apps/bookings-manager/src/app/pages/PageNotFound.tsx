@@ -11,7 +11,7 @@ export function PageNotFound(props: RouteComponentProps) {
   return (
     <PageContent noBackground>
       <Result
-        status="404"
+        status={404}
         title={t`Not found`}
         subTitle={t`Sorry, the page you visited does not exist.`}
         extra={

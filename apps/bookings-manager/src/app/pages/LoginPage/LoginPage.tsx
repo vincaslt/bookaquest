@@ -7,7 +7,7 @@ import { LoginForm } from './LoginForm';
 
 export function LoginPage({ location, navigate }: RouteComponentProps) {
   const handleLoginDone = () => {
-    navigate?.(PrivateRoutes.Bookings, { state: location?.state });
+    navigate?.(PrivateRoutes.Bookings, { state: location?.state ?? undefined });
   };
 
   return (

@@ -19,13 +19,13 @@ async function seed() {
     fullName: 'vincas stonys',
     email: 'vincaslt@gmail.com',
     password: await bcrypt.hash('123456', 10),
-    emailVerification: {
-      code: generateRandomString(32),
-      done: false
-    }
+    verificationCode: generateRandomString(32)
   };
 
-  await UserModel.create(user);
+  const newUser = await UserModel.create(user);
+
+  newUser.verified = true;
+  await newUser.save();
 
   console.log('done');
 }
