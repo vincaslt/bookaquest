@@ -12,6 +12,7 @@ export interface UserInfoDTO {
   fullName: string;
   createdAt: string;
   updatedAt: string;
+  verified: boolean;
 }
 
 export interface CreateUserDTO {

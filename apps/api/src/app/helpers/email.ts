@@ -9,14 +9,25 @@ import { environment } from '../../environments/environment';
 import { OrganizationMembership } from '../models/OrganizationMembership';
 import { User } from '../models/User';
 
-enum Emails {
-  Info = 'info@bookaquest.com'
-}
+const emails = {
+  info: { name: 'BookaQuest', email: 'info@bookaquest.com' }
+};
 
 export function initEmail() {
   if (process.env.SENDGRID_API_KEY) {
     setApiKey(process.env.SENDGRID_API_KEY);
   }
+}
+
+export function sendVerificationEmail(email: string, verificationCode: string) {
+  return send({
+    to: email,
+    from: emails.info,
+    templateId: 'd-63c2f9cf4bbf48a0839f648185f53d8b',
+    dynamicTemplateData: {
+      verificationUrl: `${environment.bookingManagerUrl}/?code=${verificationCode}`
+    }
+  });
 }
 
 // TODO: localize emails and dates
@@ -32,7 +43,7 @@ export function sendPlayerBookingRequestEmail(
 
   return send({
     to: booking.email,
-    from: Emails.Info,
+    from: emails.info,
     templateId: 'd-72811a13a18d4ea28e9f84e83b12a798',
     dynamicTemplateData: {
       escapeRoomTitle: escapeRoom.name,
@@ -61,7 +72,7 @@ export function sendPlayerBookingConfirmationEmail(
 
   return send({
     to: booking.email,
-    from: Emails.Info,
+    from: emails.info,
     templateId: 'd-69a43ce1149a40b6abacea432fa8d891',
     dynamicTemplateData: {
       escapeRoomTitle: escapeRoom.name,
@@ -89,7 +100,7 @@ export function sendPlayerBookingRejectionEmail(
 
   return send({
     to: booking.email,
-    from: Emails.Info,
+    from: emails.info,
     templateId: 'd-6d92e4cfffc0423092d992ff7450f85c',
     dynamicTemplateData: {
       escapeRoomTitle: escapeRoom.name,
@@ -120,7 +131,7 @@ export function sendOrganizationBookingRequestEmail(
     members.map(member =>
       send({
         to: (member.user as DocumentType<User>).email,
-        from: Emails.Info,
+        from: emails.info,
         templateId: 'd-54aec4106fef41afa54e70d9bbb94101',
         dynamicTemplateData: {
           escapeRoomTitle: escapeRoom.name,

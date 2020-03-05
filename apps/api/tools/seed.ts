@@ -2,6 +2,7 @@ import { config } from 'dotenv';
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserInitFields, UserModel } from '../src/app/models/User';
+import { generateRandomString } from '../src/app/utils/string';
 
 async function seed() {
   if (!process.env.MONGODB_CONNECTION) {
@@ -17,10 +18,14 @@ async function seed() {
   const user: UserInitFields = {
     fullName: 'vincas stonys',
     email: 'vincaslt@gmail.com',
-    password: await bcrypt.hash('123456', 10)
+    password: await bcrypt.hash('123456', 10),
+    verificationCode: generateRandomString(32)
   };
 
-  await UserModel.create(user);
+  const newUser = await UserModel.create(user);
+
+  newUser.verified = true;
+  await newUser.save();
 
   console.log('done');
 }

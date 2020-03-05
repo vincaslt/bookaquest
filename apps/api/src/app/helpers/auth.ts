@@ -1,4 +1,3 @@
-import { randomFillSync } from 'crypto';
 import { addDays, addMinutes } from 'date-fns';
 import { sign, verify } from 'jsonwebtoken';
 import { createError } from 'micro';
@@ -8,15 +7,7 @@ import {
   RefreshTokenInitFields
 } from '../models/RefreshToken';
 import { STATUS_ERROR } from '../lib/constants';
-
-function generateRandomString(length: number) {
-  const validChars =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const array = randomFillSync(new Uint8Array(length));
-  return String.fromCharCode(
-    ...array.map(x => validChars.charCodeAt(x % validChars.length))
-  );
-}
+import { generateRandomString } from '../utils/string';
 
 export async function issueRefreshToken(userId: string) {
   const expirationDate = addDays(new Date(), 14);

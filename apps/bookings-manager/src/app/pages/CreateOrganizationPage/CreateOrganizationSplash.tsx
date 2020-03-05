@@ -1,4 +1,3 @@
-import { RouteComponentProps } from '@reach/router';
 import { Typography } from 'antd';
 import * as React from 'react';
 import styled from 'styled-components';
@@ -9,7 +8,7 @@ const SplashImage = styled.img`
   margin: 16px;
 `;
 
-export function CreateOrganizationSplash(props: RouteComponentProps) {
+export function CreateOrganizationSplash() {
   const { t } = useI18n();
 
   return (

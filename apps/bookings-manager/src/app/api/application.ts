@@ -249,6 +249,15 @@ export const declineInvitation = withAuth(headers => (invitationId: string) =>
 
 export const getBooking = (bookingId: string) =>
   api
-    .get<BookingDTO>(`/booking/${bookingId}?noRoom=true`)
+    .get<BookingDTO>(`/booking/${bookingId}`, { params: { noRoom: true } })
     .then(res => res.data)
     .then(fromBookingDTO);
+
+export const verifyEmail = withAuth(headers => (code: string) =>
+  api.get(`/verify`, {
+    headers,
+    params: {
+      code
+    }
+  })
+);
