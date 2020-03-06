@@ -1,5 +1,4 @@
 import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
-import { message } from 'antd';
 import { Formik, FormikHelpers } from 'formik';
 import * as React from 'react';
 import styled from 'styled-components';
@@ -36,10 +35,7 @@ export function CreateOrganizationForm({ onCreateOrganization }: Props) {
     api
       .createOrganization(values)
       .then(onCreateOrganization)
-      .catch(() => {
-        actions.setSubmitting(false);
-        message.error(t`Please try again in a moment`);
-      });
+      .catch(() => actions.setSubmitting(false));
   };
 
   return (

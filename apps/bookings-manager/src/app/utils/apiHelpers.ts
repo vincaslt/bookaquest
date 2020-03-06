@@ -18,6 +18,7 @@ api.interceptors.response.use(
     const error = new Error(
       err.response.data?.message || "Something's wrong, try again later"
     );
+
     if (err.response.status !== 401) {
       message.error(error.message);
     }
