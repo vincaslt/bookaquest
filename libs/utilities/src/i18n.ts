@@ -1,7 +1,7 @@
 import { Locale } from 'date-fns';
 import localeEn from 'date-fns/locale/en-US';
 import localeLt from 'date-fns/locale/lt';
-import i18next, { TOptions } from 'i18next';
+import i18next, { TOptions, InitOptions } from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-xhr-backend';
 import {
@@ -18,7 +18,7 @@ const localeMapping: { [key: string]: Locale } = {
   en: localeEn
 };
 
-export function initI18n() {
+export function initI18n(options: InitOptions) {
   i18next
     .use(Backend)
     .use(LanguageDetector)
@@ -31,11 +31,10 @@ export function initI18n() {
       load: 'languageOnly',
       keySeparator: false,
       nsSeparator: false,
-
       interpolation: {
         escapeValue: false
       },
-      debug: true
+      ...options
     });
 }
 
