@@ -35,23 +35,24 @@ async function init() {
   initEmail();
 
   const port = process.env.PORT || 3001;
-  const handler = withErrorHandling(
-    withRouter(
-      userHandlers,
-      authHandlers,
-      bookingHandlers,
-      escapeRoomHandlers,
-      organizationHandlers
+  const handler = withCors(
+    withErrorHandling(
+      withRouter(
+        userHandlers,
+        authHandlers,
+        bookingHandlers,
+        escapeRoomHandlers,
+        organizationHandlers
+      )
     )
   );
 
-  if (!environment.production) {
-    microDev({ silent: false, limit: '1mb', host: '::', port })(
-      withCors(handler)
-    );
-  } else {
-    console.info(`listening on port ${port}`);
+  console.info(`starting to listen on port ${port}`);
+
+  if (environment.production) {
     serve(handler).listen(port);
+  } else {
+    microDev({ silent: false, limit: '1mb', host: '::', port })(handler);
   }
 }
 

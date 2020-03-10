@@ -8,8 +8,10 @@ import { OrganizationPage } from './pages/OrganizationPage/OrganizationPage';
 import { PageNotFound } from './pages/PageNotFound';
 
 export function PrivateRoutes() {
+  console.log('RR #1');
   return (
     <Router>
+      {console.log('RR #2')}
       <OrganizationPage path={Routes.Organization} />
       <BookingsPage path={Routes.Bookings} />
       <BookingsPage path={Routes.Booking} />

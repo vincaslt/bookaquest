@@ -1,5 +1,4 @@
 import 'antd/dist/antd.css';
-import 'react-aspect-ratio/aspect-ratio.css';
 import './tailwind.css';
 import './global.css';
 import { initI18n } from '@bookaquest/utilities';

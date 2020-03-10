@@ -16,9 +16,10 @@ import { PrivateRoutes, getUrl } from '../../constants/routes';
 import { BookingsSection } from './BookingsSection/BookingsSection';
 import { SchedulerSection } from './SchedulerSection';
 
-export function BookingsPage(
-  props: RouteComponentProps<{ bookingId?: string }>
-) {
+export function BookingsPage({
+  bookingId,
+  navigate
+}: RouteComponentProps<{ bookingId?: string }>) {
   const { t } = useI18n();
   const { memberships } = useUser();
   const [loading, withLoading] = useLoading(true);
@@ -27,10 +28,16 @@ export function BookingsPage(
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
   const [selectedBookings, setSelectedBookings] = React.useState<Booking[]>([]);
 
-  const openBooking = props.bookingId;
-  const membership = memberships?.[0]; // TODO: use selected, instead of first one
+  const membership = React.useMemo(() => memberships?.[0], [memberships]); // TODO: use selected, instead of first one
+
+  console.log('RR #3');
 
   React.useEffect(() => {
+    console.log('REMOUNT');
+  }, []);
+
+  React.useEffect(() => {
+    console.log('memb', membership);
     if (membership) {
       withLoading(
         Promise.all([
@@ -46,16 +53,15 @@ export function BookingsPage(
         })
       );
     }
-  }, [membership, withLoading]);
+  }, []);
 
   React.useEffect(() => {
-    if (openBooking) {
+    console.log('openBooking', bookingId);
+    if (bookingId) {
       // TODO: probably not the best idea to query booking every time separately
-      api
-        .getBooking(openBooking)
-        .then(booking => setSelectedBookings([booking]));
+      // api.getBooking(bookingId).then(booking => setSelectedBookings([booking]));
     }
-  }, [openBooking]);
+  }, [bookingId]);
 
   const updateBookings = (updatedBookings: Booking[]) => {
     const getUpdated = (booking: Booking) =>
@@ -81,16 +87,14 @@ export function BookingsPage(
 
   const handleCloseModal = () => {
     setSelectedBookings([]);
-    props.navigate?.(PrivateRoutes.Bookings, { replace: true });
+    navigate?.(PrivateRoutes.Bookings, { replace: true });
   };
 
   const handleSelectBookings = (selected: Booking[]) => {
     if (selected.length > 1) {
       setSelectedBookings(selected);
     } else {
-      props.navigate?.(
-        getUrl(PrivateRoutes.Booking, { bookingId: selected[0]._id })
-      );
+      navigate?.(getUrl(PrivateRoutes.Booking, { bookingId: selected[0]._id }));
     }
   };
 

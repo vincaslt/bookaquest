@@ -49,6 +49,7 @@ export function BookingInfoStep({ onSubmit, bookingInfo }: Props) {
     email: ''
   };
 
+  // ! TODO: use another phone input library
   return (
     <Row>
       <Col sm={14} md={18} lg={14}>
@@ -71,6 +72,7 @@ export function BookingInfoStep({ onSubmit, bookingInfo }: Props) {
               </FormItem>
               <FormItem name="phoneNumber" label={t`Phone number`}>
                 <Phone
+                  flagUrl="https://flag.pk/flags/4x3/{xx}.svg"
                   name="phoneNumber"
                   onBlur={e => handleBlur('phoneNumber')(e)}
                   numberInputProps={{ className: 'ant-input' }}
