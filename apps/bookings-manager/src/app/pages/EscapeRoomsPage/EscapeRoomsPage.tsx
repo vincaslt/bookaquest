@@ -13,6 +13,7 @@ import { EscapeRooms } from './EscapeRooms';
 export function EscapeRoomsPage(props: RouteComponentProps) {
   const { t } = useI18n();
   const { memberships } = useUser();
+  const [creating, setCreating] = React.useState(false);
   const [organization, setOrganization] = React.useState<Organization>();
 
   // TODO: use selected, instead of first one
@@ -30,7 +31,8 @@ export function EscapeRoomsPage(props: RouteComponentProps) {
         <PageHeader
           title={t`Escape Rooms`}
           extra={
-            organization && (
+            organization &&
+            !creating && (
               <Link
                 href={`${environment.bookingAppUrl}/booking/${organization._id}`}
                 newTab
@@ -43,7 +45,11 @@ export function EscapeRoomsPage(props: RouteComponentProps) {
       }
       noBackground
     >
-      <EscapeRooms organization={organization} />
+      <EscapeRooms
+        isCreating={creating}
+        setCreating={setCreating}
+        organization={organization}
+      />
     </PageContent>
   );
 }

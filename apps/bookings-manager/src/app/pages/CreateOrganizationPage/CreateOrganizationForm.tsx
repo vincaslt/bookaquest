@@ -13,16 +13,17 @@ const StyledForm = styled(Form)`
   width: 100%;
 `;
 
-const initialValues: CreateOrganization = {
-  name: ''
-};
-
 interface Props {
   onCreateOrganization: (memberships: UserMembership[]) => void;
 }
 
 export function CreateOrganizationForm({ onCreateOrganization }: Props) {
   const { t } = useI18n();
+
+  const initialValues: CreateOrganization = {
+    name: '',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+  };
 
   const validationSchema = Yup.object().shape<CreateOrganization>({
     name: Yup.string().required()
