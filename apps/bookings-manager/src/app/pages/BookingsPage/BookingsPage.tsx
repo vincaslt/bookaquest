@@ -30,14 +30,7 @@ export function BookingsPage({
 
   const membership = React.useMemo(() => memberships?.[0], [memberships]); // TODO: use selected, instead of first one
 
-  console.log('RR #3');
-
   React.useEffect(() => {
-    console.log('REMOUNT');
-  }, []);
-
-  React.useEffect(() => {
-    console.log('memb', membership);
     if (membership) {
       withLoading(
         Promise.all([
@@ -56,10 +49,9 @@ export function BookingsPage({
   }, []);
 
   React.useEffect(() => {
-    console.log('openBooking', bookingId);
     if (bookingId) {
       // TODO: probably not the best idea to query booking every time separately
-      // api.getBooking(bookingId).then(booking => setSelectedBookings([booking]));
+      api.getBooking(bookingId).then(booking => setSelectedBookings([booking]));
     }
   }, [bookingId]);
 
