@@ -76,6 +76,12 @@ export function SideMenu({ onCollapse }: Props) {
                 text={t`Organization`}
                 icon="apartment"
               />
+              <MenuLink
+                key={PrivateRoutes.Integration}
+                to={PrivateRoutes.Integration}
+                text={t`Integration`}
+                icon="api"
+              />
             </Menu>
           </>
         )}

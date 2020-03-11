@@ -5,6 +5,7 @@ import { BookingsPage } from './pages/BookingsPage/BookingsPage';
 import { EscapeRoomPage } from './pages/EscapeRoomPage/EscapeRoomPage';
 import { EscapeRoomsPage } from './pages/EscapeRoomsPage/EscapeRoomsPage';
 import { OrganizationPage } from './pages/OrganizationPage/OrganizationPage';
+import { IntegrationPage } from './pages/IntegrationPage/IntegrationPage';
 import { PageNotFound } from './pages/PageNotFound';
 
 export function PrivateRoutes() {
@@ -15,6 +16,7 @@ export function PrivateRoutes() {
       <BookingsPage path={Routes.Booking} />
       <EscapeRoomPage path={Routes.EscapeRoom} />
       <EscapeRoomsPage path={Routes.EscapeRooms} />
+      <IntegrationPage path={Routes.Integration} />
       <PageNotFound default />
     </Router>
   );

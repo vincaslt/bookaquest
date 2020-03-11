@@ -36,6 +36,7 @@ export function SchedulerSection({
     end: endOfDay(subDays(addWeeks(today, weekOffset + 1), 1))
   };
 
+  // TODO: determine number of weeks to show based on count of hours (1 day + 1 hour looks weird)
   return (
     <Section>
       {loading ? (
