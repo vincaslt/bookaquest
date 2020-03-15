@@ -189,21 +189,31 @@ export function BookingItinerary() {
                       <Text>{escapeRoom.location}</Text>
                     </div>
                   </Col>
-                  <Col lg={8} className="mb-4">
-                    <Title level={4}>{t`Contacts`}</Title>
-                    <div>
-                      <Text strong className="mr-2">{t`Email:`}</Text>
-                      <Text>{organization.email}</Text>
-                    </div>
-                    <div>
-                      <Text strong className="mr-2">{t`Phone:`}</Text>
-                      <Text>{organization.phoneNumber}</Text>
-                    </div>
-                    <div>
-                      <Text strong className="mr-2">{t`Website:`}</Text>
-                      <Text>{organization.website}</Text>
-                    </div>
-                  </Col>
+                  {(organization.email ||
+                    organization.phoneNumber ||
+                    organization.website) && (
+                    <Col lg={8} className="mb-4">
+                      <Title level={4}>{t`Contacts`}</Title>
+                      {organization.email && (
+                        <div>
+                          <Text strong className="mr-2">{t`Email:`}</Text>
+                          <Text>{organization.email}</Text>
+                        </div>
+                      )}
+                      {organization.phoneNumber && (
+                        <div>
+                          <Text strong className="mr-2">{t`Phone:`}</Text>
+                          <Text>{organization.phoneNumber}</Text>
+                        </div>
+                      )}
+                      {organization.website && (
+                        <div>
+                          <Text strong className="mr-2">{t`Website:`}</Text>
+                          <Text>{organization.website}</Text>
+                        </div>
+                      )}
+                    </Col>
+                  )}
                 </Row>
                 <Row className="mt-8">
                   <Col>

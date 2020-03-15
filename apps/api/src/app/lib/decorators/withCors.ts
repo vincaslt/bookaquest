@@ -1,5 +1,6 @@
 import { RequestHandler, send } from 'micro';
-import { STATUS_SUCCESS } from '../constants';
+import { STATUS_SUCCESS, STATUS_ERROR } from '../constants';
+import { environment } from '../../../environments/environment';
 
 const ALLOW_METHODS = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 
@@ -16,7 +17,22 @@ const MAX_AGE_SECONDS = 60 * 60 * 24; // 24 hours
 
 export function withCors(handler: RequestHandler): RequestHandler {
   return async (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const allowedOrigins = [
+      environment.bookingAppUrl,
+      environment.bookingManagerUrl
+    ];
+
+    const origin = Array.isArray(req.headers.origin)
+      ? req.headers.origin[0]
+      : req.headers.origin;
+
+    if (!environment.production) {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    } else if (!origin || !allowedOrigins.includes(origin)) {
+      return send(res, STATUS_ERROR.FORBIDDEN);
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
 
     if (req.method === 'OPTIONS') {
       res.setHeader('Access-Control-Allow-Methods', ALLOW_METHODS.join(','));

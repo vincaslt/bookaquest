@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
   paymentEnabled: false,
-  backendUrl: 'http://localhost:3001',
+  backendUrl: 'https://api.bookaquest.com',
   landingUrl: 'https://bookaquest.com'
 };

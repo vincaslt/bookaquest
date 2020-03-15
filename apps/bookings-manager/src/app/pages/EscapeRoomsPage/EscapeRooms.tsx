@@ -27,12 +27,13 @@ const NewEscapeRoomCard = styled.button`
 
 interface Props {
   organization?: Organization;
+  setCreating: (value: boolean) => void;
+  isCreating: boolean;
 }
 
-export function EscapeRooms({ organization }: Props) {
+export function EscapeRooms({ organization, setCreating, isCreating }: Props) {
   const { t } = useI18n();
   const [isLoading, withLoading] = useLoading(true);
-  const [isCreating, setIsCreating] = React.useState(false);
   const [escapeRooms, setEscapeRooms] = React.useState<EscapeRoom[]>([]);
 
   const organizationId = organization?._id;
@@ -43,11 +44,11 @@ export function EscapeRooms({ organization }: Props) {
     }
   }, [organizationId, withLoading]);
 
-  const handleCreateClick = () => setIsCreating(true);
-  const handleCancel = () => setIsCreating(false);
+  const handleCreateClick = () => setCreating(true);
+  const handleCancel = () => setCreating(false);
   const handleCreateDone = (escapeRoom: EscapeRoom) => {
     setEscapeRooms(rooms => [...rooms, escapeRoom]);
-    setIsCreating(false);
+    setCreating(false);
   };
 
   if (isCreating && organization) {

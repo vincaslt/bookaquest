@@ -5,7 +5,8 @@ export enum PrivateRoutes {
   Booking = '/booking/:bookingId',
   Organization = '/organization',
   EscapeRooms = '/escape-rooms',
-  EscapeRoom = '/escape-rooms/:escapeRoomId'
+  EscapeRoom = '/escape-rooms/:escapeRoomId',
+  Integration = '/integration'
 }
 
 export enum PublicRoutes {
