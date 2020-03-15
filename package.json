@@ -8,6 +8,7 @@
     "db:seed": "ts-node --project apps/api/tsconfig.app.json apps/api/tools/seed.ts",
     "start": "nx serve",
     "build": "nx build",
+    "build-all": "nx build api --prod && nx build bookings-app --prod && nx build bookings-manager --prod",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e",

@@ -6,7 +6,7 @@ export enum PrivateRoutes {
   Organization = '/organization',
   EscapeRooms = '/escape-rooms',
   EscapeRoom = '/escape-rooms/:escapeRoomId',
-  Integration = '/escape-rooms/integration'
+  Integration = '/integration'
 }
 
 export enum PublicRoutes {
